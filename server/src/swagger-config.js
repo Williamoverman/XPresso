@@ -8,6 +8,11 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API documentation generated with JSDoc + swagger-jsdoc',
     },
+    components: {
+      schemas: {
+        
+      }
+    }
   },
   // Point to folder where Swagger should look for the routes
   apis: ['./src/routes/*.js'], 
