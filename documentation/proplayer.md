@@ -1,4 +1,9 @@
 # Pro players
 
-|  id  | user_id | game_specialties | rating | total_jobs | bio |
-|------|---------|------------------|--------|------------|-----|
+|  user_id  | total_jobs | bio | hourly_rate |
+|------|------------|-----|----|
+
+# Pro players games
+
+|  pro_player_id  | game_id | current_rank | years_experience |
+|------|------------------|--------|------------|
