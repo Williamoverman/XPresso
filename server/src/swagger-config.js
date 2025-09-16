@@ -42,6 +42,9 @@ const swaggerOptions = {
             username: { 
               type: 'string' 
             },
+            is_active: {
+              type: 'boolean'
+            },
           },
           required: ['email', 'password', 'username'],
         },
@@ -117,9 +120,6 @@ const swaggerOptions = {
             user_id: { 
               type: 'integer' 
             },
-            total_jobs: { 
-              type: 'integer' 
-            },
             bio: { 
               type: 'string'
             },
@@ -128,6 +128,36 @@ const swaggerOptions = {
             },
           },
           required: ['user_id', 'hourly_rate'],
+        },
+        ProPlayerInput: {
+          type: 'object',
+          properties: {
+            bio: { 
+              type: 'string' 
+            },
+            hourly_rate: { 
+              type: 'number' 
+            },
+          },
+          required: ['user_id', 'hourly_rate'],
+        },
+        ProPlayerGame: {
+          type: 'object',
+          properties: {
+            pro_player_id: { 
+              type: 'integer' 
+            },
+            game_id: { 
+              type: 'integer' 
+            },
+            current_rank: { 
+              type: 'string' 
+            },
+            years_experience: { 
+              type: 'integer' 
+            },
+          },
+          required: ['pro_player_id', 'game_id'],
         },
         Ad: {
           type: 'object',
@@ -165,6 +195,69 @@ const swaggerOptions = {
           },
           required: ['id', 'identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
         },
+        AdInput: {
+          type: 'object',
+          properties: {
+            game_id: { 
+              type: 'integer' 
+            },
+            pro_player_id: { 
+              type: 'integer' 
+            },
+            identifier: { 
+              type: 'string' 
+            },
+            name: { 
+              type: 'string' 
+            },
+            description: { 
+              type: 'string' 
+            },
+            max_reservations_per_user: { 
+              type: 'integer' 
+            },
+            service_type: { 
+              type: 'string'
+            },
+            total_spots_available: { 
+              type: 'integer' 
+            },
+            max_duration_minutes: { 
+              type: 'integer' 
+            },
+          },
+          required: ['identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
+        },
+        AdUpdate: {
+          type: 'object',
+          properties: {
+            game_id: { 
+              type: 'integer' 
+            },
+            identifier: { 
+              type: 'string' 
+            },
+            name: { 
+              type: 'string' 
+            },
+            description: { 
+              type: 'string' 
+            },
+            max_reservations_per_user: { 
+              type: 'integer' 
+            },
+            service_type: { 
+              type: 'string'
+            },
+            total_spots_available: { 
+              type: 'integer' 
+            },
+            max_duration_minutes: { 
+              type: 'integer' 
+            },
+          },
+          required: ['identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
+        },
         Reservation: {
           type: 'object',
           properties: {
@@ -194,6 +287,48 @@ const swaggerOptions = {
           },
           required: ['id', 'status', 'start_date', 'end_date'],
         },
+        ReservationInput: {
+          type: 'object',
+          properties: {
+            user_id: { 
+              type: 'integer' 
+            },
+            ad_id: { 
+              type: 'integer' 
+            },
+            status: { 
+              type: 'string' 
+            },
+            customer_notes: { 
+              type: 'string' 
+            },
+            start_date: { 
+              type: 'string', format: 'date-time' 
+            },
+            end_date: { 
+              type: 'string', format: 'date-time' 
+            },
+          },
+          required: ['status', 'start_date', 'end_date'],
+        },
+        ReservationUpdate: {
+          type: 'object',
+          properties: {
+            status: { 
+              type: 'string' 
+            },
+            customer_notes: { 
+              type: 'string' 
+            },
+            start_date: { 
+              type: 'string', format: 'date-time' 
+            },
+            end_date: { 
+              type: 'string', format: 'date-time' 
+            },
+          },
+          required: ['status', 'start_date', 'end_date'],
+        },
         Review: {
           type: 'object',
           properties: {
@@ -219,6 +354,43 @@ const swaggerOptions = {
             },
           },
           required: ['id', 'rating'],
+        },
+        ReviewInput: {
+          type: 'object',
+          properties: {
+            reservation_id: { 
+              type: 'integer' 
+            },
+            user_id: { 
+              type: 'integer' 
+            },
+            pro_player_id: { 
+              type: 'integer' 
+            },
+            rating: { 
+              type: 'integer', 
+              minimum: 1, 
+              maximum: 5 
+            },
+            comment: { 
+              type: 'string' 
+            },
+          },
+          required: ['rating'],
+        },
+        ReviewUpdate: {
+          type: 'object',
+          properties: {
+            rating: { 
+              type: 'integer', 
+              minimum: 1, 
+              maximum: 5 
+            },
+            comment: { 
+              type: 'string' 
+            },
+          },
+          required: ['rating'],
         },
       }
     }

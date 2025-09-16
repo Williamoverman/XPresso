@@ -18,16 +18,6 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Game'
- *       404:
- *         description: If no games found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No games found"
  */
 router.get('/', (req, res) => {
     

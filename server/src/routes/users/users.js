@@ -18,16 +18,6 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/User'
- *       404:
- *         description: If no users found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No users found"
  */
 router.get('/', (req, res) => {
     

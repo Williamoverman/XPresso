@@ -2,9 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger-config.js';
-import userRouter from './routes/users/users.js';
+import usersRouter from './routes/users/users.js';
 import gamesRouter from './routes/games/games.js';
 import rolesRouter from './routes/roles/roles.js';
+import proPlayersRouter from './routes/pro-players/pro-players.js';
+import adsRouter from './routes/ads/ads.js';
+import reviewsRouter from './routes/reviews/reviews.js';
+import reservationsRouter from './routes/reservations/reservations.js';
 
 // Check if NODE_ENV environment variable is set, otherwise go to development mode
 const nodeEnv = process.env.NODE_ENV || 'dev';
@@ -21,9 +25,13 @@ app.use(cors({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // TODO: setup your routers here, remove the one (and the exampleRouter code) below
-app.use('/users', userRouter);
+app.use('/users', usersRouter);
 app.use('/games', gamesRouter);
 app.use('/roles', rolesRouter);
+app.use('/pro-players', proPlayersRouter)
+app.use('/ads', adsRouter)
+app.use('/reviews', reviewsRouter)
+app.use('/reservations', reservationsRouter)
 
 // Global error handler. In your code, throw an object with a status and message, and it will be caught here. We ignore one eslint call here, because next is needed.
 // eslint-disable-next-line no-unused-vars

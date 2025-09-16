@@ -3,21 +3,21 @@ const router = express.Router();
 
 /**
  * @openapi
- * /roles:
+ * /reviews:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Get all roles
- *     description: Returns all roles.
+ *       - Reviews
+ *     summary: Get all reviews
+ *     description: Returns all reviews.
  *     responses:
  *       200:
- *         description: Roles returned succesfully
+ *         description: Reviews returned succesfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Role'
+ *                 $ref: '#/components/schemas/Review'
  */
 router.get('/', (req, res) => {
     
@@ -25,28 +25,28 @@ router.get('/', (req, res) => {
 
 /**
  * @openapi
- * /roles/{id}:
+ * /reviews/{id}:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Get role by ID
- *     description: Returns a role by ID.
+ *       - Reviews
+ *     summary: Get review by ID
+ *     description: Returns a review by ID.
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the role
+ *         description: The ID of the review
  *     responses:
  *       200:
- *         description: Role returned successfully
+ *         description: Review returned successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Review'
  *       404:
- *         description: If no role found by ID
+ *         description: If no review found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -54,7 +54,7 @@ router.get('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No role found by ID"
+ *                   example: "No review found by ID"
  */
 router.get('/:id', (req, res) => {
     
@@ -62,25 +62,25 @@ router.get('/:id', (req, res) => {
 
 /**
  * @openapi
- * /roles:
+ * /reviews:
  *   post:
  *     tags:
- *       - Roles
- *     summary: Create role
- *     description: Returns created role.
+ *       - Reviews
+ *     summary: Create review
+ *     description: Returns created review.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RoleInput'
+ *             $ref: '#/components/schemas/ReviewInput'
  *     responses:
  *       201:
- *         description: Role created
+ *         description: Review created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Review'
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -90,7 +90,7 @@ router.get('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name is reqquired"
+ *                   example: "rating is required"
  */
 router.post('/', (req, res) => {
     
@@ -98,12 +98,12 @@ router.post('/', (req, res) => {
 
 /**
  * @openapi
- * /roles/{id}:
+ * /reviews/{id}:
  *   put:
  *     tags:
- *       - Roles
- *     summary: Update role
- *     description: Returns updated role.
+ *       - Reviews
+ *     summary: Update review
+ *     description: Returns updated review.
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,16 +115,16 @@ router.post('/', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RoleInput'
+ *             $ref: '#/components/schemas/ReviewUpdate'
  *     responses:
  *       200:
- *         description: Role updated
+ *         description: Review updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Review'
  *       404:
- *         description: If no role found by ID
+ *         description: If no review found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +132,7 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No role found by ID"
+ *                   example: "No review found by ID"
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -142,7 +142,7 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Required name"
+ *                   example: "Rating is required"
  */
 router.put('/:id', (req, res) => {
     
@@ -150,11 +150,11 @@ router.put('/:id', (req, res) => {
 
 /**
  * @openapi
- * /roles/{id}:
+ * /reviews/{id}:
  *   delete:
  *     tags:
- *       - Roles
- *     summary: Delete role
+ *       - Reviews
+ *     summary: Delete review
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,9 +163,9 @@ router.put('/:id', (req, res) => {
  *           type: integer
  *     responses:
  *       204:
- *         description: Role deleted
+ *         description: Review deleted
  *       404:
- *         description: If no role found by ID
+ *         description: If no review found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -175,57 +175,9 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *               example: 
  *                 error: 
- *                   "No role found by ID"
- *       400:
- *         description: Cannot delete due to associated users
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Cannot delete role with associated users"
+ *                   "No review found by ID"
  */
 router.delete('/:id', (req, res) => {
-    
-});
-
-/**
- * @openapi
- * /roles/{id}/users:
- *   get:
- *     tags:
- *       - Roles
- *     summary: Get users with certain role
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the role
- *     responses:
- *       200:
- *         description: List of users with certain role
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- *       404:
- *         description: If no role found by ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No role found by ID"
- */
-router.get('/:id/users', (req, res) => {
     
 });
 

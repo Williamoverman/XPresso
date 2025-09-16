@@ -86,16 +86,13 @@ const ProPlayer = sequelize.define('ProPlayer', {
         primaryKey: true,
         references: { model: User, key: 'id' }
     },
-    total_jobs: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
     bio: {
         type: DataTypes.TEXT
     },
     hourly_rate: {
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 10
     }
 });
 
