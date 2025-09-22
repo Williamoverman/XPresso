@@ -1,52 +1,51 @@
 import express from 'express';
+import reservationController from '../controllers/reservation-controller.js';
 const router = express.Router();
 
 /**
  * @openapi
- * /games:
+ * /reservations:
  *   get:
  *     tags:
- *       - Games
- *     summary: Get all games
- *     description: Returns all games.
+ *       - Reservations
+ *     summary: Get all reservations
+ *     description: Returns all reservations.
  *     responses:
  *       200:
- *         description: Games returned succesfully
+ *         description: Reservations returned succesfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Game'
+ *                 $ref: '#/components/schemas/Reservation'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', reservationController.getAllReservations);
 
 /**
  * @openapi
- * /games/{id}:
+ * /reservations/{id}:
  *   get:
  *     tags:
- *       - Games
- *     summary: Get game by ID
- *     description: Returns a game by ID.
+ *       - Reservations
+ *     summary: Get reservation by ID
+ *     description: Returns a reservation by ID.
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the game
+ *         description: The ID of the reservation
  *     responses:
  *       200:
- *         description: Game returned successfully
+ *         description: Reservation returned successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Game'
+ *               $ref: '#/components/schemas/Reservation'
  *       404:
- *         description: If no game found by ID
+ *         description: If no reservation found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -54,33 +53,31 @@ router.get('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No game found by ID"
+ *                   example: "No reservation found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', reservationController.getReservationById);
 
 /**
  * @openapi
- * /games:
+ * /reservations:
  *   post:
  *     tags:
- *       - Games
- *     summary: Create game
- *     description: Returns created game.
+ *       - Reservations
+ *     summary: Create reservation
+ *     description: Returns created reservation.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/GameInput'
+ *             $ref: '#/components/schemas/ReservationInput'
  *     responses:
  *       201:
- *         description: Game created
+ *         description: Reservation created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Game'
+ *               $ref: '#/components/schemas/Reservation'
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -90,20 +87,18 @@ router.get('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name and or abbrevations are required"
+ *                   example: "start_date is required"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', reservationController.createReservation);
 
 /**
  * @openapi
- * /games/{id}:
+ * /reservations/{id}:
  *   put:
  *     tags:
- *       - Games
- *     summary: Update game
- *     description: Returns updated game.
+ *       - Reservations
+ *     summary: Update reservation
+ *     description: Returns updated reservation.
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,16 +110,16 @@ router.post('/', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/GameInput'
+ *             $ref: '#/components/schemas/ReservationUpdate'
  *     responses:
  *       200:
- *         description: Game updated
+ *         description: Reservation updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Game'
+ *               $ref: '#/components/schemas/Reservation'
  *       404:
- *         description: If no game found by ID
+ *         description: If no reservation found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +127,7 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No game found by ID"
+ *                   example: "No reservation found by ID"
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -142,19 +137,17 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name and or abbrevations are required"
+ *                   example: "start_date is required"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', reservationController.updateReservation);
 
 /**
  * @openapi
- * /games/{id}:
+ * /reservations/{id}:
  *   delete:
  *     tags:
- *       - Games
- *     summary: Delete game
+ *       - Reservations
+ *     summary: Delete reservation
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,9 +156,9 @@ router.put('/:id', (req, res) => {
  *           type: integer
  *     responses:
  *       204:
- *         description: Game deleted
+ *         description: Reservation deleted
  *       404:
- *         description: If no game found by ID
+ *         description: If no reservation found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -175,9 +168,9 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *               example: 
  *                 error: 
- *                   "No game found by ID"
+ *                   "No reservation found by ID"
  *       400:
- *         description: Cannot delete due to associated ads/pro-players
+ *         description: Cannot delete due to associated reviews
  *         content:
  *           application/json:
  *             schema:
@@ -185,37 +178,35 @@ router.put('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Cannot delete game with associated ads/pro-players"
+ *                   example: "Cannot delete reservation with associated reviews"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', reservationController.deleteReservation);
 
 /**
  * @openapi
- * /games/{id}/ads:
+ * /reservations/{id}/review:
  *   get:
  *     tags:
- *       - Games
- *     summary: Get ads for certain game
+ *       - Reservations
+ *     summary: Get review for certain reservation
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the game
+ *         description: The ID of the reservation
  *     responses:
  *       200:
- *         description: List of ads for certain game
+ *         description: List of reviews for certain reservation
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Ad'
+ *                 $ref: '#/components/schemas/Review'
  *       404:
- *         description: If no ads found by that game ID
+ *         description: If no review found by that reservation ID
  *         content:
  *           application/json:
  *             schema:
@@ -223,10 +214,8 @@ router.delete('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No ads found by game ID"
+ *                   example: "No reviews found by reservation ID"
  */
-router.get('/:id/ads', (req, res) => {
-    
-});
+router.get('/:id/review', reservationController.getReviewsForReservation);
 
 export default router;

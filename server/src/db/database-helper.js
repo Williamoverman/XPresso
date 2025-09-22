@@ -129,11 +129,6 @@ const Ad = sequelize.define('Ad', {
         type: DataTypes.INTEGER,
         references: { model: ProPlayer, key: 'user_id' }
     },
-    identifier: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
     name: {
         type: DataTypes.STRING,
         allowNull: false

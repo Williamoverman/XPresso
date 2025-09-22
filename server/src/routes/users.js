@@ -1,4 +1,5 @@
 import express from 'express';
+import userController from '../controllers/user-controller.js'
 const router = express.Router();
 
 /**
@@ -19,9 +20,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', userController.getAllUsers);
 
 /**
  * @openapi
@@ -56,9 +55,7 @@ router.get('/', (req, res) => {
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', userController.getUserById);
 
 /**
  * @openapi
@@ -92,9 +89,7 @@ router.get('/:id', (req, res) => {
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', userController.createUser);
 
 /**
  * @openapi
@@ -144,9 +139,7 @@ router.post('/', (req, res) => {
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', userController.updateUser);
 
 /**
  * @openapi
@@ -187,9 +180,7 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *                   example: "Cannot delete user with associated relations"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', userController.deleteUser);
 
 /**
  * @openapi
@@ -226,9 +217,7 @@ router.delete('/:id', (req, res) => {
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/roles', (req, res) => {
-    
-});
+router.get('/:id/roles', userController.getUserRolesById);
 
 /**
  * @openapi
@@ -284,9 +273,7 @@ router.get('/:id/roles', (req, res) => {
  *                   type: string
  *                   example: "Role already assigned"
  */
-router.post('/:id/roles', (req, res) => {
-    
-});
+router.post('/:id/roles', userController.addRoleToUser);
 
 /**
  * @openapi
@@ -321,9 +308,7 @@ router.post('/:id/roles', (req, res) => {
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/reservations', (req, res) => {
-    
-});
+router.get('/:id/reservations', userController.getUserReservations);
 
 /**
  * @openapi
@@ -358,9 +343,7 @@ router.get('/:id/reservations', (req, res) => {
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/reviews', (req, res) => {
-    
-});
+router.get('/:id/reviews', userController.getUserReviews);
 
 /**
  * @openapi
@@ -393,8 +376,6 @@ router.get('/:id/reviews', (req, res) => {
  *                   type: string
  *                   example: "No pro player found by this user ID"
  */
-router.get('/:id/pro-players', (req, res) => {
-    
-});
+router.get('/:id/pro-players', userController.getUserProPlayerProfile);
 
 export default router;

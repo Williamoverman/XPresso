@@ -1,4 +1,5 @@
 import express from 'express';
+import proPlayerController from '../controllers/pro-player-controller.js';
 const router = express.Router();
 
 /**
@@ -19,9 +20,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/ProPlayer'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', proPlayerController.getAllProPlayers);
 
 /**
  * @openapi
@@ -56,9 +55,7 @@ router.get('/', (req, res) => {
  *                   type: string
  *                   example: "No pro-player found by user_id"
  */
-router.get('/:user_id', (req, res) => {
-    
-});
+router.get('/:user_id', proPlayerController.getProPlayerById);
 
 /**
  * @openapi
@@ -97,9 +94,7 @@ router.get('/:user_id', (req, res) => {
  *                   type: string
  *                   example: "Pro player already exists for this user"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', proPlayerController.createProPlayer);
 
 /**
  * @openapi
@@ -123,7 +118,7 @@ router.post('/', (req, res) => {
  *             $ref: '#/components/schemas/ProPlayerInput'
  *     responses:
  *       200:
- *         description: Game updated
+ *         description: Pro player updated
  *         content:
  *           application/json:
  *             schema:
@@ -149,9 +144,7 @@ router.post('/', (req, res) => {
  *                   type: string
  *                   example: "Hourly rate is required"
  */
-router.put('/:user_id', (req, res) => {
-    
-});
+router.put('/:user_id', proPlayerController.updateProPlayer);
 
 /**
  * @openapi
@@ -192,9 +185,7 @@ router.put('/:user_id', (req, res) => {
  *                   type: string
  *                   example: "Cannot delete pro-player with associated ads"
  */
-router.delete('/:user_id', (req, res) => {
-    
-});
+router.delete('/:user_id', proPlayerController.deleteProPlayer);
 
 /**
  * @openapi
@@ -230,9 +221,7 @@ router.delete('/:user_id', (req, res) => {
  *                   type: string
  *                   example: "No ads found by pro-player user_id"
  */
-router.get('/:user_id/ads', (req, res) => {
-    
-});
+router.get('/:user_id/ads', proPlayerController.getAdsForProPlayer);
 
 /**
  * @openapi
@@ -268,9 +257,7 @@ router.get('/:user_id/ads', (req, res) => {
  *                   type: string
  *                   example: "No games found by pro-player user_id"
  */
-router.get('/:user_id/games', (req, res) => {
-    
-});
+router.get('/:user_id/games', proPlayerController.getGamesForProPlayer);
 
 /**
  * @openapi
@@ -332,9 +319,7 @@ router.get('/:user_id/games', (req, res) => {
  *                   type: string
  *                   example: "Pro player n ot found"
  */
-router.post('/:user_id/games', (req, res) => {
-    
-});
+router.post('/:user_id/games', proPlayerController.AssignGameToProPlayer);
 
 /**
  * @openapi
@@ -398,9 +383,7 @@ router.post('/:user_id/games', (req, res) => {
  *                 error: "Pro player game association not found"
  */
 
-router.put('/:user_id/games/:game_id', (req, res) => {
-    
-});
+router.put('/:user_id/games/:game_id', proPlayerController.UpdateProPlayerGameDetails);
 
 /**
  * @openapi
@@ -436,8 +419,6 @@ router.put('/:user_id/games/:game_id', (req, res) => {
  *               example:
  *                 error: "Pro player not found"
  */
-router.put('/:user_id/reviews', (req, res) => {
-    
-});
+router.put('/:user_id/reviews', proPlayerController.getProPlayerReviews);
 
 export default router;

@@ -1,33 +1,12 @@
 <script>
-    /**
-     * Any properties (or attributes) must be retrieved
-     * using the `$props()` function. It returns an object
-     * that can be destructured
-     *
-     * @see https://svelte.dev/tutorial/svelte/declaring-props
-     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring
-     *
-     */
     let { active } = $props();
 </script>
-<nav>
-    <ul>
-        <li><a class:active={active === "/"} href="/">Home</a></li>
-        <li><a class:active={active === "/about"} href="/about">About</a></li>
-        <li><a class:active={active.match("^/example")} href="/example/testValue?key1=value1&key2=value2">Example with query parameters</a></li>
+<nav class="mx-16 my-8 font-[Bungee]">
+    <ul class="flex space-x-4 items-center">
+        <li class="pl-4 w-16 h-16 flex items-center justify-center"><img src="../src/assets/icon.png" alt="icon"></li>
+        <li class="pl-4 text-2xl"><a class:active={active === "/"} href="/">XPresso</a></li>
+        <!--li><a class:active={active.match("^/example")} href="/example/testValue?key1=value1&key2=value2">Example with query parameters</a></li>-->
+        <li class="ml-auto pr-4"><a class:active={active === "/login"} href="/login">My Account</a></li>
+        <li class="pr-4"><a class:active={active === "/games"} href="/login">Games</a></li>
     </ul>
 </nav>
-
-<style>
-    /* Style in this block is `scoped` meaning it will
-       only be applied to HTML elements within this component
-       @see https://svelte.dev/tutorial/svelte/styling
-    */
-    ul {
-        list-style-type: none;
-    }
-
-    a.active {
-        font-weight: bold;
-    }
-</style>

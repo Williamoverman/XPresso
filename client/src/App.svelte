@@ -1,7 +1,6 @@
 <script>
   import router from "page";
   import Home from "./pages/Home.svelte";
-  import About from "./pages/About.svelte";
   import ExampleWithParams from "./pages/ExampleWithParams.svelte";
 
   import Header from "./lib/Header.svelte";
@@ -12,10 +11,6 @@
 
   router('/', (ctx) => {
     Page = Home;
-    currentRoute = ctx.pathname;
-  });
-  router('/about', (ctx) => {
-    Page = About;
     currentRoute = ctx.pathname;
   });
 

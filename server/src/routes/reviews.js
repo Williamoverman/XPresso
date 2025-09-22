@@ -1,4 +1,5 @@
 import express from 'express';
+import reviewController from '../controllers/review-controller.js';
 const router = express.Router();
 
 /**
@@ -19,9 +20,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Review'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', reviewController.getAllReviews);
 
 /**
  * @openapi
@@ -56,9 +55,7 @@ router.get('/', (req, res) => {
  *                   type: string
  *                   example: "No review found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', reviewController.getReviewById);
 
 /**
  * @openapi
@@ -92,9 +89,7 @@ router.get('/:id', (req, res) => {
  *                   type: string
  *                   example: "rating is required"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', reviewController.createReview);
 
 /**
  * @openapi
@@ -144,9 +139,7 @@ router.post('/', (req, res) => {
  *                   type: string
  *                   example: "Rating is required"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', reviewController.updateReview);
 
 /**
  * @openapi
@@ -177,8 +170,6 @@ router.put('/:id', (req, res) => {
  *                 error: 
  *                   "No review found by ID"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', reviewController.deleteReview);
 
 export default router;

@@ -1,52 +1,51 @@
 import express from 'express';
+import roleController from '../controllers/role-controller.js'
 const router = express.Router();
 
 /**
  * @openapi
- * /reservations:
+ * /roles:
  *   get:
  *     tags:
- *       - Reservations
- *     summary: Get all reservations
- *     description: Returns all reservations.
+ *       - Roles
+ *     summary: Get all roles
+ *     description: Returns all roles.
  *     responses:
  *       200:
- *         description: Reservations returned succesfully
+ *         description: Roles returned succesfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Reservation'
+ *                 $ref: '#/components/schemas/Role'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', roleController.getAllRoles);
 
 /**
  * @openapi
- * /reservations/{id}:
+ * /roles/{id}:
  *   get:
  *     tags:
- *       - Reservations
- *     summary: Get reservation by ID
- *     description: Returns a reservation by ID.
+ *       - Roles
+ *     summary: Get role by ID
+ *     description: Returns a role by ID.
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the reservation
+ *         description: The ID of the role
  *     responses:
  *       200:
- *         description: Reservation returned successfully
+ *         description: Role returned successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Reservation'
+ *               $ref: '#/components/schemas/Role'
  *       404:
- *         description: If no reservation found by ID
+ *         description: If no role found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -54,33 +53,31 @@ router.get('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No reservation found by ID"
+ *                   example: "No role found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', roleController.getRoleById);
 
 /**
  * @openapi
- * /reservations:
+ * /roles:
  *   post:
  *     tags:
- *       - Reservations
- *     summary: Create reservation
- *     description: Returns created reservation.
+ *       - Roles
+ *     summary: Create role
+ *     description: Returns created role.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ReservationInput'
+ *             $ref: '#/components/schemas/RoleInput'
  *     responses:
  *       201:
- *         description: Reservation created
+ *         description: Role created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Reservation'
+ *               $ref: '#/components/schemas/Role'
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -90,20 +87,18 @@ router.get('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "start_date is required"
+ *                   example: "Name is reqquired"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', roleController.createRole);
 
 /**
  * @openapi
- * /reservations/{id}:
+ * /roles/{id}:
  *   put:
  *     tags:
- *       - Reservations
- *     summary: Update reservation
- *     description: Returns updated reservation.
+ *       - Roles
+ *     summary: Update role
+ *     description: Returns updated role.
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,16 +110,16 @@ router.post('/', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/ReservationUpdate'
+ *             $ref: '#/components/schemas/RoleInput'
  *     responses:
  *       200:
- *         description: Reservation updated
+ *         description: Role updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Reservation'
+ *               $ref: '#/components/schemas/Role'
  *       404:
- *         description: If no reservation found by ID
+ *         description: If no role found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +127,7 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No reservation found by ID"
+ *                   example: "No role found by ID"
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -142,19 +137,17 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "start_date is required"
+ *                   example: "Required name"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', roleController.updateRole);
 
 /**
  * @openapi
- * /reservations/{id}:
+ * /roles/{id}:
  *   delete:
  *     tags:
- *       - Reservations
- *     summary: Delete reservation
+ *       - Roles
+ *     summary: Delete role
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,9 +156,9 @@ router.put('/:id', (req, res) => {
  *           type: integer
  *     responses:
  *       204:
- *         description: Reservation deleted
+ *         description: Role deleted
  *       404:
- *         description: If no reservation found by ID
+ *         description: If no role found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -175,9 +168,9 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *               example: 
  *                 error: 
- *                   "No reservation found by ID"
+ *                   "No role found by ID"
  *       400:
- *         description: Cannot delete due to associated reviews
+ *         description: Cannot delete due to associated users
  *         content:
  *           application/json:
  *             schema:
@@ -185,37 +178,35 @@ router.put('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Cannot delete reservation with associated reviews"
+ *                   example: "Cannot delete role with associated users"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', roleController.deleteRole);
 
 /**
  * @openapi
- * /reservations/{id}/review:
+ * /roles/{id}/users:
  *   get:
  *     tags:
- *       - Reservations
- *     summary: Get review for certain reservation
+ *       - Roles
+ *     summary: Get users with certain role
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the reservation
+ *         description: The ID of the role
  *     responses:
  *       200:
- *         description: List of reviews for certain reservation
+ *         description: List of users with certain role
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Review'
+ *                 $ref: '#/components/schemas/User'
  *       404:
- *         description: If no review found by that reservation ID
+ *         description: If no role found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -223,10 +214,8 @@ router.delete('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No reviews found by reservation ID"
+ *                   example: "No role found by ID"
  */
-router.get('/:id/review', (req, res) => {
-    
-});
+router.get('/:id/users', roleController.getUsersWithRole);
 
 export default router;

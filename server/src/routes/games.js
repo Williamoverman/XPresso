@@ -1,52 +1,51 @@
 import express from 'express';
+import gameController from '../controllers/game-controller.js';
 const router = express.Router();
 
 /**
  * @openapi
- * /roles:
+ * /games:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Get all roles
- *     description: Returns all roles.
+ *       - Games
+ *     summary: Get all games
+ *     description: Returns all games.
  *     responses:
  *       200:
- *         description: Roles returned succesfully
+ *         description: Games returned succesfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Role'
+ *                 $ref: '#/components/schemas/Game'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', gameController.getAllGames);
 
 /**
  * @openapi
- * /roles/{id}:
+ * /games/{id}:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Get role by ID
- *     description: Returns a role by ID.
+ *       - Games
+ *     summary: Get game by ID
+ *     description: Returns a game by ID.
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the role
+ *         description: The ID of the game
  *     responses:
  *       200:
- *         description: Role returned successfully
+ *         description: Game returned successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Game'
  *       404:
- *         description: If no role found by ID
+ *         description: If no game found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -54,33 +53,31 @@ router.get('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No role found by ID"
+ *                   example: "No game found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', gameController.getGameById);
 
 /**
  * @openapi
- * /roles:
+ * /games:
  *   post:
  *     tags:
- *       - Roles
- *     summary: Create role
- *     description: Returns created role.
+ *       - Games
+ *     summary: Create game
+ *     description: Returns created game.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RoleInput'
+ *             $ref: '#/components/schemas/GameInput'
  *     responses:
  *       201:
- *         description: Role created
+ *         description: Game created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Game'
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -90,20 +87,18 @@ router.get('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name is reqquired"
+ *                   example: "Name and or abbrevations are required"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', gameController.createGame);
 
 /**
  * @openapi
- * /roles/{id}:
+ * /games/{id}:
  *   put:
  *     tags:
- *       - Roles
- *     summary: Update role
- *     description: Returns updated role.
+ *       - Games
+ *     summary: Update game
+ *     description: Returns updated game.
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,16 +110,16 @@ router.post('/', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/RoleInput'
+ *             $ref: '#/components/schemas/GameInput'
  *     responses:
  *       200:
- *         description: Role updated
+ *         description: Game updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Role'
+ *               $ref: '#/components/schemas/Game'
  *       404:
- *         description: If no role found by ID
+ *         description: If no game found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -132,7 +127,7 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No role found by ID"
+ *                   example: "No game found by ID"
  *       400:
  *         description: Invalid input or validation error
  *         content:
@@ -142,19 +137,17 @@ router.post('/', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Required name"
+ *                   example: "Name and or abbrevations are required"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', gameController.updateGame);
 
 /**
  * @openapi
- * /roles/{id}:
+ * /games/{id}:
  *   delete:
  *     tags:
- *       - Roles
- *     summary: Delete role
+ *       - Games
+ *     summary: Delete game
  *     parameters:
  *       - in: path
  *         name: id
@@ -163,9 +156,9 @@ router.put('/:id', (req, res) => {
  *           type: integer
  *     responses:
  *       204:
- *         description: Role deleted
+ *         description: Game deleted
  *       404:
- *         description: If no role found by ID
+ *         description: If no game found by ID
  *         content:
  *           application/json:
  *             schema:
@@ -175,9 +168,9 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *               example: 
  *                 error: 
- *                   "No role found by ID"
+ *                   "No game found by ID"
  *       400:
- *         description: Cannot delete due to associated users
+ *         description: Cannot delete due to associated ads/pro-players
  *         content:
  *           application/json:
  *             schema:
@@ -185,37 +178,35 @@ router.put('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Cannot delete role with associated users"
+ *                   example: "Cannot delete game with associated ads/pro-players"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', gameController.deleteGame);
 
 /**
  * @openapi
- * /roles/{id}/users:
+ * /games/{id}/ads:
  *   get:
  *     tags:
- *       - Roles
- *     summary: Get users with certain role
+ *       - Games
+ *     summary: Get ads for certain game
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: The ID of the role
+ *         description: The ID of the game
  *     responses:
  *       200:
- *         description: List of users with certain role
+ *         description: List of ads for certain game
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 $ref: '#/components/schemas/Ad'
  *       404:
- *         description: If no role found by ID
+ *         description: If no ads found by that game ID
  *         content:
  *           application/json:
  *             schema:
@@ -223,10 +214,8 @@ router.delete('/:id', (req, res) => {
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "No role found by ID"
+ *                   example: "No ads found by game ID"
  */
-router.get('/:id/users', (req, res) => {
-    
-});
+router.get('/:id/ads', gameController.getAdsForGame);
 
 export default router;

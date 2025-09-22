@@ -1,4 +1,5 @@
 import express from 'express';
+import adController from '../controllers/ad-controller.js';
 const router = express.Router();
 
 /**
@@ -35,9 +36,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Ad'
  */
-router.get('/', (req, res) => {
-    
-});
+router.get('/', adController.getAllAds);
 
 /**
  * @openapi
@@ -72,9 +71,7 @@ router.get('/', (req, res) => {
  *                   type: string
  *                   example: "No ad found by ID"
  */
-router.get('/:id', (req, res) => {
-    
-});
+router.get('/:id', adController.getAdById);
 
 /**
  * @openapi
@@ -119,9 +116,7 @@ router.get('/:id', (req, res) => {
  *               example:
  *                 error: "Game not found"
  */
-router.post('/', (req, res) => {
-    
-});
+router.post('/', adController.createAd);
 
 /**
  * @openapi
@@ -171,9 +166,7 @@ router.post('/', (req, res) => {
  *                   type: string
  *                   example: "identifier is required"
  */
-router.put('/:id', (req, res) => {
-    
-});
+router.put('/:id', adController.updateAd);
 
 /**
  * @openapi
@@ -214,9 +207,7 @@ router.put('/:id', (req, res) => {
  *                   type: string
  *                   example: "Cannot delete ad with associated reservations"
  */
-router.delete('/:id', (req, res) => {
-    
-});
+router.delete('/:id', adController.deleteAd);
 
 /**
  * @openapi
@@ -252,8 +243,6 @@ router.delete('/:id', (req, res) => {
  *                   type: string
  *                   example: "No reservations found by ad ID"
  */
-router.get('/:id/reservations', (req, res) => {
-    
-});
+router.get('/:id/reservations', adController.getReservationsForAd);
 
 export default router;

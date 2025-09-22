@@ -171,9 +171,6 @@ const swaggerOptions = {
             pro_player_id: { 
               type: 'integer' 
             },
-            identifier: { 
-              type: 'string' 
-            },
             name: { 
               type: 'string' 
             },
@@ -204,9 +201,6 @@ const swaggerOptions = {
             pro_player_id: { 
               type: 'integer' 
             },
-            identifier: { 
-              type: 'string' 
-            },
             name: { 
               type: 'string' 
             },
@@ -233,9 +227,6 @@ const swaggerOptions = {
           properties: {
             game_id: { 
               type: 'integer' 
-            },
-            identifier: { 
-              type: 'string' 
             },
             name: { 
               type: 'string' 

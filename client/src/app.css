@@ -3,3 +3,11 @@
 :root {
 /*  Variables can go here */
 }
+
+@font-face {
+  font-family: Bungee;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("./assets/Bungee-Regular.ttf") format("truetype");
+}

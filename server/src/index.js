@@ -2,13 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './swagger-config.js';
-import usersRouter from './routes/users/users.js';
-import gamesRouter from './routes/games/games.js';
-import rolesRouter from './routes/roles/roles.js';
-import proPlayersRouter from './routes/pro-players/pro-players.js';
-import adsRouter from './routes/ads/ads.js';
-import reviewsRouter from './routes/reviews/reviews.js';
-import reservationsRouter from './routes/reservations/reservations.js';
+import usersRouter from './routes/users.js';
+import gamesRouter from './routes/games.js';
+import rolesRouter from './routes/roles.js';
+import proPlayersRouter from './routes/pro-players.js';
+import adsRouter from './routes/ads.js';
+import reviewsRouter from './routes/reviews.js';
+import reservationsRouter from './routes/reservations.js';
 
 // Check if NODE_ENV environment variable is set, otherwise go to development mode
 const nodeEnv = process.env.NODE_ENV || 'dev';
