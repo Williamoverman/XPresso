@@ -1,7 +1,17 @@
 @import "tailwindcss";
 
-:root {
-/*  Variables can go here */
+@theme {
+  --color-lightgreen: #e9fff8;
+  --color-lightred: #fff3f3;
+  --color-lightblue: #e5f6ff;
+
+  --color-red: #ed7878;
+  --color-green: #82d9c8;
+  --color-blue: #6aa5ff;
+
+  --color-darkblue: #0d3c69;
+  --color-darkblue-light: #105392;
+  --color-darkblue-dark: #031120;
 }
 
 @font-face {
