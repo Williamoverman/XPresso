@@ -1,7 +1,3 @@
-<script>
-
-</script>
-
 <section class="flex flex-col md:flex-row">
     <section class="w-full md:w-1/2">
         <img src='../src/assets/spirit_blossom_syndra.jpg' 
