@@ -12,6 +12,8 @@
   --color-darkblue: #0d3c69;
   --color-darkblue-light: #105392;
   --color-darkblue-dark: #031120;
+
+  --color-custom-black: #111111;
 }
 
 @font-face {
@@ -20,4 +22,12 @@
   font-weight: 200 700;
   font-display: swap;
   src: url("./assets/Bungee-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: Bebas;
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("./assets/BebasNeue-Regular.ttf") format("truetype");
 }

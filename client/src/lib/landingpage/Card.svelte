@@ -4,7 +4,7 @@
     }
 </script>
 
-<section class="font-[Bungee] flex flex-col h-screen text-white bg-gradient-to-b from-darkblue from-85% to-darkblue-dark to-100% justify-center items-center">
+<section class="flex flex-col h-200 text-white bg-gradient-to-b from-darkblue from-85% to-darkblue-dark to-100% justify-center items-center">
     <i class="fa-light fa-rocket-launch fa-10x mb-8"></i>
     <h1 class="text-2xl pb-8">Something something inspiration</h1>
     <button 

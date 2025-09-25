@@ -4,6 +4,7 @@
   import ExampleWithParams from "./pages/ExampleWithParams.svelte";
 
   import Header from "./lib/Header.svelte";
+  import Footer from "./lib/Footer.svelte";
 
   let currentRoute = $state("/");
   let Page = $state();
@@ -29,3 +30,4 @@
 
 <Header active={currentRoute} />
 <Page {context} />
+<Footer />
