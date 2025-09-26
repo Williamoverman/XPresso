@@ -4,11 +4,11 @@
     }
 </script>
 
-<section class="flex flex-col text-white bg-gradient-to-b from-darkblue from-85% to-darkblue-dark to-100% justify-center items-center">
+<section class="flex flex-col text-white bg-gradient-to-br from-indigo-900 via-blue-900 to-indigo-800 justify-center items-center text-center min-h-[calc(100vh-theme(spacing.20))]">
     <i class="fa-light fa-rocket-launch fa-10x mb-8"></i>
     <h1 class="text-2xl pb-8">Something something inspiration</h1>
     <button 
-        class="group relative rounded-lg text-lg px-10 py-4 mb-16 overflow-hidden transition-all duration-500 bg-black"
+        class="group relative rounded-lg text-lg px-10 py-4 mb-36 overflow-hidden transition-all duration-500 bg-blue-950"
         onclick={() => handleClick()}
     >
         RANK UP NOW

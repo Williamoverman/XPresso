@@ -26,9 +26,8 @@
 
 <link rel="stylesheet" crossorigin="anonymous" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css">
 
-<main class="flex flex-col min-h-screen">
-  <Header active={currentRoute} />
+<Header />
+<main class="flex-1">
   <Page {context} />
 </main>
-
 <Footer />
