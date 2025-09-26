@@ -18,8 +18,6 @@
   router('/example/:id', (ctx) => {
     Page = ExampleWithParams;
     currentRoute = ctx.pathname;
-    // The entire context is added. It contains the parameters
-    // as well as a wealth of information about the request.
     context = ctx;
   });
 

@@ -10,3 +10,10 @@
         <li class="pr-4"><a class:active={active === "/games"} href="/login">Games</a></li>
     </ul>
 </nav>
+
+<style>
+    @reference "tailwindcss";
+    a {
+        @apply hover:bg-gradient-to-r hover:from-cyan-400 hover:via-purple-400 hover:to-pink-400 hover:text-transparent hover:bg-clip-text hover:transition-all hover:duration-500 hover:ease-out;
+    }
+</style>
