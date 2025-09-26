@@ -4,8 +4,8 @@
     import LandingPageOverview from '../lib/landingpage/Overview.svelte'
 </script>
 
-<main class="font-[Bungee]">
+<section class="font-[Bungee]">
     <LandingPageCard />
     <LandingPageGames />
     <LandingPageOverview />
-</main>
+</section>
