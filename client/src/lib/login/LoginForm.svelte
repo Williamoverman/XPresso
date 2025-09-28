@@ -3,7 +3,7 @@
 </script>
 
 <section class="font-[Bebas] tracking-widest min-h-[calc(100vh-theme(spacing.20))] bg-gradient-to-br from-indigo-900 via-blue-900 to-indigo-800 flex items-center justify-center">
-    <article class="max-w-2/6 bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 mb-16">
+    <article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 mb-16">
         <form class="space-y-6 px-4">
             <fieldset>
                 <label for="email" class="block text-sm font-medium text-white">Email</label>
@@ -18,7 +18,7 @@
             </fieldset>
 
             <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition duration-300">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-lg transition duration-300">
                 Inloggen
             </button>
         </form>
