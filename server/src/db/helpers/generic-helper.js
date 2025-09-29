@@ -33,9 +33,7 @@ async function createRecord(model, data, excludes = {}) {
 async function updateRecord(model, id, data, excludes = {}) {
     const record = await findById(model, id);
     await record.update(data)
-    return await model.findByPk(id, {
-        ...excludes
-    });
+    return findById(model, id, excludes)
 }
 
 // generic delete
