@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --env-file=.env.prod ./src/index.js",
     "dev": "node --env-file=.env.dev --watch ./src/index.js",
-    "dbDev": "node --env-file=.env.dev ./src/db/database-helper.js",
+    "dbDev": "node --env-file=.env.dev ./src/db/database-helper.js && node --env-file=.env.dev ./src/db/seed.js",
     "dbProd": "node --env-file=.env.prod ./src/db/database-helper.js",
     "lint": "npx eslint ./src",
     "test": "vitest"

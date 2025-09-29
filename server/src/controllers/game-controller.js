@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 const getAllGames = (req, res, next) => {
     try {
-
+        
     } catch (error) {
         next(error);
     }

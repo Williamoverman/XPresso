@@ -221,35 +221,49 @@ const Review = sequelize.define('Review', {
     }
 });
 
-User.belongsToMany(Role, { through: UserRole });
-Role.belongsToMany(User, { through: UserRole });
+User.belongsToMany(Role, { through: UserRole, foreignKey: "user_id", otherKey: "role_id" });
+Role.belongsToMany(User, { through: UserRole, foreignKey: "role_id", otherKey: "user_id" });
 
-User.hasMany(Reservation);
-Reservation.belongsTo(User);
+ProPlayer.belongsTo(User, { foreignKey: "user_id" });
+User.hasOne(ProPlayer, { foreignKey: "user_id" });
 
-Ad.hasMany(Reservation);
-Reservation.belongsTo(Ad);
+ProPlayer.belongsToMany(Game, { through: ProPlayerGame, foreignKey: "pro_player_id", otherKey: "game_id" });
+Game.belongsToMany(ProPlayer, { through: ProPlayerGame, foreignKey: "game_id", otherKey: "pro_player_id" });
 
-Ad.belongsTo(Game);
-Game.hasMany(Ad);
+Ad.belongsTo(Game, { foreignKey: "game_id" });
+Game.hasMany(Ad, { foreignKey: "game_id" });
 
-ProPlayer.belongsTo(User);
-User.hasOne(ProPlayer);
+Ad.belongsTo(ProPlayer, { foreignKey: "pro_player_id" });
+ProPlayer.hasMany(Ad, { foreignKey: "pro_player_id" });
 
-Ad.belongsTo(ProPlayer);
-ProPlayer.hasMany(Ad);
+Reservation.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Reservation, { foreignKey: "user_id" });
 
-ProPlayer.belongsToMany(Game, { through: ProPlayerGame });
-Game.belongsToMany(ProPlayer, { through: ProPlayerGame });
+Reservation.belongsTo(Ad, { foreignKey: "ad_id" });
+Ad.hasMany(Reservation, { foreignKey: "ad_id" });
 
-Review.belongsTo(User);
-Review.belongsTo(Reservation);
-Review.belongsTo(ProPlayer);
+Review.belongsTo(Reservation, { foreignKey: "reservation_id" });
+Reservation.hasOne(Review, { foreignKey: "reservation_id" });
 
-User.hasMany(Review);
-Reservation.hasOne(Review);
-ProPlayer.hasMany(Review);
+Review.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Review, { foreignKey: "user_id" });
+
+Review.belongsTo(ProPlayer, { foreignKey: "pro_player_id" });
+ProPlayer.hasMany(Review, { foreignKey: "pro_player_id" });
 
 await sequelize.sync();
+
+export default {
+    sequelize,
+    User,
+    Role,
+    UserRole,
+    Game,
+    ProPlayer,
+    ProPlayerGame,
+    Ad,
+    Reservation,
+    Review
+}
 
 // TODO export your own functions here, which you can use in your controllers
