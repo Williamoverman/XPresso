@@ -39,7 +39,8 @@ async function updateRecord(model, id, data, excludes = {}) {
 // generic delete
 async function deleteRecord(model, id) {
     const record = await findById(model, id);
-    return await record.destroy();
+    await record.destroy();
+    return;
 }
 
 export default {
