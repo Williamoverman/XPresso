@@ -24,7 +24,7 @@ router.get('/', proPlayerController.getAllProPlayers);
 
 /**
  * @openapi
- * /pro-players/{user_id}:
+ * /pro-players/{id}:
  *   get:
  *     tags:
  *       - Pro-players
@@ -32,7 +32,7 @@ router.get('/', proPlayerController.getAllProPlayers);
  *     description: Returns a pro-player by user_id.
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -98,7 +98,7 @@ router.post('/', proPlayerController.createProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}:
+ * /pro-players/{id}:
  *   put:
  *     tags:
  *       - Pro-players
@@ -106,7 +106,7 @@ router.post('/', proPlayerController.createProPlayer);
  *     description: Returns updated pro-player.
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -148,14 +148,14 @@ router.put('/:user_id', proPlayerController.updateProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}:
+ * /pro-players/{id}:
  *   delete:
  *     tags:
  *       - Pro-players
  *     summary: Delete pro-player
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -189,14 +189,14 @@ router.delete('/:user_id', proPlayerController.deleteProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}/ads:
+ * /pro-players/{id}/ads:
  *   get:
  *     tags:
  *       - Pro-players
  *     summary: Get ads for certain pro-player
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -225,14 +225,14 @@ router.get('/:user_id/ads', proPlayerController.getAdsForProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}/games:
+ * /pro-players/{id}/games:
  *   get:
  *     tags:
  *       - Pro-players
  *     summary: Get games for certain pro-player
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -261,14 +261,14 @@ router.get('/:user_id/games', proPlayerController.getGamesForProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}/games:
+ * /pro-players/{id}/games:
  *   post:
  *     tags:
  *       - Pro-players
  *     summary: Assign game to pro-player
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -323,14 +323,14 @@ router.post('/:user_id/games', proPlayerController.AssignGameToProPlayer);
 
 /**
  * @openapi
- * /pro-players/{user_id}/games/{game_id}:
+ * /pro-players/{id}/games/{game_id}:
  *   put:
  *     tags:
  *       - Pro-players
  *     summary: Update pro player game details
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer
@@ -387,14 +387,14 @@ router.put('/:user_id/games/:game_id', proPlayerController.UpdateProPlayerGameDe
 
 /**
  * @openapi
- * /pro-players/{user_id}/reviews:
+ * /pro-players/{id}/reviews:
  *   get:
  *     tags:
  *       - Pro-players
  *     summary: Get pro player reviews
  *     parameters:
  *       - in: path
- *         name: user_id
+ *         name: id
  *         required: true
  *         schema:
  *           type: integer

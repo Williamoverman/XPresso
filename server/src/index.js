@@ -9,6 +9,7 @@ import proPlayersRouter from './routes/pro-players.js';
 import adsRouter from './routes/ads.js';
 import reviewsRouter from './routes/reviews.js';
 import reservationsRouter from './routes/reservations.js';
+import authRouter from './routes/auth.js'
 
 // Check if NODE_ENV environment variable is set, otherwise go to development mode
 const nodeEnv = process.env.NODE_ENV || 'dev';
@@ -19,19 +20,19 @@ const port = 3000;
 app.use(express.json());
 app.use(cors({
   origin: ['http://localhost:4173', 'http://localhost:5173']
-})); // TODO make sure it blocks everything except localhost port 4173 and 5173 (default Svelte ports)
+}));
 
 // Setup swagger and make it available on /api-docs.
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// TODO: setup your routers here, remove the one (and the exampleRouter code) below
 app.use('/users', usersRouter);
 app.use('/games', gamesRouter);
 app.use('/roles', rolesRouter);
-app.use('/pro-players', proPlayersRouter)
-app.use('/ads', adsRouter)
-app.use('/reviews', reviewsRouter)
-app.use('/reservations', reservationsRouter)
+app.use('/pro-players', proPlayersRouter);
+app.use('/ads', adsRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/reservations', reservationsRouter);
+app.use('/auth', authRouter);
 
 // Global error handler. In your code, throw an object with a status and message, and it will be caught here. We ignore one eslint call here, because next is needed.
 // eslint-disable-next-line no-unused-vars

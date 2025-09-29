@@ -1,4 +1,4 @@
-import db from "./database-helper.js";
+import { sequelize, User, Role, UserRole, Game, ProPlayer, ProPlayerGame, Ad, Reservation, Review } from "./database-helper.js";
 import bcrypt from "bcrypt";
 
 async function hashPassword(password) {
@@ -6,9 +6,9 @@ async function hashPassword(password) {
 }
 
 async function seed() {
-  await db.sequelize.sync({ force: true });
+  await sequelize.sync({ force: true });
 
-  const users = await db.User.bulkCreate([
+  const users = await User.bulkCreate([
     {
       email: "admin@gmail.com",
       password: await hashPassword("admin"),
@@ -26,40 +26,40 @@ async function seed() {
     },
   ]);
 
-  const roles = await db.Role.bulkCreate([
+  const roles = await Role.bulkCreate([
     { name: "User" },
     { name: "Admin" },
     { name: "ProPlayer" },
   ]);
 
-  await db.UserRole.bulkCreate([
+  await UserRole.bulkCreate([
     { user_id: users[0].id, role_id: roles[1].id },
     { user_id: users[1].id, role_id: roles[0].id },
     { user_id: users[2].id, role_id: roles[2].id },
   ]);
 
-  const games = await db.Game.bulkCreate([
+  const games = await Game.bulkCreate([
     { name: "League of Legends", abbreviation: "LoL" },
     { name: "Marvel Rivals", abbreviation: "MR" },
   ]);
 
-  const proPlayers = await db.ProPlayer.bulkCreate([
+  const proPlayers = await ProPlayer.bulkCreate([
     { user_id: users[2].id, bio: "bio" },
   ]);
 
-  await db.ProPlayerGame.bulkCreate([
+  await ProPlayerGame.bulkCreate([
     {
-      pro_player_id: proPlayers[0].id,
+      pro_player_id: proPlayers[0].user_id,
       game_id: games[0].id,
       current_rank: "Platinum",
       years_experience: 5,
     },
   ]);
 
-  const ads = await db.Ad.bulkCreate([
+  const ads = await Ad.bulkCreate([
     {
       game_id: games[0].id,
-      pro_player_id: proPlayers[0].id,
+      pro_player_id: proPlayers[0].user_id,
       name: "Professional boosting",
       description: "Description",
       max_reservations_per_user: 2,
@@ -69,7 +69,7 @@ async function seed() {
     },
   ]);
 
-  const reservations = await db.Reservation.bulkCreate([
+  const reservations = await Reservation.bulkCreate([
     {
       user_id: users[1].id,
       ad_id: ads[0].id,
@@ -79,7 +79,7 @@ async function seed() {
     },
   ]);
 
-  await db.Review.bulkCreate([
+  await Review.bulkCreate([
     {
       reservation_id: reservations[0].id,
       user_id: users[1].id,

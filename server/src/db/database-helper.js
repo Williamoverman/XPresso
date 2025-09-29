@@ -253,7 +253,7 @@ ProPlayer.hasMany(Review, { foreignKey: "pro_player_id" });
 
 await sequelize.sync();
 
-export default {
+export {
     sequelize,
     User,
     Role,
@@ -265,5 +265,3 @@ export default {
     Reservation,
     Review
 }
-
-// TODO export your own functions here, which you can use in your controllers

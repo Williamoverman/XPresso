@@ -26,7 +26,6 @@ const swaggerOptions = {
             is_active: {
               type: 'boolean'
             },
-            required: ['id', 'email', 'username', 'is_active'],
           },
         },
         UserInput: {
@@ -42,11 +41,22 @@ const swaggerOptions = {
             username: { 
               type: 'string' 
             },
-            is_active: {
-              type: 'boolean'
+          },
+        },
+        UserUpdate: {
+          type: 'object',
+          properties: {
+            email: { 
+              type: 'string', 
+              format: 'email' 
+            },
+            password: { 
+              type: 'string' 
+            },
+            username: { 
+              type: 'string' 
             },
           },
-          required: ['email', 'password', 'username'],
         },
         Role: {
           type: 'object',
@@ -58,7 +68,6 @@ const swaggerOptions = {
               type: 'string' 
             },
           },
-          required: ['id', 'name'],
         },
         RoleInput: {
           type: 'object',
@@ -67,7 +76,6 @@ const swaggerOptions = {
               type: 'string'
             },
           },
-          required: ['name'],
         },
         UserRole: {
           type: 'object',
@@ -79,7 +87,6 @@ const swaggerOptions = {
               type: 'integer' 
             },
           },
-          required: ['user_id', 'role_id'],
         },
         Game: {
           type: 'object',
@@ -97,7 +104,6 @@ const swaggerOptions = {
               type: 'boolean' 
             },
           },
-          required: ['id', 'name', 'is_active'],
         },
         GameInput: {
           type: 'object',
@@ -112,7 +118,6 @@ const swaggerOptions = {
               type: 'boolean' 
             },
           },
-          required: ['name'],
         },
         ProPlayer: {
           type: 'object',
@@ -127,7 +132,6 @@ const swaggerOptions = {
               type: 'number' 
             },
           },
-          required: ['user_id', 'hourly_rate'],
         },
         ProPlayerInput: {
           type: 'object',
@@ -139,7 +143,6 @@ const swaggerOptions = {
               type: 'number' 
             },
           },
-          required: ['user_id', 'hourly_rate'],
         },
         ProPlayerGame: {
           type: 'object',
@@ -157,7 +160,6 @@ const swaggerOptions = {
               type: 'integer' 
             },
           },
-          required: ['pro_player_id', 'game_id'],
         },
         Ad: {
           type: 'object',
@@ -190,7 +192,6 @@ const swaggerOptions = {
               type: 'integer' 
             },
           },
-          required: ['id', 'identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
         },
         AdInput: {
           type: 'object',
@@ -220,7 +221,6 @@ const swaggerOptions = {
               type: 'integer' 
             },
           },
-          required: ['identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
         },
         AdUpdate: {
           type: 'object',
@@ -247,7 +247,6 @@ const swaggerOptions = {
               type: 'integer' 
             },
           },
-          required: ['identifier', 'name', 'max_reservations_per_user', 'service_type', 'total_spots_available'],
         },
         Reservation: {
           type: 'object',
@@ -276,7 +275,6 @@ const swaggerOptions = {
               format: 'date-time' 
             },
           },
-          required: ['id', 'status', 'start_date', 'end_date'],
         },
         ReservationInput: {
           type: 'object',
@@ -300,7 +298,6 @@ const swaggerOptions = {
               type: 'string', format: 'date-time' 
             },
           },
-          required: ['status', 'start_date', 'end_date'],
         },
         ReservationUpdate: {
           type: 'object',
@@ -318,7 +315,6 @@ const swaggerOptions = {
               type: 'string', format: 'date-time' 
             },
           },
-          required: ['status', 'start_date', 'end_date'],
         },
         Review: {
           type: 'object',
@@ -344,7 +340,6 @@ const swaggerOptions = {
               type: 'string' 
             },
           },
-          required: ['id', 'rating'],
         },
         ReviewInput: {
           type: 'object',
@@ -367,7 +362,6 @@ const swaggerOptions = {
               type: 'string' 
             },
           },
-          required: ['rating'],
         },
         ReviewUpdate: {
           type: 'object',
@@ -381,13 +375,38 @@ const swaggerOptions = {
               type: 'string' 
             },
           },
-          required: ['rating'],
+        },
+        LoginInput: {
+          type: 'object',
+          properties: {
+            email: { 
+              type: 'string', 
+              format: 'email' 
+            },
+            password: { 
+              type: 'string' 
+            },
+          },
+        },
+        Login: {
+          type: 'object',
+          properties: {
+            accessToken: { 
+              type: 'string'
+            },
+            expiresIn: { 
+              type: 'integer' 
+            },
+            user: { 
+              $ref: '#/components/schemas/User' 
+            },
+          },
         },
       }
     }
   },
   // Point to folder where Swagger should look for the routes
-  apis: ['./src/routes/*/*.js'], 
+  apis: ['./src/routes/*.js'], 
 };
 
 export const swaggerSpec = swaggerJSDoc(swaggerOptions);

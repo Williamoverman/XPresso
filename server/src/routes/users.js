@@ -1,5 +1,7 @@
 import express from 'express';
-import userController from '../controllers/user-controller.js'
+import userController from '../controllers/user-controller.js';
+import validator from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -55,7 +57,7 @@ router.get('/', userController.getAllUsers);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id', userController.getUserById);
+router.get('/:id', validator.validateId, userController.getUserById);
 
 /**
  * @openapi
@@ -89,12 +91,12 @@ router.get('/:id', userController.getUserById);
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.post('/', userController.createUser);
+router.post('/', validator.validateEmail, validator.validatePassword, userController.createUser);
 
 /**
  * @openapi
  * /users/{id}:
- *   put:
+ *   patch:
  *     tags:
  *       - Users
  *     summary: Update user
@@ -110,7 +112,7 @@ router.post('/', userController.createUser);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UserInput'
+ *             $ref: '#/components/schemas/UserUpdate'
  *     responses:
  *       200:
  *         description: User updated
@@ -139,7 +141,7 @@ router.post('/', userController.createUser);
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.put('/:id', userController.updateUser);
+router.patch('/:id', validator.validateId, validator.validateEmail, validator.validatePassword, userController.updateUser);
 
 /**
  * @openapi
@@ -180,7 +182,7 @@ router.put('/:id', userController.updateUser);
  *                   type: string
  *                   example: "Cannot delete user with associated relations"
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', validator.validateId, userController.deleteUser);
 
 /**
  * @openapi
@@ -277,6 +279,286 @@ router.post('/:id/roles', userController.addRoleToUser);
 
 /**
  * @openapi
+ * /users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get user by ID
+ *     description: Returns a user by ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user
+ *     responses:
+ *       200:
+ *         description: User returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: If no user found by ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No user found by ID"
+ */
+router.get('/:id', validator.validateId, userController.getUserById);
+
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Create user
+ *     description: Returns created user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserInput'
+ *     responses:
+ *       201:
+ *         description: User created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid input or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid email format"
+ */
+router.post('/', validator.validateEmail, validator.validatePassword, userController.createUser);
+
+/**
+ * @openapi
+ * /users/{id}:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Update user
+ *     description: Returns updated user.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserUpdate'
+ *     responses:
+ *       200:
+ *         description: User updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: If no user found by ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No user found by ID"
+ *       400:
+ *         description: Invalid input or validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid email format"
+ */
+router.patch('/:id', validator.validateId, validator.validateEmail, validator.validatePassword, userController.updateUser);
+
+/**
+ * @openapi
+ * /users/{id}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Delete user
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: User deleted
+ *       404:
+ *         description: If no user found by ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No user found by ID"
+ *       400:
+ *         description: Cannot delete due to associated relations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Cannot delete user with associated relations"
+ */
+router.delete('/:id', validator.validateId, userController.deleteUser);
+
+/**
+ * @openapi
+ * /users/{id}/activate:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Activate user by admin
+ *     description: Activates a user account by ID, restricted to admin users.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user to activate
+ *     responses:
+ *       200:
+ *         description: User activated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User activated successfully"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: User already active
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User is already active"
+ *       401:
+ *         description: Unauthorized, admin access required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Admin access required"
+ *       404:
+ *         description: If no user found by ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No user found by ID"
+ */
+router.patch('/:id/activate', userController.activateUser);
+
+/**
+ * @openapi
+ * /users/{id}/deactivate:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Deactivate user by admin
+ *     description: Deactivates a user account by ID, restricted to admin users.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user to deactivate
+ *     responses:
+ *       200:
+ *         description: User deactivated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deactivated successfully"
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: User already deactivated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User is already deactivated"
+ *       401:
+ *         description: Unauthorized, admin access required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Admin access required"
+ *       404:
+ *         description: If no user found by ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "No user found by ID"
+ */
+router.patch('/:id/deactivate', userController.deactivateUser);
+
+/**
+ * @openapi
  * /users/{id}/reservations:
  *   get:
  *     tags:
@@ -344,38 +626,5 @@ router.get('/:id/reservations', userController.getUserReservations);
  *                   example: "No user found by ID"
  */
 router.get('/:id/reviews', userController.getUserReviews);
-
-/**
- * @openapi
- * /users/{id}/pro-players:
- *   get:
- *     tags:
- *       - Users
- *     summary: Get user's pro player profile
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Pro player profile
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ProPlayer'
- *       404:
- *         description: No pro player found by this user ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No pro player found by this user ID"
- */
-router.get('/:id/pro-players', userController.getUserProPlayerProfile);
 
 export default router;
