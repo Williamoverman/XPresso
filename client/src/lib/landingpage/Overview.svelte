@@ -1,6 +1,6 @@
 <section class="flex flex-col md:flex-row bg-gray-100">
     <section class="w-full md:w-1/2">
-        <img src='../src/assets/spirit_blossom_syndra.jpg' 
+        <img src='../src/assets/yoriichi.png' 
         alt="cover" 
         class="h-full w-full object-cover [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] md:[mask-image:linear-gradient(to_right,black_75%,transparent_100%)] mask-repeat:no-repeat mask-size:cover"/>
     </section>

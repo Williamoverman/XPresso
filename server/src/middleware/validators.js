@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { User, Role } from "../db/database-helper.js";
 
 function validateId(req, res, next) {
     const { id } = req.params;
@@ -42,8 +43,46 @@ function validatePassword(req, res, next) {
     next();
 }
 
+async function checkIfEmailExists(req, res, next) {
+    const { email } = req.body;
+    const { id } = req.params;
+    if (!email)
+        return next();
+
+    const user = await User.findOne({ where: { email } });
+
+    if (user && user.id !== parseInt(id)) {
+        const error = new Error(`Email already exists`);
+        error.status = StatusCodes.BAD_REQUEST;
+        throw error;
+    }
+
+    next();
+}
+
+async function checkIfRoleExists(req, res, next) {
+    const { role_id } = req.body;
+    
+    if (!role_id || isNaN(role_id)) {
+        const error = new Error(`Invalid role ID`);
+        error.status = StatusCodes.BAD_REQUEST;
+        throw error;
+    }
+
+    const role = await Role.findByPk(role_id);
+    if (!role) {
+        const error = new Error(`Role does not exist`);
+        error.status = StatusCodes.NOT_FOUND;
+        throw error;
+    }
+
+    next();
+}
+
 export default {
     validateId,
     validateEmail,
-    validatePassword
+    validatePassword,
+    checkIfEmailExists,
+    checkIfRoleExists
 };

@@ -4,14 +4,15 @@ import { StatusCodes } from 'http-status-codes';
 async function findAll(model, options = {}, excludes = {}) {
     return await model.findAll({
         ...options,
-        ...excludes
+        attributes: excludes
     });
 }
 
 // generic get by ID
-async function findById(model, id, excludes = {}) {
+async function findById(model, id, includes = {}, excludes = {}) {
     const record = await model.findByPk(id, {
-        ...excludes
+        ...includes,
+        attributes: excludes
     });
     if (!record) {
         const error = new Error(`No ${model.name} found by ID: ${id}`);
@@ -26,14 +27,14 @@ async function findById(model, id, excludes = {}) {
 async function createRecord(model, data, excludes = {}) {
     const record = await model.create(data);
 
-    return findById(model, record.id, excludes);
+    return findById(model, record.id, {}, excludes);
 }
 
 // generic update
 async function updateRecord(model, id, data, excludes = {}) {
     const record = await findById(model, id);
     await record.update(data)
-    return findById(model, id, excludes)
+    return findById(model, id, {}, excludes)
 }
 
 // generic delete

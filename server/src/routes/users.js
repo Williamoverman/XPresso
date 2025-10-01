@@ -22,7 +22,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', userController.getAllUsers);
+router.get('/', 
+    userController.getAllUsers
+);
 
 /**
  * @openapi
@@ -57,7 +59,10 @@ router.get('/', userController.getAllUsers);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id', validator.validateId, userController.getUserById);
+router.get('/:id', 
+    validator.validateId, 
+    userController.getUserById
+);
 
 /**
  * @openapi
@@ -91,7 +96,12 @@ router.get('/:id', validator.validateId, userController.getUserById);
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.post('/', validator.validateEmail, validator.validatePassword, userController.createUser);
+router.post('/', 
+    validator.validateEmail, 
+    validator.checkIfEmailExists, 
+    validator.validatePassword, 
+    userController.createUser
+);
 
 /**
  * @openapi
@@ -141,7 +151,13 @@ router.post('/', validator.validateEmail, validator.validatePassword, userContro
  *                   type: string
  *                   example: "Invalid email format"
  */
-router.patch('/:id', validator.validateId, validator.validateEmail, validator.validatePassword, userController.updateUser);
+router.patch('/:id', 
+    validator.validateId, 
+    validator.validateEmail, 
+    validator.checkIfEmailExists, 
+    validator.validatePassword, 
+    userController.updateUser
+);
 
 /**
  * @openapi
@@ -182,7 +198,10 @@ router.patch('/:id', validator.validateId, validator.validateEmail, validator.va
  *                   type: string
  *                   example: "Cannot delete user with associated relations"
  */
-router.delete('/:id', validator.validateId, userController.deleteUser);
+router.delete('/:id', 
+    validator.validateId, 
+    userController.deleteUser
+);
 
 /**
  * @openapi
@@ -191,7 +210,7 @@ router.delete('/:id', validator.validateId, userController.deleteUser);
  *     tags:
  *       - Users
  *     summary: Get users roles by user ID
- *     description: Returns a user by ID.
+ *     description: Returns a users roles by ID.
  *     parameters:
  *       - in: path
  *         name: id
@@ -219,7 +238,10 @@ router.delete('/:id', validator.validateId, userController.deleteUser);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/roles', userController.getUserRolesById);
+router.get('/:id/roles',
+    validator.validateId,
+    userController.getUserRolesById
+);
 
 /**
  * @openapi
@@ -275,7 +297,11 @@ router.get('/:id/roles', userController.getUserRolesById);
  *                   type: string
  *                   example: "Role already assigned"
  */
-router.post('/:id/roles', userController.addRoleToUser);
+router.post('/:id/roles', 
+    validator.validateId,
+    validator.checkIfRoleExists,
+    userController.addRoleToUser
+);
 
 /**
  * @openapi
@@ -336,7 +362,10 @@ router.post('/:id/roles', userController.addRoleToUser);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.patch('/:id/activate', userController.activateUser);
+router.patch('/:id/activate',
+    validator.validateId,
+    userController.activateUser
+);
 
 /**
  * @openapi
@@ -397,7 +426,10 @@ router.patch('/:id/activate', userController.activateUser);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.patch('/:id/deactivate', userController.deactivateUser);
+router.patch('/:id/deactivate', 
+    validator.validateId,
+    userController.deactivateUser
+);
 
 /**
  * @openapi

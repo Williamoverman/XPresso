@@ -69,33 +69,45 @@ const deleteUser = async (req, res, next) => {
     }
 }
 
-const getUserRolesById = (req, res, next) => {
+const getUserRolesById = async (req, res, next) => {
     try {
-
+        const { id } = req.params;
+        const roles = await queries.getRolesById(id);
+        res.status(StatusCodes.OK).json(roles);
     } catch (error) {
         next(error);
     }
 }
 
-const addRoleToUser = (req, res, next) => {
+const addRoleToUser = async (req, res, next) => {
     try {
+        const { id } = req.params;
+        const { role_id } = req.body;
 
+        const userWithRole = await queries.addRole(id, role_id);
+        res.status(StatusCodes.OK).json(userWithRole);
     } catch (error) {
         next(error);
     }
 }
 
-const deactivateUser = (req, res, next) => {
+const activateUser = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
+        const user = await queries.toggleActive(id, true);
+        res.status(StatusCodes.OK).json(user);
     } catch (error) {
         next(error);
     }
 }
 
-const activateUser = (req, res, next) => {
+const deactivateUser = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
+        const user = await queries.toggleActive(id, false);
+        res.status(StatusCodes.OK).json(user);
     } catch (error) {
         next(error);
     }
@@ -125,8 +137,8 @@ export default {
     deleteUser,
     getUserRolesById,
     addRoleToUser,
-    deactivateUser,
     activateUser,
+    deactivateUser,
     getUserReservations,
     getUserReviews
 }
