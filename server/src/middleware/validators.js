@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { User, Role } from "../db/database-helper.js";
+import jwt from "jsonwebtoken";
 
 function validateId(req, res, next) {
     const { id } = req.params;
@@ -13,7 +14,7 @@ function validateId(req, res, next) {
     next();
 }
 
-async function validateEmail(req, res, next) {    
+function validateEmail(req, res, next) {    
     const { email } = req.body;
     if (!email)
         return next();
@@ -79,10 +80,29 @@ async function checkIfRoleExists(req, res, next) {
     next();
 }
 
+function requireAdmin(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        const error = new Error('Unauthorized, admin acces required');
+        error.status = 401;
+        throw error;
+    }
+
+    try {
+        req.user = decoded.user;
+        next();
+    } catch (err) {
+        const error = new Error('Unauthorized, admin acces required');
+        error.status = 401;
+        throw error;
+    }
+}
+
 export default {
     validateId,
     validateEmail,
     validatePassword,
     checkIfEmailExists,
-    checkIfRoleExists
+    checkIfRoleExists,
+    requireAdmin
 };

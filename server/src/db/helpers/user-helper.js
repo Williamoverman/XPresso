@@ -1,4 +1,4 @@
-import { User, Role } from "../database-helper.js";
+import { User, Role, Reservation, Review } from "../database-helper.js";
 import generic from "../helpers/generic-helper.js"
 import { StatusCodes } from "http-status-codes";
 
@@ -19,19 +19,20 @@ async function update(id, data) {
 }
 
 async function remove(id) {
-    await generic.deleteRecord(User, id)
+    const user = await generic.findById(User, id, { include: [ Reservation, Review, Role] })
 
+    if (user.Reservations.length > 0 || user.Reviews.length > 0 || user.Roles.length > 0) {
+        const error = new Error('Cannot delete user with associated relations');
+        error.status = StatusCodes.BAD_REQUEST;
+        throw error;
+    }
+
+    await generic.deleteRecord(User, id)
     return;
 }
 
 async function getRolesById(id) {
     const user = await generic.findById(User, id, { include: Role })
-
-    if (user.Roles.length === 0) {
-        const error = new Error(`User has no roles`);
-        error.status = StatusCodes.NO_CONTENT;
-        throw error;
-    }
 
     return user.Roles;
 }
@@ -49,7 +50,7 @@ async function addRole(id, role_id) {
 }
 
 async function toggleActive(id, active) {
-    const user = await generic.findById(User, id);
+    const user = await generic.findById(User, id, {}, { exclude: ['password'] });
 
     if (user.is_active === active) {
         const error = new Error(`User is already ${active ? "activated" : "deactivated"}`);
@@ -63,6 +64,18 @@ async function toggleActive(id, active) {
     return user;
 }
 
+async function getReservations(id) {
+    const userReservations = await generic.findById(User, id, { include: Reservation });
+
+    return userReservations.Reservations;
+}
+
+async function getReviews(id) {
+    const userReviews = await generic.findById(User, id, { include: Review });
+
+    return userReviews.Reviews;
+}
+
 export default {
     getAll,
     getById,
@@ -71,5 +84,7 @@ export default {
     remove,
     getRolesById,
     addRole,
-    toggleActive
+    toggleActive,
+    getReservations,
+    getReviews
 }

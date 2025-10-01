@@ -309,7 +309,7 @@ router.post('/:id/roles',
  *   patch:
  *     tags:
  *       - Users
- *     summary: Activate user by admin
+ *     summary: Activate user
  *     description: Activates a user account by ID, restricted to admin users.
  *     parameters:
  *       - in: path
@@ -324,13 +324,7 @@ router.post('/:id/roles',
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "User activated successfully"
- *                 user:
- *                   $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: User already active
  *         content:
@@ -364,6 +358,7 @@ router.post('/:id/roles',
  */
 router.patch('/:id/activate',
     validator.validateId,
+    validator.requireAdmin,
     userController.activateUser
 );
 
@@ -373,7 +368,7 @@ router.patch('/:id/activate',
  *   patch:
  *     tags:
  *       - Users
- *     summary: Deactivate user by admin
+ *     summary: Deactivate user
  *     description: Deactivates a user account by ID, restricted to admin users.
  *     parameters:
  *       - in: path
@@ -388,13 +383,7 @@ router.patch('/:id/activate',
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "User deactivated successfully"
- *                 user:
- *                   $ref: '#/components/schemas/User'
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: User already deactivated
  *         content:
@@ -428,6 +417,7 @@ router.patch('/:id/activate',
  */
 router.patch('/:id/deactivate', 
     validator.validateId,
+    validator.requireAdmin,
     userController.deactivateUser
 );
 
@@ -464,7 +454,10 @@ router.patch('/:id/deactivate',
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/reservations', userController.getUserReservations);
+router.get('/:id/reservations', 
+    validator.validateId,
+    userController.getUserReservations
+);
 
 /**
  * @openapi
@@ -499,6 +492,9 @@ router.get('/:id/reservations', userController.getUserReservations);
  *                   type: string
  *                   example: "No user found by ID"
  */
-router.get('/:id/reviews', userController.getUserReviews);
+router.get('/:id/reviews', 
+    validator.validateId,
+    userController.getUserReviews
+);
 
 export default router;

@@ -25,6 +25,12 @@ const createUser = async (req, res, next) => {
     try {
         const { email, password, username } = req.body;
 
+        if (!email || !password) {
+            const error = new Error('Email and/or password are required');
+            error.status = StatusCodes.BAD_REQUEST;
+            throw error;
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const input = {
@@ -84,8 +90,8 @@ const addRoleToUser = async (req, res, next) => {
         const { id } = req.params;
         const { role_id } = req.body;
 
-        const userWithRole = await queries.addRole(id, role_id);
-        res.status(StatusCodes.OK).json(userWithRole);
+        const userRole = await queries.addRole(id, role_id);
+        res.status(StatusCodes.CREATED).json(userRole);
     } catch (error) {
         next(error);
     }
@@ -113,17 +119,23 @@ const deactivateUser = async (req, res, next) => {
     }
 }
 
-const getUserReservations = (req, res, next) => {
+const getUserReservations = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
+        const reservations = await queries.getReservations(id);
+        res.status(StatusCodes.OK).json(reservations);
     } catch (error) {
         next(error);
     }
 }
 
-const getUserReviews = (req, res, next) => {
+const getUserReviews = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
+        const reviews = await queries.getReviews(id);
+        res.status(StatusCodes.OK).json(reviews);
     } catch (error) {
         next(error);
     }
