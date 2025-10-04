@@ -1,5 +1,7 @@
 import express from 'express';
 import authController from '../controllers/auth-controller.js';
+import validators from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -21,9 +23,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Login'
+ *               $ref: '#/components/schemas/Login'
  *       401:
  *         description: invalid credentials
  *         content:
@@ -45,7 +45,10 @@ const router = express.Router();
  *                   type: string
  *                   example: "Email and password are required"
  */
-router.post('/login', authController.login);
+router.post('/login',
+    validators.validateEmail,
+    authController.login
+);
 
 /**
  * @openapi
@@ -54,16 +57,6 @@ router.post('/login', authController.login);
  *     tags:
  *       - Auth
  *     summary: Logout
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               token:
- *                 type: string
- *                 example: "user-jwt-token"
  *     responses:
  *       200:
  *         description: Logout successful
@@ -86,6 +79,9 @@ router.post('/login', authController.login);
  *                   type: string
  *                   example: "Invalid or missing token"
  */
-router.post('/logout', authController.logout);
+router.post('/logout', 
+    validators.requireAuth,
+    authController.logout
+);
 
 export default router;

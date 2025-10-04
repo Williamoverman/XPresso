@@ -9,6 +9,13 @@ const swaggerOptions = {
       description: 'API documentation generated with JSDoc + swagger-jsdoc',
     },
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      },
       schemas: {
         User: {
           type: 'object',
@@ -394,16 +401,13 @@ const swaggerOptions = {
             accessToken: { 
               type: 'string'
             },
-            expiresIn: { 
-              type: 'integer' 
-            },
-            user: { 
-              $ref: '#/components/schemas/User' 
-            },
           },
         },
       }
-    }
+    },
+    security: [
+      { bearerAuth: [] }
+    ],
   },
   // Point to folder where Swagger should look for the routes
   apis: ['./src/routes/*.js'], 

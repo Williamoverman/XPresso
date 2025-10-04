@@ -110,6 +110,7 @@ router.post('/',
  *     tags:
  *       - Users
  *     summary: Update user
+ * 
  *     description: Returns updated user.
  *     parameters:
  *       - in: path
@@ -153,6 +154,8 @@ router.post('/',
  */
 router.patch('/:id', 
     validator.validateId, 
+    validator.requireAuth,
+    validator.requireOwner,
     validator.validateEmail, 
     validator.checkIfEmailExists, 
     validator.validatePassword, 
@@ -199,7 +202,9 @@ router.patch('/:id',
  *                   example: "Cannot delete user with associated relations"
  */
 router.delete('/:id', 
-    validator.validateId, 
+    validator.validateId,
+    validator.requireAuth,
+    validator.requireOwner,
     userController.deleteUser
 );
 
@@ -240,6 +245,8 @@ router.delete('/:id',
  */
 router.get('/:id/roles',
     validator.validateId,
+    validator.requireAuth,
+    validator.requireRoles('Admin'),
     userController.getUserRolesById
 );
 
@@ -299,6 +306,8 @@ router.get('/:id/roles',
  */
 router.post('/:id/roles', 
     validator.validateId,
+    validator.requireAuth,
+    validator.requireRoles('Admin'),
     validator.checkIfRoleExists,
     userController.addRoleToUser
 );
@@ -358,7 +367,8 @@ router.post('/:id/roles',
  */
 router.patch('/:id/activate',
     validator.validateId,
-    validator.requireAdmin,
+    validator.requireAuth,
+    validator.requireRoles('Admin'),
     userController.activateUser
 );
 
@@ -417,7 +427,8 @@ router.patch('/:id/activate',
  */
 router.patch('/:id/deactivate', 
     validator.validateId,
-    validator.requireAdmin,
+    validator.requireAuth,
+    validator.requireRoles('Admin'),
     userController.deactivateUser
 );
 
@@ -456,6 +467,7 @@ router.patch('/:id/deactivate',
  */
 router.get('/:id/reservations', 
     validator.validateId,
+    validator.requireAuth,
     userController.getUserReservations
 );
 

@@ -80,22 +80,63 @@ async function checkIfRoleExists(req, res, next) {
     next();
 }
 
-function requireAdmin(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        const error = new Error('Unauthorized, admin acces required');
-        error.status = 401;
-        throw error;
-    }
-
+function requireAuth(req, res, next) {
     try {
-        req.user = decoded.user;
+        const authHeader = req.headers.authorization;
+        console.log(req.headers);
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            const error = new Error('Unauthorized: missing or invalid token');
+            error.status = StatusCodes.UNAUTHORIZED;
+            throw error;
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        req.user = decoded;
         next();
     } catch (err) {
-        const error = new Error('Unauthorized, admin acces required');
-        error.status = 401;
-        throw error;
+        const error = new Error('Unauthorized: invalid or expired token');
+        error.status = StatusCodes.UNAUTHORIZED;
+        next(error);
     }
+}
+
+function requireRoles(...requiredRoles) {
+  return (req, res, next) => {
+    try {
+      if (!req.user) {
+        const error = new Error('Unauthorized: user not authenticated');
+        error.status = StatusCodes.UNAUTHORIZED;
+        throw error;
+      }
+
+      console.log(req.user.roles)
+      const userRoles = req.user.roles || [];
+      const hasAccess = requiredRoles.some(role => userRoles.includes(role));
+
+      if (!hasAccess) {
+        const error = new Error(`Forbidden: requires one of [${requiredRoles.join(', ')}]`);
+        error.status = StatusCodes.FORBIDDEN;
+        throw error;
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+function requireOwner(req, res, next) {
+  console.log(req.user.id);
+  console.log(req.params.id);
+  if (req.user.id !== parseInt(req.params.id)) {
+    const error = new Error('Forbidden: not authorized to edit this user');
+    error.status = StatusCodes.FORBIDDEN;
+    throw error;
+  }
+  next();
 }
 
 export default {
@@ -104,5 +145,7 @@ export default {
     validatePassword,
     checkIfEmailExists,
     checkIfRoleExists,
-    requireAdmin
+    requireAuth,
+    requireRoles,
+    requireOwner
 };
