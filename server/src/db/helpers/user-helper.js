@@ -11,7 +11,12 @@ async function getById(id) {
 }
 
 async function create(data) {
-    return await generic.createRecord(User, data, { exclude: ['password'] })
+    const user = await generic.createRecord(User, data, { exclude: ['password'] });
+
+    const userRole = await Role.findOne({ where: { name: 'User' } });
+    if (userRole) await user.addRole(userRole);
+
+    return user;
 }
 
 async function update(id, data) {
@@ -19,9 +24,9 @@ async function update(id, data) {
 }
 
 async function remove(id) {
-    const user = await generic.findById(User, id, { include: [ Reservation, Review, Role] })
+    const user = await generic.findById(User, id, { include: [ Reservation ] })
 
-    if (user.Reservations.length > 0 || user.Reviews.length > 0 || user.Roles.length > 0) {
+    if (user.Reservations.length > 0) {
         const error = new Error('Cannot delete user with associated relations');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;

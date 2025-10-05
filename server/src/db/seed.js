@@ -44,12 +44,12 @@ async function seed() {
   ]);
 
   const proPlayers = await ProPlayer.bulkCreate([
-    { user_id: users[2].id, bio: "bio" },
+    { id: users[2].id, bio: "bio" },
   ]);
 
   await ProPlayerGame.bulkCreate([
     {
-      pro_player_id: proPlayers[0].user_id,
+      pro_player_id: proPlayers[0].id,
       game_id: games[0].id,
       current_rank: "Platinum",
       years_experience: 5,
@@ -59,7 +59,7 @@ async function seed() {
   const ads = await Ad.bulkCreate([
     {
       game_id: games[0].id,
-      pro_player_id: proPlayers[0].user_id,
+      pro_player_id: proPlayers[0].id,
       name: "Professional boosting",
       description: "Description",
       max_reservations_per_user: 2,
@@ -90,7 +90,7 @@ async function seed() {
     {
       reservation_id: reservations[0].id,
       user_id: users[1].id,
-      pro_player_id: proPlayers[0].user_id,
+      pro_player_id: proPlayers[0].id,
       rating: 4,
       comment: "comment",
     },

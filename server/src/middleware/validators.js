@@ -44,6 +44,20 @@ function validatePassword(req, res, next) {
     next();
 }
 
+function validateYearsExperience(req, res, next) {
+    const { years_experience } = req.body;
+    if (!years_experience)
+        return next();
+
+    if (years_experience < 0) {
+        const error = new Error('Years experience has to be more than 0');
+        error.status = StatusCodes.BAD_REQUEST;
+        throw error;
+    }
+
+    next();
+}
+
 async function checkIfEmailExists(req, res, next) {
     const { email } = req.body;
     const { id } = req.params;
@@ -143,6 +157,7 @@ export default {
     validateId,
     validateEmail,
     validatePassword,
+    validateYearsExperience,
     checkIfEmailExists,
     checkIfRoleExists,
     requireAuth,

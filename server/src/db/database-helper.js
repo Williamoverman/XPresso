@@ -81,7 +81,7 @@ const Game = sequelize.define('Game', {
 });
 
 const ProPlayer = sequelize.define('ProPlayer', {
-    user_id: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: { model: User, key: 'id' }
@@ -99,7 +99,7 @@ const ProPlayer = sequelize.define('ProPlayer', {
 const ProPlayerGame = sequelize.define('ProPlayerGame', {
     pro_player_id: {
         type: DataTypes.INTEGER,
-        references: { model: ProPlayer, key: 'user_id' },
+        references: { model: ProPlayer, key: 'id' },
         primaryKey: true
     },
     game_id: {
@@ -127,7 +127,7 @@ const Ad = sequelize.define('Ad', {
     },
     pro_player_id: {
         type: DataTypes.INTEGER,
-        references: { model: ProPlayer, key: 'user_id' }
+        references: { model: ProPlayer, key: 'id' }
     },
     name: {
         type: DataTypes.STRING,
@@ -206,7 +206,7 @@ const Review = sequelize.define('Review', {
     },
     pro_player_id: {
         type: DataTypes.INTEGER,
-        references: { model: ProPlayer, key: 'user_id' }
+        references: { model: ProPlayer, key: 'id' }
     },
     rating: {
         type: DataTypes.INTEGER,
@@ -224,8 +224,8 @@ const Review = sequelize.define('Review', {
 User.belongsToMany(Role, { through: UserRole, foreignKey: "user_id", otherKey: "role_id" });
 Role.belongsToMany(User, { through: UserRole, foreignKey: "role_id", otherKey: "user_id" });
 
-ProPlayer.belongsTo(User, { foreignKey: "user_id" });
-User.hasOne(ProPlayer, { foreignKey: "user_id" });
+ProPlayer.belongsTo(User, { foreignKey: "id" });
+User.hasOne(ProPlayer, { foreignKey: "id" });
 
 ProPlayer.belongsToMany(Game, { through: ProPlayerGame, foreignKey: "pro_player_id", otherKey: "game_id" });
 Game.belongsToMany(ProPlayer, { through: ProPlayerGame, foreignKey: "game_id", otherKey: "pro_player_id" });
@@ -250,6 +250,9 @@ User.hasMany(Review, { foreignKey: "user_id" });
 
 Review.belongsTo(ProPlayer, { foreignKey: "pro_player_id" });
 ProPlayer.hasMany(Review, { foreignKey: "pro_player_id" });
+
+ProPlayerGame.belongsTo(ProPlayer, { foreignKey: 'pro_player_id' });
+ProPlayerGame.belongsTo(Game, { foreignKey: 'game_id' });
 
 await sequelize.sync();
 

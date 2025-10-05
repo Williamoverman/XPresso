@@ -1,5 +1,7 @@
 import express from 'express';
-import roleController from '../controllers/role-controller.js'
+import roleController from '../controllers/role-controller.js';
+import validator from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -20,7 +22,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Role'
  */
-router.get('/', roleController.getAllRoles);
+router.get('/',
+    roleController.getAllRoles
+);
 
 /**
  * @openapi
@@ -55,7 +59,10 @@ router.get('/', roleController.getAllRoles);
  *                   type: string
  *                   example: "No role found by ID"
  */
-router.get('/:id', roleController.getRoleById);
+router.get('/:id',
+    validator.validateId,
+    roleController.getRoleById
+);
 
 /**
  * @openapi
@@ -89,7 +96,9 @@ router.get('/:id', roleController.getRoleById);
  *                   type: string
  *                   example: "Name is reqquired"
  */
-router.post('/', roleController.createRole);
+router.post('/',
+    roleController.createRole
+);
 
 /**
  * @openapi
@@ -139,7 +148,10 @@ router.post('/', roleController.createRole);
  *                   type: string
  *                   example: "Required name"
  */
-router.put('/:id', roleController.updateRole);
+router.put('/:id', 
+    validator.validateId,
+    roleController.updateRole
+);
 
 /**
  * @openapi
@@ -180,7 +192,10 @@ router.put('/:id', roleController.updateRole);
  *                   type: string
  *                   example: "Cannot delete role with associated users"
  */
-router.delete('/:id', roleController.deleteRole);
+router.delete('/:id', 
+    validator.validateId,
+    roleController.deleteRole
+);
 
 /**
  * @openapi
@@ -216,6 +231,9 @@ router.delete('/:id', roleController.deleteRole);
  *                   type: string
  *                   example: "No role found by ID"
  */
-router.get('/:id/users', roleController.getUsersWithRole);
+router.get('/:id/users', 
+    validator.validateId,
+    roleController.getUsersWithRole
+);
 
 export default router;

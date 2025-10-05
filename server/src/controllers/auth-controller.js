@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import queries from '../db/helpers/auth-helper.js';
+import authQueries from '../db/helpers/auth-helper.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -13,7 +13,7 @@ const login = async (req, res, next) => {
             throw error;
         }
 
-        const user = await queries.getByEmail(email);
+        const user = await authQueries.getByEmail(email);
 
         if (!user || !await bcrypt.compare(password, user.password)) {
             const error = new Error('Invalid email or password');

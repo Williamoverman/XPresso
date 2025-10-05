@@ -9,7 +9,8 @@ import proPlayersRouter from './routes/pro-players.js';
 import adsRouter from './routes/ads.js';
 import reviewsRouter from './routes/reviews.js';
 import reservationsRouter from './routes/reservations.js';
-import authRouter from './routes/auth.js'
+import authRouter from './routes/auth.js';
+import validator from './middleware/validators.js';
 
 // Check if NODE_ENV environment variable is set, otherwise go to development mode
 const nodeEnv = process.env.NODE_ENV || 'dev';
@@ -27,7 +28,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/users', usersRouter);
 app.use('/games', gamesRouter);
-app.use('/roles', rolesRouter);
+app.use('/roles', validator.requireAuth, validator.requireRoles('Admin'), rolesRouter);
 app.use('/pro-players', proPlayersRouter);
 app.use('/ads', adsRouter);
 app.use('/reviews', reviewsRouter);

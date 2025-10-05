@@ -121,15 +121,12 @@ const swaggerOptions = {
             abbreviation: { 
               type: 'string' 
             },
-            is_active: { 
-              type: 'boolean' 
-            },
           },
         },
         ProPlayer: {
           type: 'object',
           properties: {
-            user_id: { 
+            id: { 
               type: 'integer' 
             },
             bio: { 

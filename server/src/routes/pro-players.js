@@ -1,5 +1,6 @@
 import express from 'express';
 import proPlayerController from '../controllers/pro-player-controller.js';
+import validator from '../middleware/validators.js';
 const router = express.Router();
 
 /**
@@ -20,7 +21,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/ProPlayer'
  */
-router.get('/', proPlayerController.getAllProPlayers);
+router.get('/', 
+    proPlayerController.getAllProPlayers
+);
 
 /**
  * @openapi
@@ -55,27 +58,26 @@ router.get('/', proPlayerController.getAllProPlayers);
  *                   type: string
  *                   example: "No pro-player found by user_id"
  */
-router.get('/:user_id', proPlayerController.getProPlayerById);
+router.get('/:id', 
+    validator.validateId,
+    proPlayerController.getProPlayerById
+);
 
 /**
  * @openapi
- * /pro-players:
+ * /pro-players/{id}:
  *   post:
  *     tags:
  *       - Pro-players
  *     summary: Create pro-player
  *     description: Returns created pro-player.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               user_id:
- *                 type: integer
- *             required:
- *               - user_id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The user_id of the pro-player
  *     responses:
  *       201:
  *         description: Pro-player created
@@ -92,9 +94,14 @@ router.get('/:user_id', proPlayerController.getProPlayerById);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Pro player already exists for this user"
+ *                   example: "This user is already registered as a pro player"
  */
-router.post('/', proPlayerController.createProPlayer);
+router.post('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('User'),
+    proPlayerController.createProPlayer
+);
 
 /**
  * @openapi
@@ -144,7 +151,13 @@ router.post('/', proPlayerController.createProPlayer);
  *                   type: string
  *                   example: "Hourly rate is required"
  */
-router.put('/:user_id', proPlayerController.updateProPlayer);
+router.put('/:id', 
+    validator.validateId,
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    proPlayerController.updateProPlayer
+);
 
 /**
  * @openapi
@@ -185,43 +198,13 @@ router.put('/:user_id', proPlayerController.updateProPlayer);
  *                   type: string
  *                   example: "Cannot delete pro-player with associated ads"
  */
-router.delete('/:user_id', proPlayerController.deleteProPlayer);
-
-/**
- * @openapi
- * /pro-players/{id}/ads:
- *   get:
- *     tags:
- *       - Pro-players
- *     summary: Get ads for certain pro-player
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The user_id of the pro-player
- *     responses:
- *       200:
- *         description: List of ads for certain pro-player
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Ad'
- *       404:
- *         description: If no ads found by that pro-player user_id
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No ads found by pro-player user_id"
- */
-router.get('/:user_id/ads', proPlayerController.getAdsForProPlayer);
+router.delete('/:id', 
+    validator.validateId,
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    proPlayerController.deleteProPlayer
+);
 
 /**
  * @openapi
@@ -257,7 +240,10 @@ router.get('/:user_id/ads', proPlayerController.getAdsForProPlayer);
  *                   type: string
  *                   example: "No games found by pro-player user_id"
  */
-router.get('/:user_id/games', proPlayerController.getGamesForProPlayer);
+router.get('/:id/games', 
+    validator.validateId,
+    proPlayerController.getGamesForProPlayer
+);
 
 /**
  * @openapi
@@ -319,12 +305,18 @@ router.get('/:user_id/games', proPlayerController.getGamesForProPlayer);
  *                   type: string
  *                   example: "Pro player n ot found"
  */
-router.post('/:user_id/games', proPlayerController.AssignGameToProPlayer);
+router.post('/:id/games', 
+    validator.validateId,
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    proPlayerController.AssignGameToProPlayer
+);
 
 /**
  * @openapi
  * /pro-players/{id}/games/{game_id}:
- *   put:
+ *   patch:
  *     tags:
  *       - Pro-players
  *     summary: Update pro player game details
@@ -383,7 +375,14 @@ router.post('/:user_id/games', proPlayerController.AssignGameToProPlayer);
  *                 error: "Pro player game association not found"
  */
 
-router.put('/:user_id/games/:game_id', proPlayerController.UpdateProPlayerGameDetails);
+router.patch('/:id/games/:game_id', 
+    validator.validateId,
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    validator.validateYearsExperience,
+    proPlayerController.UpdateProPlayerGameDetails
+);
 
 /**
  * @openapi
@@ -419,6 +418,9 @@ router.put('/:user_id/games/:game_id', proPlayerController.UpdateProPlayerGameDe
  *               example:
  *                 error: "Pro player not found"
  */
-router.put('/:user_id/reviews', proPlayerController.getProPlayerReviews);
+router.get('/:id/reviews', 
+    validator.validateId,
+    proPlayerController.getProPlayerReviews
+);
 
 export default router;

@@ -1,5 +1,7 @@
 import express from 'express';
 import gameController from '../controllers/game-controller.js';
+import validator from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -20,7 +22,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Game'
  */
-router.get('/', gameController.getAllGames);
+router.get('/', 
+    gameController.getAllGames
+);
 
 /**
  * @openapi
@@ -55,7 +59,10 @@ router.get('/', gameController.getAllGames);
  *                   type: string
  *                   example: "No game found by ID"
  */
-router.get('/:id', gameController.getGameById);
+router.get('/:id', 
+    validator.validateId,
+    gameController.getGameById
+);
 
 /**
  * @openapi
@@ -89,7 +96,10 @@ router.get('/:id', gameController.getGameById);
  *                   type: string
  *                   example: "Name and or abbrevations are required"
  */
-router.post('/', gameController.createGame);
+router.post('/', 
+    validator.requireAuth,
+    gameController.createGame
+);
 
 /**
  * @openapi
@@ -139,7 +149,11 @@ router.post('/', gameController.createGame);
  *                   type: string
  *                   example: "Name and or abbrevations are required"
  */
-router.put('/:id', gameController.updateGame);
+router.put('/:id', 
+    validator.requireAuth,
+    validator.validateId,
+    gameController.updateGame
+);
 
 /**
  * @openapi
@@ -180,42 +194,10 @@ router.put('/:id', gameController.updateGame);
  *                   type: string
  *                   example: "Cannot delete game with associated ads/pro-players"
  */
-router.delete('/:id', gameController.deleteGame);
-
-/**
- * @openapi
- * /games/{id}/ads:
- *   get:
- *     tags:
- *       - Games
- *     summary: Get ads for certain game
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the game
- *     responses:
- *       200:
- *         description: List of ads for certain game
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Ad'
- *       404:
- *         description: If no ads found by that game ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No ads found by game ID"
- */
-router.get('/:id/ads', gameController.getAdsForGame);
+router.delete('/:id', 
+    validator.requireAuth,
+    validator.validateId,
+    gameController.deleteGame
+);
 
 export default router;
