@@ -1,6 +1,7 @@
 import express from 'express';
 import adController from '../controllers/ad-controller.js';
 import validator from '../middleware/validators.js';
+import { Ad, Game, ProPlayer } from '../db/database-helper.js';
 
 const router = express.Router();
 
@@ -76,7 +77,9 @@ router.get('/',
  *                   example: "No ad found by ID"
  */
 router.get('/:id', 
-    validator.validateId,
+    validator.validateId([
+        {source: 'params', field: 'id'}
+    ]),
     adController.getAdById
 );
 
@@ -124,9 +127,19 @@ router.get('/:id',
  *                 error: "Game not found"
  */
 router.post('/', 
+    validator.validateId([
+        {source: 'body', field: 'game_id'},
+        {source: 'body', field: 'pro_player_id'}
+    ]),
+    validator.checkIfExists([
+        {model: Game, source: 'body', field: 'game_id'},
+        {model: ProPlayer, source: 'body', field: 'pro_player_id'}
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner('body', 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
+    validator.requireFields('name', 'max_reservations_per_user', 'service_type', 'total_spots_available', 'max_duration_minutes'),
+    validator.validatePositiveNumber('max_reservations_per_user', 'total_spots_available', 'max_duration_minutes'),
     adController.createAd
 );
 
@@ -179,10 +192,17 @@ router.post('/',
  *                   example: "Max reservations per user, max duration in minutes, total spots available and name are required"
  */
 router.patch('/:id', 
+    validator.validateId([
+        {source: 'body', field: 'game_id'}
+    ]),
+    validator.checkIfExists([
+        {model: Game, source: 'body', field: 'game_id'}
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireResourceOwner(Ad, 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
-    validator.validateId,
+    validator.requireFields('name', 'max_reservations_per_user', 'service_type', 'total_spots_available', 'max_duration_minutes'),
+    validator.validatePositiveNumber('max_reservations_per_user', 'total_spots_available', 'max_duration_minutes'),
     adController.updateAd
 );
 
@@ -226,10 +246,10 @@ router.patch('/:id',
  *                   example: "Cannot delete ad with associated reservations"
  */
 router.delete('/:id', 
+    validator.validateId(),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireResourceOwner(Ad, 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
-    validator.validateId,
     adController.deleteAd
 );
 

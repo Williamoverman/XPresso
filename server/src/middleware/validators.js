@@ -1,23 +1,23 @@
 import { StatusCodes } from "http-status-codes";
-import { User, Role } from "../db/database-helper.js";
+import { User } from "../db/database-helper.js";
 import validator from 'validator';
 import jwt from "jsonwebtoken";
+import createService from "../db/helpers/generic-helper.js";
 
 /**
  * Generic ID validator
- * @param {string} source - body, params or query
- * @param {string} field - The field name
+ * @param {Array<{source: string, field: string}>} validators - Array of {source, field} objects to validate, if left empty checks for basic params, id
  */
-function validateId(source = 'params', field = 'id') {
+function validateId(validators = [{source: 'params', field: 'id'}]) {
     return (req, res, next) => {
-        const value = req[source]?.[field];
-
-        if (!value || isNaN(value)) {
-            const error = new Error(`Invalid ${field}`);
-            error.status = StatusCodes.BAD_REQUEST;
-            return next(error);
+        for (const {source, field} of validators) {
+            const value = req[source]?.[field];
+            if (!value || isNaN(value)) {
+                const error = new Error(`Invalid ${field}`);
+                error.status = StatusCodes.BAD_REQUEST;
+                return next(error);
+            }
         }
-        
         next();
     };
 }
@@ -81,35 +81,28 @@ function validateDates(req, res, next) {
 
 /**
  * Validator for positive numbers
- * @param {string} field - The field name
+ * @param {...string} fields - The array of field names
  */
-function validatePositiveNumber(field) {
+function validatePositiveNumber(...fields) {
     return (req, res, next) => {
-        const value = req.body[field];
-        if (value === undefined || value === null) return next();
-
-        if (isNaN(value) || value < 0) {
-            const error = new Error(`${field} must be a positive number`);
+        const negative = fields.filter(field => req.body[field] < 0);
+        if (negative.length > 0) {
+            const error = new Error(`These fields cannot have a negative number: ${negative.join(', ')}`);
             error.status = StatusCodes.BAD_REQUEST;
             return next(error);
         }
-
+        
         next();
     };
 }
 
 /**
- * Validator to check if email exists
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * Validator to check if email exists (slightly differs from generic existt check)
  */
 async function checkIfEmailExists(req, res, next) {
     const { email } = req.body;
     const { id } = req.params;
-    if (!email)
-        return next();
+    if (!email) return next();
 
     const user = await User.findOne({ where: { email } });
 
@@ -123,40 +116,28 @@ async function checkIfEmailExists(req, res, next) {
 }
 
 /**
- * Validator to check if role exists
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * Generic existence validator
+ * @param {Array<{model: Object, source: string, field: string}>} validators - Array of validator objects
  */
-async function checkIfRoleExists(req, res, next) {
-    const { role_id } = req.body;
-    
-    if (!role_id || isNaN(role_id)) {
-        const error = new Error(`Invalid role ID`);
-        error.status = StatusCodes.BAD_REQUEST;
-        throw error;
-    }
+function checkIfExists(validators = []) {
+    return async (req, res, next) => {
+        for (const {model, source, field} of validators) {
+            const value = req[source]?.[field];
 
-    const role = await Role.findByPk(role_id);
-    if (!role) {
-        const error = new Error(`Role does not exist`);
-        error.status = StatusCodes.NOT_FOUND;
-        throw error;
-    }
-
-    next();
+            const service = createService(model);
+            await service.findById(parseInt(value));
+        }
+        next();
+    };
 }
 
 /**
  * Validator to check if user is logged in with a valid JWT
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
  */
 function requireAuth(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
-        console.log(req.headers);
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             const error = new Error('Unauthorized: missing or invalid token');
             error.status = StatusCodes.UNAUTHORIZED;
@@ -177,8 +158,8 @@ function requireAuth(req, res, next) {
 
 /**
  * Function to check if user has one of or more than one of specific roles
- * @param  {...any} requiredRoles 
- * @returns 
+ * @param  {...any} requiredRoles Role to check for, if left empty you just need any role
+ * @returns middleware function
  */
 function requireRoles(...requiredRoles) {
   return (req, res, next) => {
@@ -189,7 +170,11 @@ function requireRoles(...requiredRoles) {
         throw error;
       }
 
-      console.log(req.user.roles)
+      if (requiredRoles.length === 0) {
+        next();
+        return;
+      }
+
       const userRoles = req.user.roles || [];
       const hasAccess = requiredRoles.some(role => userRoles.includes(role));
 
@@ -207,26 +192,51 @@ function requireRoles(...requiredRoles) {
 }
 
 /**
- * Validator to check if the person sending the request is the owner of the values hes editing
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * Generic owner validator
+ * @param {string} source - body, params or query
+ * @param {string} field - The field name for target user ID, defaults to params/id
  */
-function requireOwner(req, res, next) {
-    const targetUserId = parseInt(req.params.id);
+function requireOwner(source = 'params', field = 'id') {
+    return (req, res, next) => {
+        if (req.user.id !== parseInt(req[source]?.[field])) {
+            const error = new Error('Forbidden: not authorized to edit this user');
+            error.status = StatusCodes.FORBIDDEN;
+            throw error;
+        }
 
-    if (req.user.id !== targetUserId) {
-        const error = new Error('Forbidden: not authorized to edit this user');
-        error.status = StatusCodes.FORBIDDEN;
-        throw error;
-    }
-    next();
+        next();
+    };
+}
+
+/**
+ * Generic resource ownership validator
+ * @param {Object} model - Sequelize model
+ * @param {string} ownerField - Field name that contains the user ID
+ * @returns middleware function
+ */
+function requireResourceOwner(model, ownerField = 'user_id') {
+    return async (req, res, next) => {
+        try {
+            const service = createService(model);
+            const record = await service.findById(parseInt(req.params.id));
+
+            if (record[ownerField] !== req.user.id) {
+                const error = new Error(`Forbidden: not authorized to modify this ${model.name}`);
+                error.status = StatusCodes.FORBIDDEN;
+                return next(error);
+            }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
 }
 
 /**
  * Validator for required fields
  * @param  {...string} fields
- * @returns
+ * @returns middleware function
  */
 function requireFields(...fields) {
     return (req, res, next) => {
@@ -246,12 +256,13 @@ export default {
     validateId,
     validateEmail,
     validatePassword,
-    validateYearsExperience,
+    validatePositiveNumber,
     validateDates,
     checkIfEmailExists,
-    checkIfRoleExists,
+    checkIfExists,
     requireAuth,
     requireRoles,
     requireOwner,
+    requireResourceOwner,
     requireFields
 };

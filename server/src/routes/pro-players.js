@@ -1,6 +1,8 @@
 import express from 'express';
 import proPlayerController from '../controllers/pro-player-controller.js';
 import validator from '../middleware/validators.js';
+import { Game } from '../db/database-helper.js';
+
 const router = express.Router();
 
 /**
@@ -59,7 +61,7 @@ router.get('/',
  *                   example: "No pro-player found by user_id"
  */
 router.get('/:id', 
-    validator.validateId,
+    validator.validateId(),
     proPlayerController.getProPlayerById
 );
 
@@ -97,8 +99,9 @@ router.get('/:id',
  *                   example: "This user is already registered as a pro player"
  */
 router.post('/:id', 
+    validator.validateId(),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.requireRoles('User'),
     proPlayerController.createProPlayer
 );
@@ -152,10 +155,12 @@ router.post('/:id',
  *                   example: "Hourly rate is required"
  */
 router.put('/:id', 
-    validator.validateId,
+    validator.validateId(),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.requireRoles('ProPlayer'),
+    validator.requireFields('hourly_rate'),
+    validator.validatePositiveNumber('hourly_rate'),
     proPlayerController.updateProPlayer
 );
 
@@ -199,9 +204,9 @@ router.put('/:id',
  *                   example: "Cannot delete pro-player with associated ads"
  */
 router.delete('/:id', 
-    validator.validateId,
+    validator.validateId(),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.requireRoles('ProPlayer'),
     proPlayerController.deleteProPlayer
 );
@@ -241,7 +246,8 @@ router.delete('/:id',
  *                   example: "No games found by pro-player user_id"
  */
 router.get('/:id/games', 
-    validator.validateId,
+    validator.validateId(),
+    validator.requireAuth,
     proPlayerController.getGamesForProPlayer
 );
 
@@ -306,10 +312,18 @@ router.get('/:id/games',
  *                   example: "Pro player n ot found"
  */
 router.post('/:id/games', 
-    validator.validateId,
+    validator.validateId([
+        { source: 'body', field: 'game_id' },
+        { source: 'params', field: 'id' }
+    ]),
+    validator.checkIfExists([
+        {model: Game, source: 'body', field: 'game_id'}
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.requireRoles('ProPlayer'),
+    validator.requireFields('years_experience', 'current_rank'),
+    validator.validatePositiveNumber('years_experience'),
     proPlayerController.AssignGameToProPlayer
 );
 
@@ -376,51 +390,18 @@ router.post('/:id/games',
  */
 
 router.patch('/:id/games/:game_id', 
-    validator.validateId,
+    validator.validateId([
+        { source: 'params', field: 'game_id' },
+        { source: 'params', field: 'id' }
+    ]),
+    validator.checkIfExists([
+        {model: Game, source: 'params', field: 'game_id'}
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.requireRoles('ProPlayer'),
-    validator.validateYearsExperience,
+    validator.validatePositiveNumber('years_experience'),
     proPlayerController.UpdateProPlayerGameDetails
-);
-
-/**
- * @openapi
- * /pro-players/{id}/reviews:
- *   get:
- *     tags:
- *       - Pro-players
- *     summary: Get pro player reviews
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of reviews for pro player
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Review'
- *       404:
- *         description: Pro player not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *               example:
- *                 error: "Pro player not found"
- */
-router.get('/:id/reviews', 
-    validator.validateId,
-    proPlayerController.getProPlayerReviews
 );
 
 export default router;

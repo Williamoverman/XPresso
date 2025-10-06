@@ -7,14 +7,17 @@ const proPlayerService = createService(ProPlayer, {
         await proPlayer.reload({ include: Ad });
         
         if (proPlayer.Ads.length > 0) {
-            const error = new Error('Cannot delete pro player with associated relations');
+            const error = new Error('Cannot delete pro player with associated ads');
             error.status = StatusCodes.BAD_REQUEST;
             throw error;
         }
+
+        const user = await User.findByPk(proPlayer.id);
+        if (user) await user.removeRole('ProPlayer');
     }
 });
 
-// Custom create, different from normal creates
+// Custom create, different from my generic create
 async function create(id) {
     const user = await User.findByPk(id, { include: ProPlayer });
     
@@ -82,19 +85,15 @@ async function updateAssignedGame(id, game_id, data) {
             game_id: game_id
         }
     });
-    
-    return await ProPlayerGame.findOne({ 
-        where: { 
-            pro_player_id: id, 
-            game_id: game_id 
-        } 
-    });
-}
 
-// Get reviews for a pro player
-async function getReviews(id) {
-    const proPlayer = await proPlayerService.findById(id, { include: Review });
-    return proPlayer.Reviews;
+    const updatedRecord = await ProPlayerGame.findOne({
+        where: {
+            pro_player_id: id,
+            game_id: game_id
+        }
+    });
+
+    return updatedRecord;
 }
 
 export default {
@@ -105,6 +104,5 @@ export default {
     remove: proPlayerService.delete.bind(proPlayerService),
     getGames,
     assignGame,
-    updateAssignedGame,
-    getReviews
+    updateAssignedGame
 };

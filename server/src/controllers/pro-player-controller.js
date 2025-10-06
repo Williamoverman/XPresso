@@ -37,12 +37,6 @@ const updateProPlayer = async (req, res, next) => {
         const { id } = req.params;
         const { bio, hourly_rate } = req.body;
 
-        if (!hourly_rate) {
-            const error = new Error('Hourly rate is required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-
         const input = {
             bio: bio,
             hourly_rate: hourly_rate
@@ -82,12 +76,6 @@ const AssignGameToProPlayer = async (req, res, next) => {
         const { id } = req.params;
         const { game_id, current_rank, years_experience } = req.body;
 
-        if (!game_id || isNaN(game_id)) {
-            const error = new Error('Game ID is required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-
         const input = {
             game_id: game_id,
             current_rank: current_rank,
@@ -118,17 +106,6 @@ const UpdateProPlayerGameDetails = async (req, res, next) => {
     }
 }
 
-const getProPlayerReviews = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-
-        const reviews = await proPlayerQueries.getReviews(id);
-        res.status(StatusCodes.OK).json(reviews);
-    } catch (error) {
-        next(error);
-    }
-}
-
 export default {
     getAllProPlayers,
     getProPlayerById,
@@ -137,6 +114,5 @@ export default {
     deleteProPlayer,
     getGamesForProPlayer,
     AssignGameToProPlayer,
-    UpdateProPlayerGameDetails,
-    getProPlayerReviews
+    UpdateProPlayerGameDetails
 }

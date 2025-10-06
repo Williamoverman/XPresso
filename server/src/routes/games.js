@@ -60,7 +60,7 @@ router.get('/',
  *                   example: "No game found by ID"
  */
 router.get('/:id', 
-    validator.validateId,
+    validator.validateId(),
     gameController.getGameById
 );
 
@@ -98,6 +98,8 @@ router.get('/:id',
  */
 router.post('/', 
     validator.requireAuth,
+    validator.requireRoles(),
+    validator.requireFields('name', 'abbreviation'),
     gameController.createGame
 );
 
@@ -150,8 +152,10 @@ router.post('/',
  *                   example: "Name and or abbrevations are required"
  */
 router.put('/:id', 
+    validator.validateId(),
     validator.requireAuth,
-    validator.validateId,
+    validator.requireRoles(),
+    validator.requireFields('name', 'abbreviation'),
     gameController.updateGame
 );
 
@@ -195,8 +199,9 @@ router.put('/:id',
  *                   example: "Cannot delete game with associated ads/pro-players"
  */
 router.delete('/:id', 
+    validator.validateId(),
     validator.requireAuth,
-    validator.validateId,
+    validator.requireRoles(),
     gameController.deleteGame
 );
 

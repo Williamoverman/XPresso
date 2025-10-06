@@ -308,7 +308,6 @@ router.post('/:id/roles',
     validator.validateId,
     validator.requireAuth,
     validator.requireRoles('Admin'),
-    validator.checkIfRoleExists,
     userController.addRoleToUser
 );
 

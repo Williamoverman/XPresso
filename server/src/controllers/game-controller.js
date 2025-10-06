@@ -25,12 +25,6 @@ const createGame = async (req, res, next) => {
     try {
         const { name, abbreviation } = req.body;
 
-        if (!name || !abbreviation) {
-            const error = new Error('Name and abbreviation are required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-
         const input = {
             name: name,
             abbreviation: abbreviation
@@ -47,12 +41,6 @@ const updateGame = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name, abbreviation } = req.body;
-
-        if (!name || !abbreviation) {
-            const error = new Error('Name and abbreviation are required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
 
         const input = {
             name: name,
