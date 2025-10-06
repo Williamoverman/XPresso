@@ -1,5 +1,7 @@
 import express from 'express';
 import adController from '../controllers/ad-controller.js';
+import validator from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -36,7 +38,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Ad'
  */
-router.get('/', adController.getAllAds);
+router.get('/', 
+    adController.getAllAds
+);
 
 /**
  * @openapi
@@ -71,7 +75,10 @@ router.get('/', adController.getAllAds);
  *                   type: string
  *                   example: "No ad found by ID"
  */
-router.get('/:id', adController.getAdById);
+router.get('/:id', 
+    validator.validateId,
+    adController.getAdById
+);
 
 /**
  * @openapi
@@ -103,7 +110,7 @@ router.get('/:id', adController.getAdById);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "identifier is required"
+ *                   example: "Max reservations per user, max duration in minutes, total spots available and name are required"
  *       404:
  *         description: Game or pro player not found
  *         content:
@@ -116,12 +123,17 @@ router.get('/:id', adController.getAdById);
  *               example:
  *                 error: "Game not found"
  */
-router.post('/', adController.createAd);
+router.post('/', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    adController.createAd
+);
 
 /**
  * @openapi
  * /ads/{id}:
- *   put:
+ *   patch:
  *     tags:
  *       - Ads
  *     summary: Update ad
@@ -164,9 +176,15 @@ router.post('/', adController.createAd);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "identifier is required"
+ *                   example: "Max reservations per user, max duration in minutes, total spots available and name are required"
  */
-router.put('/:id', adController.updateAd);
+router.patch('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    validator.validateId,
+    adController.updateAd
+);
 
 /**
  * @openapi
@@ -207,42 +225,12 @@ router.put('/:id', adController.updateAd);
  *                   type: string
  *                   example: "Cannot delete ad with associated reservations"
  */
-router.delete('/:id', adController.deleteAd);
-
-/**
- * @openapi
- * /ads/{id}/reservations:
- *   get:
- *     tags:
- *       - Ads
- *     summary: Get reservations for certain ad
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the ad
- *     responses:
- *       200:
- *         description: List of reservations for certain ad
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Reservation'
- *       404:
- *         description: If no reservations found by that ad ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No reservations found by ad ID"
- */
-router.get('/:id/reservations', adController.getReservationsForAd);
+router.delete('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.requireRoles('ProPlayer'),
+    validator.validateId,
+    adController.deleteAd
+);
 
 export default router;

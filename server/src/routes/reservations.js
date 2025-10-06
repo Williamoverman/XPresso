@@ -1,5 +1,7 @@
 import express from 'express';
 import reservationController from '../controllers/reservation-controller.js';
+import validator from '../middleware/validators.js';
+
 const router = express.Router();
 
 /**
@@ -10,6 +12,12 @@ const router = express.Router();
  *       - Reservations
  *     summary: Get all reservations
  *     description: Returns all reservations.
+ *     parameters:
+ *       - in: query
+ *         name: ad_id
+ *         schema:
+ *           type: string
+ *         description: Filter reservations by ad ID
  *     responses:
  *       200:
  *         description: Reservations returned succesfully
@@ -20,7 +28,11 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Reservation'
  */
-router.get('/', reservationController.getAllReservations);
+router.get('/',
+    validator.requireAuth,
+    validator.requireOwner,
+    reservationController.getAllReservations
+);
 
 /**
  * @openapi
@@ -55,7 +67,12 @@ router.get('/', reservationController.getAllReservations);
  *                   type: string
  *                   example: "No reservation found by ID"
  */
-router.get('/:id', reservationController.getReservationById);
+router.get('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.validateId,
+    reservationController.getReservationById
+);
 
 /**
  * @openapi
@@ -87,14 +104,19 @@ router.get('/:id', reservationController.getReservationById);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "start_date is required"
+ *                   example: "Dates, user and ad are required"
  */
-router.post('/', reservationController.createReservation);
+router.post('/', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.validateDates,
+    reservationController.createReservation
+);
 
 /**
  * @openapi
  * /reservations/{id}:
- *   put:
+ *   patch:
  *     tags:
  *       - Reservations
  *     summary: Update reservation
@@ -137,9 +159,15 @@ router.post('/', reservationController.createReservation);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "start_date is required"
+ *                   example: "Start date and end date have to be valid inputs"
  */
-router.put('/:id', reservationController.updateReservation);
+router.patch('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.validateId,
+    validator.validateDates,
+    reservationController.updateReservation
+);
 
 /**
  * @openapi
@@ -169,53 +197,12 @@ router.put('/:id', reservationController.updateReservation);
  *               example: 
  *                 error: 
  *                   "No reservation found by ID"
- *       400:
- *         description: Cannot delete due to associated reviews
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Cannot delete reservation with associated reviews"
  */
-router.delete('/:id', reservationController.deleteReservation);
-
-/**
- * @openapi
- * /reservations/{id}/review:
- *   get:
- *     tags:
- *       - Reservations
- *     summary: Get review for certain reservation
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: The ID of the reservation
- *     responses:
- *       200:
- *         description: List of reviews for certain reservation
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Review'
- *       404:
- *         description: If no review found by that reservation ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No reviews found by reservation ID"
- */
-router.get('/:id/review', reservationController.getReviewsForReservation);
+router.delete('/:id', 
+    validator.requireAuth,
+    validator.requireOwner,
+    validator.validateId,
+    reservationController.deleteReservation
+);
 
 export default router;

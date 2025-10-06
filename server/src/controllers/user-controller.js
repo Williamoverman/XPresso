@@ -52,7 +52,7 @@ const updateUser = async (req, res, next) => {
 
         const { email, password, username } = req.body;
 
-        const input = {};
+        let input = {};
 
         if (email) input.email = email;
         if (username) input.username = username;

@@ -2,6 +2,12 @@ import { StatusCodes } from "http-status-codes";
 import { User, Role } from "../db/database-helper.js";
 import jwt from "jsonwebtoken";
 
+/**
+ * Validator to check if ID is valid
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 function validateId(req, res, next) {
     const { id } = req.params;
 
@@ -30,6 +36,13 @@ function validateEmail(req, res, next) {
     next();
 }
 
+/**
+ * Validator for password checks if length is smaller then 8
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 function validatePassword(req, res, next) {
     const { password } = req.body;
     if (!password)
@@ -44,13 +57,35 @@ function validatePassword(req, res, next) {
     next();
 }
 
+/**
+ * Validator for checking dates
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+function validateDates(req, res, next) {
+    const { start_date, end_date } = req.body;
+
+    if (!start_date && !end_date)
+        return next();
+
+    return next();
+}
+
+/**
+ * Validator for years of experience checks if it is a positive number
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 function validateYearsExperience(req, res, next) {
     const { years_experience } = req.body;
     if (!years_experience)
         return next();
 
     if (years_experience < 0) {
-        const error = new Error('Years experience has to be more than 0');
+        const error = new Error('Years of experience has to be more than 0');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;
     }
@@ -58,6 +93,13 @@ function validateYearsExperience(req, res, next) {
     next();
 }
 
+/**
+ * Validator to check if email exists
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 async function checkIfEmailExists(req, res, next) {
     const { email } = req.body;
     const { id } = req.params;
@@ -75,6 +117,12 @@ async function checkIfEmailExists(req, res, next) {
     next();
 }
 
+/**
+ * Validator to check if role exists
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 async function checkIfRoleExists(req, res, next) {
     const { role_id } = req.body;
     
@@ -94,6 +142,12 @@ async function checkIfRoleExists(req, res, next) {
     next();
 }
 
+/**
+ * Validator to check if user is logged in with a valid JWT
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 function requireAuth(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
@@ -116,6 +170,11 @@ function requireAuth(req, res, next) {
     }
 }
 
+/**
+ * Function to check if user has one of or more than one of specific roles
+ * @param  {...any} requiredRoles 
+ * @returns 
+ */
 function requireRoles(...requiredRoles) {
   return (req, res, next) => {
     try {
@@ -142,15 +201,20 @@ function requireRoles(...requiredRoles) {
   };
 }
 
+/**
+ * Validator to check if the person sending the request is the owner of the values hes editing
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 function requireOwner(req, res, next) {
-  console.log(req.user.id);
-  console.log(req.params.id);
-  if (req.user.id !== parseInt(req.params.id)) {
-    const error = new Error('Forbidden: not authorized to edit this user');
-    error.status = StatusCodes.FORBIDDEN;
-    throw error;
-  }
-  next();
+    let id = req.body.user_id ? req.body.user_id : req.params.id;
+    if (req.user.id !== parseInt(id)) {
+        const error = new Error('Forbidden: not authorized to edit this user');
+        error.status = StatusCodes.FORBIDDEN;
+        throw error;
+    }
+    next();
 }
 
 export default {
@@ -158,6 +222,7 @@ export default {
     validateEmail,
     validatePassword,
     validateYearsExperience,
+    validateDates,
     checkIfEmailExists,
     checkIfRoleExists,
     requireAuth,

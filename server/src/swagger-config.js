@@ -289,9 +289,6 @@ const swaggerOptions = {
             ad_id: { 
               type: 'integer' 
             },
-            status: { 
-              type: 'string' 
-            },
             customer_notes: { 
               type: 'string' 
             },

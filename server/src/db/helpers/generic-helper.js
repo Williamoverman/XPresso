@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 // generic get all
 async function findAll(model, options = {}, excludes = {}) {
+    console.log(options)
     return await model.findAll({
         ...options,
         attributes: excludes
