@@ -94,7 +94,7 @@ router.post('/', reviewController.createReview);
 /**
  * @openapi
  * /reviews/{id}:
- *   put:
+ *   patch:
  *     tags:
  *       - Reviews
  *     summary: Update review
@@ -139,7 +139,7 @@ router.post('/', reviewController.createReview);
  *                   type: string
  *                   example: "Rating is required"
  */
-router.put('/:id', reviewController.updateReview);
+router.patch('/:id', reviewController.updateReview);
 
 /**
  * @openapi

@@ -57,7 +57,7 @@ const updateRole = async (req, res, next) => {
             name: name
         }
 
-        const updatedRole = await roleQueries.update(input, id);
+        const updatedRole = await roleQueries.update(id, input);
         res.status(StatusCodes.OK).json(updatedRole);
     } catch (error) {
         next(error);

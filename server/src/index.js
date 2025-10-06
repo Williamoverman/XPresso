@@ -18,7 +18,7 @@ const app = express();
 const port = 3000;
 
 // Set up basic JSON parsing and CORS headers
-app.use(express.json());
+app.use(express.json({ type: 'application/json' }));
 app.use(cors({
   origin: ['http://localhost:4173', 'http://localhost:5173']
 }));
@@ -32,7 +32,7 @@ app.use('/roles', validator.requireAuth, validator.requireRoles('Admin'), rolesR
 app.use('/pro-players', proPlayersRouter);
 app.use('/ads', adsRouter);
 app.use('/reviews', reviewsRouter);
-app.use('/reservations', reservationsRouter);
+app.use('/reservations', validator.requireAuth, validator.requireOwner, reservationsRouter);
 app.use('/auth', authRouter);
 
 // Global error handler. In your code, throw an object with a status and message, and it will be caught here. We ignore one eslint call here, because next is needed.

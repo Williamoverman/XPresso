@@ -1,33 +1,35 @@
 import { StatusCodes } from "http-status-codes";
 import { User, Role } from "../db/database-helper.js";
+import validator from 'validator';
 import jwt from "jsonwebtoken";
 
 /**
- * Validator to check if ID is valid
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * Generic ID validator
+ * @param {string} source - body, params or query
+ * @param {string} field - The field name
  */
-function validateId(req, res, next) {
-    const { id } = req.params;
+function validateId(source = 'params', field = 'id') {
+    return (req, res, next) => {
+        const value = req[source]?.[field];
 
-    if (!id || isNaN(id)){
-        const error = new Error('Invalid ID');
-        error.status = StatusCodes.BAD_REQUEST;
-        throw error;
-    }
-    
-    next();
+        if (!value || isNaN(value)) {
+            const error = new Error(`Invalid ${field}`);
+            error.status = StatusCodes.BAD_REQUEST;
+            return next(error);
+        }
+        
+        next();
+    };
 }
 
+/**
+ * Validator for email
+ */
 function validateEmail(req, res, next) {    
     const { email } = req.body;
-    if (!email)
-        return next();
+    if (!email) return next();
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(email)) {
+    if (!validator.isEmail(email)) {
         const error = new Error('Invalid email format');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;
@@ -37,19 +39,15 @@ function validateEmail(req, res, next) {
 }
 
 /**
- * Validator for password checks if length is smaller then 8
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * Validator for password
  */
 function validatePassword(req, res, next) {
     const { password } = req.body;
     if (!password)
         return next();
 
-    if (password.length < 8) {
-        const error = new Error('Password must be atleast 8 characters');
+    if (validator.isStrongPassword(password)) {
+        const error = new Error('Password is not strong enough');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;
     }
@@ -58,39 +56,46 @@ function validatePassword(req, res, next) {
 }
 
 /**
- * Validator for checking dates
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * Validator for date formats
  */
 function validateDates(req, res, next) {
     const { start_date, end_date } = req.body;
 
-    if (!start_date && !end_date)
-        return next();
+    if (!start_date && !end_date) return next();
 
-    return next();
-}
-
-/**
- * Validator for years of experience checks if it is a positive number
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
- */
-function validateYearsExperience(req, res, next) {
-    const { years_experience } = req.body;
-    if (!years_experience)
-        return next();
-
-    if (years_experience < 0) {
-        const error = new Error('Years of experience has to be more than 0');
+    if ((start_date && !validator.isDate(start_date)) || 
+        (end_date && !validator.isDate(end_date))) {
+        const error = new Error('Invalid date format');
         error.status = StatusCodes.BAD_REQUEST;
-        throw error;
+        return next(error);
+    }
+
+    if (start_date && end_date && new Date(start_date) > new Date(end_date)) {
+        const error = new Error('Start date must be before end date');
+        error.status = StatusCodes.BAD_REQUEST;
+        return next(error);
     }
 
     next();
+}
+
+/**
+ * Validator for positive numbers
+ * @param {string} field - The field name
+ */
+function validatePositiveNumber(field) {
+    return (req, res, next) => {
+        const value = req.body[field];
+        if (value === undefined || value === null) return next();
+
+        if (isNaN(value) || value < 0) {
+            const error = new Error(`${field} must be a positive number`);
+            error.status = StatusCodes.BAD_REQUEST;
+            return next(error);
+        }
+
+        next();
+    };
 }
 
 /**
@@ -208,13 +213,33 @@ function requireRoles(...requiredRoles) {
  * @param {*} next 
  */
 function requireOwner(req, res, next) {
-    let id = req.body.user_id ? req.body.user_id : req.params.id;
-    if (req.user.id !== parseInt(id)) {
+    const targetUserId = parseInt(req.params.id);
+
+    if (req.user.id !== targetUserId) {
         const error = new Error('Forbidden: not authorized to edit this user');
         error.status = StatusCodes.FORBIDDEN;
         throw error;
     }
     next();
+}
+
+/**
+ * Validator for required fields
+ * @param  {...string} fields
+ * @returns
+ */
+function requireFields(...fields) {
+    return (req, res, next) => {
+        const missing = fields.filter(field => !req.body[field]);
+        
+        if (missing.length > 0) {
+            const error = new Error(`Missing required fields: ${missing.join(', ')}`);
+            error.status = StatusCodes.BAD_REQUEST;
+            return next(error);
+        }
+        
+        next();
+    };
 }
 
 export default {
@@ -227,5 +252,6 @@ export default {
     checkIfRoleExists,
     requireAuth,
     requireRoles,
-    requireOwner
+    requireOwner,
+    requireFields
 };

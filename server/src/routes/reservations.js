@@ -29,8 +29,6 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Reservation'
  */
 router.get('/',
-    validator.requireAuth,
-    validator.requireOwner,
     reservationController.getAllReservations
 );
 
@@ -68,8 +66,6 @@ router.get('/',
  *                   example: "No reservation found by ID"
  */
 router.get('/:id', 
-    validator.requireAuth,
-    validator.requireOwner,
     validator.validateId,
     reservationController.getReservationById
 );
@@ -107,8 +103,6 @@ router.get('/:id',
  *                   example: "Dates, user and ad are required"
  */
 router.post('/', 
-    validator.requireAuth,
-    validator.requireOwner,
     validator.validateDates,
     reservationController.createReservation
 );
@@ -162,8 +156,6 @@ router.post('/',
  *                   example: "Start date and end date have to be valid inputs"
  */
 router.patch('/:id', 
-    validator.requireAuth,
-    validator.requireOwner,
     validator.validateId,
     validator.validateDates,
     reservationController.updateReservation
@@ -199,8 +191,6 @@ router.patch('/:id',
  *                   "No reservation found by ID"
  */
 router.delete('/:id', 
-    validator.requireAuth,
-    validator.requireOwner,
     validator.validateId,
     reservationController.deleteReservation
 );

@@ -4,8 +4,7 @@ import reservationQueries from '../db/helpers/reservation-helper.js';
 const getAllReservations = async (req, res, next) => {
     try {
         const { ad_id } = req.query;
-
-        const reservations = await reservationQueries.getAll(ad_id);
+        const reservations = await reservationQueries.getAll({ ad_id });
         res.status(StatusCodes.OK).json(reservations);
     } catch (error) {
         next(error);
@@ -60,7 +59,7 @@ const updateReservation = async (req, res, next) => {
         if (start_date) input.start_date = start_date;
         if (end_date) input.end_date = end_date;
 
-        const updatedReservation = await reservationQueries.update(input, id);
+        const updatedReservation = await reservationQueries.update(id, input);
         res.status(StatusCodes.OK).json(updatedReservation);
     } catch (error) {
         next(error);

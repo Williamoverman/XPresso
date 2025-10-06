@@ -59,7 +59,7 @@ const updateGame = async (req, res, next) => {
             abbreviation: abbreviation
         }
 
-        const updatedGame = await gameQueries.update(input, id);
+        const updatedGame = await gameQueries.update(id, input);
         res.status(StatusCodes.OK).json(updatedGame);
     } catch (error) {
         next(error);

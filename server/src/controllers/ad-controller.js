@@ -91,7 +91,7 @@ const updateAd = async (req, res, next) => {
         if (total_spots_available) input.total_spots_available = total_spots_available;
         if (max_duration_minutes) input.max_duration_minutes = max_duration_minutes;
 
-        const updatedAd = await adQueries.update(input, id);
+        const updatedAd = await adQueries.update(id, input);
         res.status(StatusCodes.OK).json(updatedAd);
     } catch (error) {
         next(error);

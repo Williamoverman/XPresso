@@ -1,65 +1,63 @@
 import { Ad, Game, ProPlayer, ProPlayerGame, Review, User, Role } from "../database-helper.js";
-import generic from "../helpers/generic-helper.js"
+import createService from "../helpers/generic-helper.js";
 import { StatusCodes } from "http-status-codes";
 
-async function getAll() {
-    return await generic.findAll(ProPlayer);
-}
+const proPlayerService = createService(ProPlayer, {
+    beforeDelete: async (proPlayer) => {
+        await proPlayer.reload({ include: Ad });
+        
+        if (proPlayer.Ads.length > 0) {
+            const error = new Error('Cannot delete pro player with associated relations');
+            error.status = StatusCodes.BAD_REQUEST;
+            throw error;
+        }
+    }
+});
 
-async function getById(id) {
-    return await generic.findById(ProPlayer, id);
-}
-
+// Custom create, different from normal creates
 async function create(id) {
-    const user = await generic.findById(User, id, { include: ProPlayer }); //check for user first (if exists) include proplayer to check if he/she is already a proplayer
+    const user = await User.findByPk(id, { include: ProPlayer });
+    
+    if (!user) {
+        const error = new Error(`No User found by ID: ${id}`);
+        error.status = StatusCodes.NOT_FOUND;
+        throw error;
+    }
+    
     if (user.ProPlayer) {
         const error = new Error('This user is already registered as a pro player');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;
     }
-
-    const proPlayer = await generic.createRecord(ProPlayer, { id: id });
-
+    
+    const proPlayer = await ProPlayer.create({ id: id });
     const proPlayerRole = await Role.findOne({ where: { name: 'ProPlayer' } });
     if (proPlayerRole) await user.addRole(proPlayerRole);
-
+    
     return proPlayer;
 }
 
-async function update(id, data) {
-    return await generic.updateRecord(ProPlayer, id, data);
-}
-
-async function remove(id) {
-    const proPlayer = await generic.findById(ProPlayer, id, { include: Ad })
-
-    if (proPlayer.Ads.length > 0) {
-        const error = new Error('Cannot delete pro player with associated relations');
-        error.status = StatusCodes.BAD_REQUEST;
-        throw error;
-    }
-
-    await generic.deleteRecord(ProPlayer, id);
-    return;
-}
-
+// Get games for a pro player
 async function getGames(id) {
-    const proPlayer = await generic.findById(ProPlayer, id, { include: {
+    const proPlayer = await proPlayerService.findById(id, { 
+        include: {
             model: Game,
             through: { attributes: [] }
-        }});
-
+        }
+    });
     return proPlayer.Games;
 }
 
+// Assign a game to a pro player
 async function assignGame(id, data) {
-    const proPlayer = await generic.findById(ProPlayer, id, { include: Game });
+    const proPlayer = await proPlayerService.findById(id, { include: Game });
+    
     if (proPlayer.Games.some(game => game.id === data.game_id)) {
         const error = new Error('This game is already assigned to this pro player');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;
     }
-
+    
     return await proPlayer.addGame(data.game_id, {
         through: {
             current_rank: data.current_rank,
@@ -68,40 +66,45 @@ async function assignGame(id, data) {
     });
 }
 
+// Update an assigned game
 async function updateAssignedGame(id, game_id, data) {
-    const proPlayer = await generic.findById(ProPlayer, id, { include: Game });
+    const proPlayer = await proPlayerService.findById(id, { include: Game });
+    
     if (!proPlayer.Games.some(game => game.id == game_id)) {
         const error = new Error('This game is not assigned to this pro player');
         error.status = StatusCodes.NOT_FOUND;
         throw error;
     }
     
-    await ProPlayerGame.update(data,
-        {
-            where: {
-                pro_player_id: id,
-                game_id: game_id
-            }
+    await ProPlayerGame.update(data, {
+        where: {
+            pro_player_id: id,
+            game_id: game_id
         }
-    );
-
-    return await ProPlayerGame.findOne({ where: { pro_player_id: id, game_id: game_id } });
+    });
+    
+    return await ProPlayerGame.findOne({ 
+        where: { 
+            pro_player_id: id, 
+            game_id: game_id 
+        } 
+    });
 }
 
+// Get reviews for a pro player
 async function getReviews(id) {
-    const proPlayer = await generic.findById(ProPlayer, id, { include: Review });
-
+    const proPlayer = await proPlayerService.findById(id, { include: Review });
     return proPlayer.Reviews;
 }
 
 export default {
-    getAll,
-    getById,
+    getAll: proPlayerService.findAll.bind(proPlayerService),
+    getById: proPlayerService.findById.bind(proPlayerService),
     create,
-    update,
-    remove,
+    update: proPlayerService.update.bind(proPlayerService),
+    remove: proPlayerService.delete.bind(proPlayerService),
     getGames,
     assignGame,
     updateAssignedGame,
     getReviews
-}
+};

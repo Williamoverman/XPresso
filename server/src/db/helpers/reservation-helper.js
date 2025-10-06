@@ -1,33 +1,16 @@
 import { Reservation } from "../database-helper.js";
-import generic from "../helpers/generic-helper.js"
-import { StatusCodes } from "http-status-codes";
+import createService from "../helpers/generic-helper.js"
 
-async function getAll(ad_id) {
-    const where = ad_id ? { where: { ad_id: ad_id } } : {};
-    return await generic.findAll(Reservation, where );
-}
-
-async function getById(id) {
-    return await generic.findById(Reservation, id);
-}
-
-async function create(data) {
-    return await generic.createRecord(Reservation, data);
-}
-
-async function update(data, id) {
-    return await generic.updateRecord(Reservation, id, data);
-}
-
-async function remove(id) {
-    await generic.deleteRecord(Reservation, id);
-    return;
-}
+const reservationService = createService(Reservation, {
+    buildWhereClause: (options) => {
+        return options.ad_id ? { ad_id: options.ad_id } : {}; 
+    }
+});
 
 export default {
-    getAll,
-    getById,
-    create,
-    update,
-    remove
-}
+    getAll: reservationService.findAll.bind(reservationService),
+    getById: reservationService.findById.bind(reservationService),
+    create: reservationService.create.bind(reservationService),
+    update: reservationService.update.bind(reservationService),
+    remove: reservationService.delete.bind(reservationService)
+};
