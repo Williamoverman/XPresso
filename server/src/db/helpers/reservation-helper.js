@@ -3,7 +3,12 @@ import createService from "../helpers/generic-helper.js"
 
 const reservationService = createService(Reservation, {
     buildWhereClause: (options) => {
-        return options.ad_id ? { ad_id: options.ad_id } : {}; 
+        const where = {};
+        
+        if (options.user_id) where.user_id = options.user_id;
+        if (options.ad_id)  where.ad_id = options.ad_id;
+        
+        return where;
     }
 });
 

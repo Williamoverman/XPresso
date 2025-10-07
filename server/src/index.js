@@ -32,7 +32,7 @@ app.use('/roles', validator.requireAuth, validator.requireRoles('Admin'), rolesR
 app.use('/pro-players', proPlayersRouter);
 app.use('/ads', adsRouter);
 app.use('/reviews', reviewsRouter);
-app.use('/reservations', validator.requireAuth, validator.requireOwner, reservationsRouter);
+app.use('/reservations', validator.requireAuth, validator.requireRoles(), reservationsRouter);
 app.use('/auth', authRouter);
 
 // Global error handler. In your code, throw an object with a status and message, and it will be caught here. We ignore one eslint call here, because next is needed.

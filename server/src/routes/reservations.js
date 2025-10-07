@@ -1,6 +1,7 @@
 import express from 'express';
 import reservationController from '../controllers/reservation-controller.js';
 import validator from '../middleware/validators.js';
+import { Ad, Reservation, User } from '../db/database-helper.js';
 
 const router = express.Router();
 
@@ -10,25 +11,42 @@ const router = express.Router();
  *   get:
  *     tags:
  *       - Reservations
- *     summary: Get all reservations
- *     description: Returns all reservations.
+ *     summary: Get all reservations for a user
+ *     description: Returns all reservations for a specific user.
  *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the user
  *       - in: query
  *         name: ad_id
  *         schema:
- *           type: string
+ *           type: integer
  *         description: Filter reservations by ad ID
  *     responses:
  *       200:
- *         description: Reservations returned succesfully
+ *         description: Reservations returned successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Reservation'
+ *       403:
+ *         description: Forbidden - not authorized
+ *       404:
+ *         description: User not found
  */
 router.get('/',
+    validator.validateId([
+        { source: 'query', field: 'id' }
+    ]),
+    validator.checkIfExists([
+        { model: User, source: 'query', field: 'id' }
+    ]),
+    validator.requireOwner('query', 'id'),
     reservationController.getAllReservations
 );
 
@@ -66,7 +84,8 @@ router.get('/',
  *                   example: "No reservation found by ID"
  */
 router.get('/:id', 
-    validator.validateId,
+    validator.validateId(),
+    validator.requireResourceOwner(Reservation, 'user_id'),
     reservationController.getReservationById
 );
 
@@ -103,6 +122,12 @@ router.get('/:id',
  *                   example: "Dates, user and ad are required"
  */
 router.post('/', 
+    validator.checkIfExists([
+        { model: User, source: 'body', field: 'user_id' },
+        { model: Ad, source: 'body', field: 'ad_id' }
+    ]),
+    validator.requireOwner('body', 'user_id'),
+    validator.requireFields('start_date', 'end_date'),
     validator.validateDates,
     reservationController.createReservation
 );
@@ -156,7 +181,12 @@ router.post('/',
  *                   example: "Start date and end date have to be valid inputs"
  */
 router.patch('/:id', 
-    validator.validateId,
+    validator.checkIfExists([
+        { model: User, source: 'body', field: 'user_id' },
+        { model: Ad, source: 'body', field: 'ad_id' }
+    ]),
+    validator.requireOwner('body', 'user_id'),
+    validator.requireFields('start_date', 'end_date'),
     validator.validateDates,
     reservationController.updateReservation
 );
@@ -191,7 +221,8 @@ router.patch('/:id',
  *                   "No reservation found by ID"
  */
 router.delete('/:id', 
-    validator.validateId,
+    validator.validateId(),
+    validator.requireResourceOwner(Reservation, 'user_id'),
     reservationController.deleteReservation
 );
 

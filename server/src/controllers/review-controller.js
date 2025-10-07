@@ -3,7 +3,9 @@ import reviewQueries from '../db/helpers/review-helper.js';
 
 const getAllReviews = async (req, res, next) => {
     try {
-        const reviews = await reviewQueries.getAll();
+        const { pro_player_id, user_id } = req.query;
+
+        const reviews = await reviewQueries.getAll({ pro_player_id, user_id });
         res.status(StatusCodes.OK).json(reviews);
     } catch (error) {
         next(error);

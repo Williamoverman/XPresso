@@ -1,5 +1,8 @@
 import express from 'express';
 import reviewController from '../controllers/review-controller.js';
+import validator from '../middleware/validators.js';
+import { ProPlayer, Reservation, Review, User } from '../db/database-helper.js';
+
 const router = express.Router();
 
 /**
@@ -10,6 +13,17 @@ const router = express.Router();
  *       - Reviews
  *     summary: Get all reviews
  *     description: Returns all reviews.
+ *     parameters:
+ *       - in: query
+ *         name: pro_player_id
+ *         schema:
+ *           type: integer
+ *         description: Filter reviews by pro player ID
+ *       - in: query
+ *         name: user_id
+ *         schema:
+ *           type: integer
+ *         description: Filter reviews by user ID
  *     responses:
  *       200:
  *         description: Reviews returned succesfully
@@ -20,7 +34,9 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Review'
  */
-router.get('/', reviewController.getAllReviews);
+router.get('/', 
+    reviewController.getAllReviews
+);
 
 /**
  * @openapi
@@ -55,7 +71,10 @@ router.get('/', reviewController.getAllReviews);
  *                   type: string
  *                   example: "No review found by ID"
  */
-router.get('/:id', reviewController.getReviewById);
+router.get('/:id', 
+    validator.validateId(),
+    reviewController.getReviewById
+);
 
 /**
  * @openapi
@@ -89,7 +108,25 @@ router.get('/:id', reviewController.getReviewById);
  *                   type: string
  *                   example: "rating is required"
  */
-router.post('/', reviewController.createReview);
+router.post('/', 
+    validator.validateId([
+        { source: 'body', field: 'reservation_id' },
+        { source: 'body', field: 'user_id' },
+        { source: 'body', field: 'pro_player_id' }
+    ]),
+    validator.checkIfExists([
+        { model: Reservation, source: 'body', field: 'reservation_id' },
+        { model: User, source: 'body', field: 'user_id' },
+        { model: ProPlayer, source: 'body', field: 'pro_player_id' }
+    ]),
+    validator.requireAuth,
+    validator.requireRoles(),
+    validator.requireOwner('body', 'user_id'),
+    validator.requireResourceOwner(Reservation, 'user_id', 'body', 'reservation_id'),
+    validator.requireFields('rating'),
+    validator.validateRating,
+    reviewController.createReview
+);
 
 /**
  * @openapi
@@ -139,7 +176,14 @@ router.post('/', reviewController.createReview);
  *                   type: string
  *                   example: "Rating is required"
  */
-router.patch('/:id', reviewController.updateReview);
+router.patch('/:id', 
+    validator.requireAuth,
+    validator.requireRoles(),
+    validator.requireResourceOwner(Review, 'user_id'),
+    validator.requireFields('rating'),
+    validator.validateRating,
+    reviewController.updateReview
+);
 
 /**
  * @openapi
@@ -170,6 +214,12 @@ router.patch('/:id', reviewController.updateReview);
  *                 error: 
  *                   "No review found by ID"
  */
-router.delete('/:id', reviewController.deleteReview);
+router.delete('/:id', 
+    validator.validateId(),
+    validator.requireAuth,
+    validator.requireRoles(),
+    validator.requireResourceOwner(Review, 'user_id'),
+    reviewController.deleteReview
+);
 
 export default router;

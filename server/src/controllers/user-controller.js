@@ -119,28 +119,6 @@ const deactivateUser = async (req, res, next) => {
     }
 }
 
-const getUserReservations = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-
-        const reservations = await userQueries.getReservations(id);
-        res.status(StatusCodes.OK).json(reservations);
-    } catch (error) {
-        next(error);
-    }
-}
-
-const getUserReviews = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-
-        const reviews = await userQueries.getReviews(id);
-        res.status(StatusCodes.OK).json(reviews);
-    } catch (error) {
-        next(error);
-    }
-}
-
 export default {
     getAllUsers,
     getUserById,
@@ -150,7 +128,5 @@ export default {
     getUserRolesById,
     addRoleToUser,
     activateUser,
-    deactivateUser,
-    getUserReservations,
-    getUserReviews
+    deactivateUser
 }

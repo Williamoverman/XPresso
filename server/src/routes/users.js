@@ -305,7 +305,6 @@ router.get('/:id/roles',
  *                   example: "Role already assigned"
  */
 router.post('/:id/roles', 
-    validator.validateId,
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.addRoleToUser
@@ -429,83 +428,6 @@ router.patch('/:id/deactivate',
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.deactivateUser
-);
-
-/**
- * @openapi
- * /users/{id}/reservations:
- *   get:
- *     tags:
- *       - Users
- *     summary: Get users reservations
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of reservations for user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Reservation'
- *       404:
- *         description: If no user found by ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No user found by ID"
- */
-router.get('/:id/reservations', 
-    validator.validateId,
-    validator.requireAuth,
-    userController.getUserReservations
-);
-
-/**
- * @openapi
- * /users/{id}/reviews:
- *   get:
- *     tags:
- *       - Users
- *     summary: Get users reviews
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of reviews by user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Review'
- *       404:
- *         description: If no user found by ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No user found by ID"
- */
-router.get('/:id/reviews', 
-    validator.validateId,
-    userController.getUserReviews
 );
 
 export default router;

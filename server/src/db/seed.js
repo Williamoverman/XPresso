@@ -71,14 +71,14 @@ async function seed() {
 
   const reservations = await Reservation.bulkCreate([
     {
-      user_id: users[2].id,
+      user_id: users[1].id,
       ad_id: ads[0].id,
       customer_notes: "notes",
       start_date: new Date("2025-01-10T17:00:00Z"),
       end_date: new Date("2025-01-10T18:00:00Z"),
     },
     {
-      user_id: users[2].id,
+      user_id: users[1].id,
       ad_id: ads[0].id,
       customer_notes: "notes",
       start_date: new Date("2025-01-10T14:00:00Z"),

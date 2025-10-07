@@ -3,8 +3,8 @@ import reservationQueries from '../db/helpers/reservation-helper.js';
 
 const getAllReservations = async (req, res, next) => {
     try {
-        const { ad_id } = req.query;
-        const reservations = await reservationQueries.getAll({ ad_id });
+        const { id, ad_id } = req.query;
+        const reservations = await reservationQueries.getAll({ id, ad_id });
         res.status(StatusCodes.OK).json(reservations);
     } catch (error) {
         next(error);
@@ -25,12 +25,6 @@ const getReservationById = async (req, res, next) => {
 const createReservation = async (req, res, next) => {
     try {
         const { user_id, ad_id, customer_notes, start_date, end_date } = req.body;
-
-        if (!start_date || !end_date || !ad_id || !user_id) {
-            const error = new Error('Dates, user and ad are required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
 
         const input = {
             user_id: user_id,

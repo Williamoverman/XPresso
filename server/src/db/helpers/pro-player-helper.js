@@ -21,12 +21,6 @@ const proPlayerService = createService(ProPlayer, {
 async function create(id) {
     const user = await User.findByPk(id, { include: ProPlayer });
     
-    if (!user) {
-        const error = new Error(`No User found by ID: ${id}`);
-        error.status = StatusCodes.NOT_FOUND;
-        throw error;
-    }
-    
     if (user.ProPlayer) {
         const error = new Error('This user is already registered as a pro player');
         error.status = StatusCodes.BAD_REQUEST;

@@ -1,7 +1,7 @@
 import express from 'express';
 import proPlayerController from '../controllers/pro-player-controller.js';
 import validator from '../middleware/validators.js';
-import { Game } from '../db/database-helper.js';
+import { Game, User } from '../db/database-helper.js';
 
 const router = express.Router();
 
@@ -100,6 +100,9 @@ router.get('/:id',
  */
 router.post('/:id', 
     validator.validateId(),
+    validator.checkIfExists([
+        {model: User, source: 'params', field: 'id'}
+    ]),
     validator.requireAuth,
     validator.requireOwner(),
     validator.requireRoles('User'),

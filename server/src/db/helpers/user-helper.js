@@ -52,16 +52,6 @@ async function toggleActive(id, active) {
     return user;
 }
 
-async function getReservations(id) {
-    const userReservations = await userService.findById(id, { include: Reservation });
-    return userReservations.Reservations;
-}
-
-async function getReviews(id) {
-    const userReviews = await userService.findById(id, { include: Review });
-    return userReviews.Reviews;
-}
-
 export default {
     getAll: userService.findAll.bind(userService),
     getById: userService.findById.bind(userService),
@@ -70,7 +60,5 @@ export default {
     remove: userService.delete.bind(userService),
     getRolesById,
     addRole,
-    toggleActive,
-    getReservations,
-    getReviews
+    toggleActive
 };

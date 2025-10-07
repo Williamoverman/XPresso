@@ -63,14 +63,14 @@ function validateDates(req, res, next) {
 
     if (!start_date && !end_date) return next();
 
-    if ((start_date && !validator.isDate(start_date)) || 
-        (end_date && !validator.isDate(end_date))) {
+    if ((start_date && !validator.isISO8601(start_date)) || 
+        (end_date && !validator.isISO8601(end_date))) {
         const error = new Error('Invalid date format');
         error.status = StatusCodes.BAD_REQUEST;
         return next(error);
     }
 
-    if (start_date && end_date && new Date(start_date) > new Date(end_date)) {
+    if (start_date && end_date && new Date(start_date) >= new Date(end_date)) {
         const error = new Error('Start date must be before end date');
         error.status = StatusCodes.BAD_REQUEST;
         return next(error);
@@ -94,6 +94,19 @@ function validatePositiveNumber(...fields) {
         
         next();
     };
+}
+
+/**
+ * Validator for review rating
+ */
+function validateRating(req, res, next) {
+    if (req.body.rating > 5 || req.body.rating < 1) {
+        const error = new Error('Rating has to be a number between 1 and 5');
+        error.status = StatusCodes.BAD_REQUEST;
+        return next(error);
+    }
+        
+    next();
 }
 
 /**
@@ -212,20 +225,23 @@ function requireOwner(source = 'params', field = 'id') {
  * Generic resource ownership validator
  * @param {Object} model - Sequelize model
  * @param {string} ownerField - Field name that contains the user ID
+ * @param {string} source - body, params or query
+ * @param {string} field - Field name for target source ID
  * @returns middleware function
  */
-function requireResourceOwner(model, ownerField = 'user_id') {
+function requireResourceOwner(model, ownerField = 'user_id', source = 'params', field = 'id') {
     return async (req, res, next) => {
         try {
             const service = createService(model);
-            const record = await service.findById(parseInt(req.params.id));
+            const record = await service.findById(parseInt(req[source]?.[field]));
 
             if (record[ownerField] !== req.user.id) {
+                console.log('failed');
                 const error = new Error(`Forbidden: not authorized to modify this ${model.name}`);
                 error.status = StatusCodes.FORBIDDEN;
                 return next(error);
             }
-
+            console.log('passed');
             next();
         } catch (err) {
             next(err);
@@ -257,6 +273,7 @@ export default {
     validateEmail,
     validatePassword,
     validatePositiveNumber,
+    validateRating,
     validateDates,
     checkIfEmailExists,
     checkIfExists,
