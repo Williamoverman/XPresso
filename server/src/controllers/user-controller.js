@@ -24,13 +24,6 @@ const getUserById = async (req, res, next) => {
 const createUser = async (req, res, next) => {
     try {
         const { email, password, username } = req.body;
-
-        if (!email || !password) {
-            const error = new Error('Email and/or password are required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const input = {
@@ -49,7 +42,6 @@ const createUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-
         const { email, password, username } = req.body;
 
         let input = {};

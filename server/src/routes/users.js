@@ -1,6 +1,7 @@
 import express from 'express';
 import userController from '../controllers/user-controller.js';
 import validator from '../middleware/validators.js';
+import { User } from '../db/database-helper.js';
 
 const router = express.Router();
 
@@ -60,7 +61,7 @@ router.get('/',
  *                   example: "No user found by ID"
  */
 router.get('/:id', 
-    validator.validateId, 
+    validator.validateId(), 
     userController.getUserById
 );
 
@@ -97,6 +98,7 @@ router.get('/:id',
  *                   example: "Invalid email format"
  */
 router.post('/', 
+    validator.requireFields('email', 'password', 'username'),
     validator.validateEmail, 
     validator.checkIfEmailExists, 
     validator.validatePassword, 
@@ -153,9 +155,12 @@ router.post('/',
  *                   example: "Invalid email format"
  */
 router.patch('/:id', 
-    validator.validateId, 
+    validator.validateId(), 
+    validator.checkIfExists([
+        { model: User, source: 'params', field: 'id' }
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     validator.validateEmail, 
     validator.checkIfEmailExists, 
     validator.validatePassword, 
@@ -202,9 +207,12 @@ router.patch('/:id',
  *                   example: "Cannot delete user with associated relations"
  */
 router.delete('/:id', 
-    validator.validateId,
+    validator.validateId(),
+    validator.checkIfExists([
+        { model: User, source: 'params', field: 'id' }
+    ]),
     validator.requireAuth,
-    validator.requireOwner,
+    validator.requireOwner(),
     userController.deleteUser
 );
 
@@ -244,7 +252,7 @@ router.delete('/:id',
  *                   example: "No user found by ID"
  */
 router.get('/:id/roles',
-    validator.validateId,
+    validator.validateId(),
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.getUserRolesById
@@ -305,6 +313,7 @@ router.get('/:id/roles',
  *                   example: "Role already assigned"
  */
 router.post('/:id/roles', 
+    validator.validateId(),
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.addRoleToUser
@@ -364,7 +373,7 @@ router.post('/:id/roles',
  *                   example: "No user found by ID"
  */
 router.patch('/:id/activate',
-    validator.validateId,
+    validator.validateId(),
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.activateUser
@@ -424,7 +433,7 @@ router.patch('/:id/activate',
  *                   example: "No user found by ID"
  */
 router.patch('/:id/deactivate', 
-    validator.validateId,
+    validator.validateId(),
     validator.requireAuth,
     validator.requireRoles('Admin'),
     userController.deactivateUser

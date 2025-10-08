@@ -46,7 +46,7 @@ function validatePassword(req, res, next) {
     if (!password)
         return next();
 
-    if (validator.isStrongPassword(password)) {
+    if (!validator.isStrongPassword(password)) {
         const error = new Error('Password is not strong enough');
         error.status = StatusCodes.BAD_REQUEST;
         throw error;

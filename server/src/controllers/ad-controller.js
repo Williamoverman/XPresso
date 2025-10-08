@@ -42,12 +42,6 @@ const createAd = async (req, res, next) => {
             max_duration_minutes
         } = req.body;
 
-        if (!name || !max_reservations_per_user || !max_duration_minutes || !total_spots_available) {
-            const error = new Error('Max reservations per user, max duration in minutes, total spots available and name are required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-
         const input = {
             game_id: game_id,
             pro_player_id: pro_player_id,
