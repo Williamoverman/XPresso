@@ -2,7 +2,7 @@ import { Role, User } from "../database-helper.js";
 import createService from "../helpers/generic-helper.js"
 import { StatusCodes } from "http-status-codes";
 
-const reservationService = createService(Role, {
+const roleService = createService(Role, {
     defaultExcludes: { exclude: ['password'] },
     beforeDelete: async (role) => {
         await role.reload({ include: [User] });
@@ -16,7 +16,7 @@ const reservationService = createService(Role, {
 });
 
 async function getUsers(id) {
-    const role = await reservationService.findById(id, { include: {
+    const role = await roleService.findById(id, { include: {
             model: User,
             attributes: { exclude: ['password'] },
             through: { attributes: [] }
@@ -26,10 +26,10 @@ async function getUsers(id) {
 }
 
 export default {
-    getAll: reservationService.findAll.bind(reservationService),
-    getById: reservationService.findById.bind(reservationService),
-    create: reservationService.create.bind(reservationService),
-    update: reservationService.update.bind(reservationService),
-    remove: reservationService.delete.bind(reservationService),
+    getAll: roleService.findAll.bind(roleService),
+    getById: roleService.findById.bind(roleService),
+    create: roleService.create.bind(roleService),
+    update: roleService.update.bind(roleService),
+    remove: roleService.delete.bind(roleService),
     getUsers
 };

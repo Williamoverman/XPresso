@@ -25,12 +25,6 @@ const createRole = async (req, res, next) => {
     try {
         const { name } = req.body;
         
-        if (!name) {
-            const error = new Error('Name is required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
-        
         const input = {
             name: name
         }
@@ -46,12 +40,6 @@ const updateRole = async (req, res, next) => {
     try {
         const { name } = req.body;
         const { id } = req.params;
-
-        if (!name) {
-            const error = new Error('Name is required');
-            error.status = StatusCodes.BAD_REQUEST;
-            throw error;
-        }
         
         const input = {
             name: name

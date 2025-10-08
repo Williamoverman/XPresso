@@ -60,7 +60,7 @@ router.get('/',
  *                   example: "No role found by ID"
  */
 router.get('/:id',
-    validator.validateId,
+    validator.validateId(),
     roleController.getRoleById
 );
 
@@ -97,6 +97,7 @@ router.get('/:id',
  *                   example: "Name is reqquired"
  */
 router.post('/',
+    validator.requireFields('name'),
     roleController.createRole
 );
 
@@ -149,7 +150,8 @@ router.post('/',
  *                   example: "Required name"
  */
 router.put('/:id', 
-    validator.validateId,
+    validator.validateId(),
+    validator.requireFields('name'),
     roleController.updateRole
 );
 
@@ -193,7 +195,7 @@ router.put('/:id',
  *                   example: "Cannot delete role with associated users"
  */
 router.delete('/:id', 
-    validator.validateId,
+    validator.validateId(),
     roleController.deleteRole
 );
 
@@ -232,7 +234,7 @@ router.delete('/:id',
  *                   example: "No role found by ID"
  */
 router.get('/:id/users', 
-    validator.validateId,
+    validator.validateId(),
     roleController.getUsersWithRole
 );
 

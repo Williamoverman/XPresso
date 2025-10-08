@@ -1,6 +1,6 @@
 import express from 'express';
 import authController from '../controllers/auth-controller.js';
-import validators from '../middleware/validators.js';
+import validator from '../middleware/validators.js';
 
 const router = express.Router();
 
@@ -46,7 +46,8 @@ const router = express.Router();
  *                   example: "Email and password are required"
  */
 router.post('/login',
-    validators.validateEmail,
+    validator.requireFields('email', 'password'),
+    validator.validateEmail,
     authController.login
 );
 
@@ -80,7 +81,7 @@ router.post('/login',
  *                   example: "Invalid or missing token"
  */
 router.post('/logout', 
-    validators.requireAuth,
+    validator.requireAuth,
     authController.logout
 );
 

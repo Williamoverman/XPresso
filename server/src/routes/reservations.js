@@ -222,6 +222,7 @@ router.patch('/:id',
  */
 router.delete('/:id', 
     validator.validateId(),
+    validator.requireRoles('User', 'ProPlayer'),
     validator.requireResourceOwner(Reservation, 'user_id'),
     reservationController.deleteReservation
 );

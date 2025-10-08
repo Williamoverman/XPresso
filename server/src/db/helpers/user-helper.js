@@ -25,7 +25,10 @@ async function create(data) {
 }
 
 async function getRolesById(id) {
-    const user = await userService.findById(id, { include: Role });
+    const user = await userService.findById(id, { include: {
+            model: Role,
+            through: { attributes: [] }
+        }});
     return user.Roles;
 }
 

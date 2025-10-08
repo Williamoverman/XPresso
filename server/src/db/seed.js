@@ -100,3 +100,7 @@ async function seed() {
 }
 
 await seed();
+
+export default {
+  seed
+}
