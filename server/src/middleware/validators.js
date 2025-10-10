@@ -212,7 +212,7 @@ function requireRoles(...requiredRoles) {
 function requireOwner(source = 'params', field = 'id') {
     return (req, res, next) => {
         if (req.user.id !== parseInt(req[source]?.[field])) {
-            const error = new Error('Forbidden: not authorized to edit this user');
+            const error = new Error('Forbidden: not authorized to interact with this user');
             error.status = StatusCodes.FORBIDDEN;
             throw error;
         }
@@ -236,12 +236,11 @@ function requireResourceOwner(model, ownerField = 'user_id', source = 'params', 
             const record = await service.findById(parseInt(req[source]?.[field]));
 
             if (record[ownerField] !== req.user.id) {
-                console.log('failed');
                 const error = new Error(`Forbidden: not authorized to modify this ${model.name}`);
                 error.status = StatusCodes.FORBIDDEN;
                 return next(error);
             }
-            console.log('passed');
+            
             next();
         } catch (err) {
             next(err);
