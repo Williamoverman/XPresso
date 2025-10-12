@@ -119,7 +119,7 @@ router.get('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Dates, user and ad are required"
+ *                   example: "Missing required fields:"
  */
 router.post('/', 
     validator.checkIfExists([
@@ -178,12 +178,13 @@ router.post('/',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Start date and end date have to be valid inputs"
+ *                   example: "Missing required fields:"
  */
 router.patch('/:id', 
     validator.checkIfExists([
         { model: User, source: 'body', field: 'user_id' },
-        { model: Ad, source: 'body', field: 'ad_id' }
+        { model: Ad, source: 'body', field: 'ad_id' },
+        { model: Reservation, source: 'params', field: 'id' }
     ]),
     validator.requireOwner('body', 'user_id'),
     validator.requireFields('start_date', 'end_date'),

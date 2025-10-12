@@ -113,7 +113,7 @@ router.get('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Max reservations per user, max duration in minutes, total spots available and name are required"
+ *                   example: "Missing required fields:"
  *       404:
  *         description: Game or pro player not found
  *         content:
@@ -189,7 +189,7 @@ router.post('/',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Max reservations per user, max duration in minutes, total spots available and name are required"
+ *                   example: "Missing required fields:"
  */
 router.patch('/:id', 
     validator.validateId([

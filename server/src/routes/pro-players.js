@@ -1,7 +1,7 @@
 import express from 'express';
 import proPlayerController from '../controllers/pro-player-controller.js';
 import validator from '../middleware/validators.js';
-import { Game, User } from '../db/database-helper.js';
+import { ProPlayer, Game, User } from '../db/database-helper.js';
 
 const router = express.Router();
 
@@ -155,7 +155,7 @@ router.post('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Hourly rate is required"
+ *                   example: "Missing required fields:"
  */
 router.put('/:id', 
     validator.validateId(),
@@ -208,6 +208,9 @@ router.put('/:id',
  */
 router.delete('/:id', 
     validator.validateId(),
+    validator.checkIfExists([
+        { model: ProPlayer, source: 'params', field: 'id' }
+    ]),
     validator.requireAuth,
     validator.requireOwner(),
     validator.requireRoles('ProPlayer'),
@@ -237,16 +240,6 @@ router.delete('/:id',
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Game'
- *       404:
- *         description: If no games found by that pro-player user_id
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "No games found by pro-player user_id"
  */
 router.get('/:id/games', 
     validator.validateId(),
@@ -320,7 +313,8 @@ router.post('/:id/games',
         { source: 'params', field: 'id' }
     ]),
     validator.checkIfExists([
-        {model: Game, source: 'body', field: 'game_id'}
+        {model: Game, source: 'body', field: 'game_id'},
+        {model: ProPlayer, source: 'params', field: 'id'}
     ]),
     validator.requireAuth,
     validator.requireOwner(),
@@ -398,7 +392,8 @@ router.patch('/:id/games/:game_id',
         { source: 'params', field: 'id' }
     ]),
     validator.checkIfExists([
-        {model: Game, source: 'params', field: 'game_id'}
+        {model: Game, source: 'params', field: 'game_id'},
+        {model: ProPlayer, source: 'params', field: 'id'}
     ]),
     validator.requireAuth,
     validator.requireOwner(),

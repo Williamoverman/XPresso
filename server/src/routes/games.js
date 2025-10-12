@@ -94,7 +94,7 @@ router.get('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name and or abbrevations are required"
+ *                   example: "Missing required fields:"
  */
 router.post('/', 
     validator.requireAuth,
@@ -149,7 +149,7 @@ router.post('/',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name and or abbrevations are required"
+ *                   example: "Missing required fields:"
  */
 router.put('/:id', 
     validator.validateId(),

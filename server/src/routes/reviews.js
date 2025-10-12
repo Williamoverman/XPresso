@@ -106,7 +106,7 @@ router.get('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "rating is required"
+ *                   example: "Missing required fields:"
  */
 router.post('/', 
     validator.validateId([
@@ -174,7 +174,7 @@ router.post('/',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Rating is required"
+ *                   example: "Missing required fields:"
  */
 router.patch('/:id', 
     validator.requireAuth,

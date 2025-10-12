@@ -183,14 +183,18 @@ function requireRoles(...requiredRoles) {
         throw error;
       }
 
+      const userRoles = req.user.roles || [];
+      
       if (requiredRoles.length === 0) {
-        next();
-        return;
+        if (userRoles.length === 0) {
+          const error = new Error('Forbidden: At least one role required');
+          error.status = StatusCodes.FORBIDDEN;
+          throw error;
+        }
+        return next();
       }
 
-      const userRoles = req.user.roles || [];
       const hasAccess = requiredRoles.some(role => userRoles.includes(role));
-
       if (!hasAccess) {
         const error = new Error(`Forbidden: requires one of [${requiredRoles.join(', ')}]`);
         error.status = StatusCodes.FORBIDDEN;

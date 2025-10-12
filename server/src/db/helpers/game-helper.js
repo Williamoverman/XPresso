@@ -7,7 +7,7 @@ const gameService = createService(Game, {
         await game.reload({ include: [ProPlayer, Ad] });
         
         if (game.ProPlayers.length > 0 || game.Ads.length > 0) {
-            const error = new Error('Cannot delete game with associated relations');
+            const error = new Error('Cannot delete game with associated ads/pro-players');
             error.status = StatusCodes.BAD_REQUEST;
             throw error;
         }

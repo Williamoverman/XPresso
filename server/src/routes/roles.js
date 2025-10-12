@@ -94,7 +94,7 @@ router.get('/:id',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Name is reqquired"
+ *                   example: "Missing required fields:"
  */
 router.post('/',
     validator.requireFields('name'),
@@ -147,7 +147,7 @@ router.post('/',
  *               properties:
  *                 error:
  *                   type: string
- *                   example: "Required name"
+ *                   example: "Missing required fields:"
  */
 router.put('/:id', 
     validator.validateId(),
