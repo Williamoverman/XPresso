@@ -70,13 +70,13 @@ describe('POST /ads', () => {
 
 describe('GET /ads/:id', () => {
   it('returns 200 (existing ad)', async () => {
-    const res = await request(app).get(`/ads/${1}`);
+    const res = await request(app).get(`/ads/1`);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('id');
   });
 
   it('returns 404 (non existing ad)', async () => {
-    const res = await request(app).get(`/ads/${231}`);
+    const res = await request(app).get(`/ads/231`);
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('No Ad found by ID: 231');
   });
@@ -85,14 +85,14 @@ describe('GET /ads/:id', () => {
 describe('PATCH /ads/:id', () => {
   it('returns 200 (correct ad)', async () => {
     dummyAd.name = "somethingNew";
-    const res = await request(app).patch(`/ads/${1}`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
+    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
     expect(res.status).toBe(200);
     expect(res.body.name).toBe("somethingNew");
   });
 
   it('returns 403 (regular user cannot update ad for another pro player)', async () => {
     dummyAd.pro_player_id = 3;
-    const res = await request(app).patch(`/ads/${1}`).set('Authorization', `Bearer ${userToken}`).send(dummyAd);
+    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${userToken}`).send(dummyAd);
     expect(res.status).toBe(403);
     expect(res.body.message).toBe('Forbidden: not authorized to modify this Ad');
   });
@@ -100,20 +100,20 @@ describe('PATCH /ads/:id', () => {
   it('returns 400 (missing required fields)', async () => {
     dummyAd.name = "";
     dummyAd.max_reservations_per_user = 0;
-    const res = await request(app).patch(`/ads/${1}`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
+    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
     expect(res.status).toBe(400);
     expect(res.body.message).toBe('Missing required fields: name, max_reservations_per_user');
   });
 
   it('returns 404 (non existing ad)', async () => {
-    const res = await request(app).patch(`/ads/${1233}`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
+    const res = await request(app).patch(`/ads/1233`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('No Ad found by ID: 1233');
   });
   
   it('returns 404 (non existing game)', async () => {
     dummyAd.game_id = 23;
-    const res = await request(app).patch(`/ads/${1}`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
+    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('No Game found by ID: 23');
   });
@@ -121,24 +121,24 @@ describe('PATCH /ads/:id', () => {
 
 describe('DELETE /ads/:id', () => {
   it('returns 204 (correct ad)', async () => {
-    const res = await request(app).delete(`/ads/${2}`).set('Authorization', `Bearer ${proPlayerToken}`);
+    const res = await request(app).delete(`/ads/2`).set('Authorization', `Bearer ${proPlayerToken}`);
     expect(res.status).toBe(204);
   });
 
   it('returns 400 (associated reservations)', async () => {
-    const res = await request(app).delete(`/ads/${1}`).set('Authorization', `Bearer ${proPlayerToken}`);
+    const res = await request(app).delete(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`);
     expect(res.status).toBe(400);
     expect(res.body.message).toBe('Cannot delete ad with associated reservations');
   });
   
   it('returns 403 (cannot delete someone elses ad)', async () => {
-    const res = await request(app).delete(`/ads/${1}`).set('Authorization', `Bearer ${userToken}`);
+    const res = await request(app).delete(`/ads/1`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
     expect(res.body.message).toBe('Forbidden: not authorized to modify this Ad');
   });
 
   it('returns 404 (non existing ad)', async () => {
-    const res = await request(app).delete(`/ads/${123}`).set('Authorization', `Bearer ${proPlayerToken}`);
+    const res = await request(app).delete(`/ads/123`).set('Authorization', `Bearer ${proPlayerToken}`);
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('No Ad found by ID: 123');
   });

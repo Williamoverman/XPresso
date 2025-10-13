@@ -3,8 +3,8 @@
   import Home from "./pages/Home.svelte";
   import Login from "./pages/Login.svelte";
 
-  import Header from "./lib/Header.svelte";
-  import Footer from "./lib/Footer.svelte";
+  import Header from "./lib/components/Header.svelte";
+  import Footer from "./lib/components/Footer.svelte";
 
   let currentRoute = $state("/");
   let Page = $state();
