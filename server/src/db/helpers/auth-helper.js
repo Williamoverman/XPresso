@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { User, Role } from "../database-helper.js";
+import createService from "./generic-helper.js";
 
 async function getByEmail(email) {
     const user = await User.findOne({ 
@@ -16,6 +17,17 @@ async function getByEmail(email) {
     return user;
 }
 
+async function getById(id) {
+    const userService = createService(User, {
+        defaultIncludes: { include: Role }
+    });
+
+    const user = await userService.findById(id);
+
+    return user;
+}
+
 export default {
-    getByEmail
+    getByEmail,
+    getById
 }

@@ -14,12 +14,12 @@ class ApiClient {
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                ...(token && { Authorization: `Bearer ${token}` }),
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 ...options.headers,
             },
             ...options,
         };
-
+        
         try {
             const response = await fetch(`${this.baseUrl}${endpoint}`, config);
         

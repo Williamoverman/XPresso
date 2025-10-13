@@ -2,6 +2,7 @@
   import router from "page";
   import Home from "./pages/Home.svelte";
   import Login from "./pages/Login.svelte";
+  import Games from "./pages/Games.svelte";
 
   import Header from "./lib/components/Header.svelte";
   import Footer from "./lib/components/Footer.svelte";
@@ -17,6 +18,12 @@
 
   router('/login', (ctx) => {
     Page = Login 
+    currentRoute = ctx.pathname;
+    context = ctx;
+  });
+
+  router('/games', (ctx) => {
+    Page = Games 
     currentRoute = ctx.pathname;
     context = ctx;
   });

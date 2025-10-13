@@ -24,7 +24,6 @@
     }
 </script>
 
-<section class="font-[Bebas] tracking-widest min-h-[calc(100vh-theme(spacing.20))] bg-gradient-to-br from-indigo-900 via-blue-900 to-indigo-800 flex items-center justify-center">
     <article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 mb-16">
         <form class="space-y-6 px-4" onsubmit={handleLogin}>
             {#if error}
@@ -50,4 +49,3 @@
             </button>
         </form>
     </article>
-</section>

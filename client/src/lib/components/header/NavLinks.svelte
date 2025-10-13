@@ -13,11 +13,11 @@
                 aria-label="My account" 
                 onclick={toggleDropDown}
             >
-                <a class="group" href="">
+                <div class="group">
                     <i class="fa-light fa-user"></i>
-                    My Account
+                        {authState.getName()}
                     <span></span>
-                </a>
+                </div>
             </button>
             {#if isDropDownOpen}
                 <AccountDropdown {isDropDownOpen} {handleLogout} />
@@ -43,10 +43,10 @@
 
 <style>
     @reference "tailwindcss";
-    li a {
+    li a, li div {
         @apply relative text-white/90 hover:text-white transition-all duration-300 rounded-xl hover:bg-white/10 p-4;
     }
-    li a span {
+    li a span, li div span {
         @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-400 group-hover:w-3/4 group-hover:left-1/8 transition-all duration-300;
     }
     .fa-light {

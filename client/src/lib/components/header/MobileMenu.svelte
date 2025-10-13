@@ -15,7 +15,7 @@
                     onclick={toggleDropDown}
                 >
                     <i class="fa-light fa-user group-hover:text-blue-300 transition-colors duration-300"></i>
-                    <span>My Account</span>
+                    <span>{authState.getName()}</span>
                     <i class="fa-light fa-arrow-right"></i>
                 </a>
                 {#if isDropDownOpen}

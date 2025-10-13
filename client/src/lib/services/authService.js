@@ -11,5 +11,5 @@ export const authService = {
   async logout() {
     await api.post('/auth/logout');
     authState.logout();
-  }
+  },
 };

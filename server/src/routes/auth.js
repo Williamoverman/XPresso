@@ -85,4 +85,49 @@ router.post('/logout',
     authController.logout
 );
 
+/**
+ * @openapi
+ * /auth/validate-token:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Validate JWT and return user data
+ *     responses:
+ *       200:
+ *         description: Token is valid, returns user data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 email:
+ *                   type: string
+ *                   example: "user@gmail.com"
+ *                 username:
+ *                   type: string
+ *                   example: "WilliamOverman"
+ *                 roles:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["user", "admin"]
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid or missing token"
+ */
+router.get('/validate-token', 
+    validator.requireAuth, 
+    authController.validateToken
+);
+
 export default router;

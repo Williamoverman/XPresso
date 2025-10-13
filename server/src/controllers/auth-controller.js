@@ -35,7 +35,23 @@ const logout = (req, res, next) => {
     }
 }
 
+const validateToken = async (req, res, next) => {
+  try {
+    const user = await authQueries.getById(req.user.id);
+
+    res.status(StatusCodes.OK).json({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      roles: user.Roles.map((r) => r.name),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
     login,
-    logout
+    logout,
+    validateToken
 }

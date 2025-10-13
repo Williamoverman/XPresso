@@ -2,22 +2,16 @@
 
 </script>
 
+{#snippet game()}
+    <article class="text-green">
+        <i class="fa-regular fa-gamepad fa-3x"></i>
+    </article>
+{/snippet}
+
 <section class="flex justify-evenly bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 py-4">
-    <article class="text-green">
-        <i class="fa-regular fa-gamepad fa-3x"></i>
-    </article>
-    <article class="text-green">
-        <i class="fa-regular fa-gamepad fa-3x"></i>
-    </article>
-    <article class="text-green">
-        <i class="fa-regular fa-gamepad fa-3x"></i>
-    </article>
-    <article class="text-green">
-        <i class="fa-regular fa-gamepad fa-3x"></i>
-    </article>
-    <article class="text-green">
-        <i class="fa-regular fa-gamepad fa-3x"></i>
-    </article>
+    {#each {length: 5}}
+        {@render game()}
+    {/each}
 </section>
 
 <style>
