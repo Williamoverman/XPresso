@@ -3,6 +3,7 @@
   import Home from "./pages/Home.svelte";
   import Login from "./pages/Login.svelte";
   import Games from "./pages/Games.svelte";
+  import Register from "./pages/Register.svelte";
 
   import Header from "./lib/components/Header.svelte";
   import Footer from "./lib/components/Footer.svelte";
@@ -18,6 +19,12 @@
 
   router('/login', (ctx) => {
     Page = Login 
+    currentRoute = ctx.pathname;
+    context = ctx;
+  });
+
+  router('/register', (ctx) => {
+    Page = Register 
     currentRoute = ctx.pathname;
     context = ctx;
   });
