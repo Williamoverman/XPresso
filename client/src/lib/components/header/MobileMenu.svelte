@@ -10,7 +10,7 @@
 		<div class="px-6 py-4 space-y-2">
             {#if authState.isLoggedIn}
                 <a 
-                    href="/login"
+                    href="#"
                     class="group"
                     onclick={toggleDropDown}
                 >
