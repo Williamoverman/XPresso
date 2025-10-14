@@ -6,7 +6,7 @@
         loading = $bindable(false),
         error = $bindable(null),
         submitText = 'Submit',
-        loadingText = 'Loading...',
+        loadingText = 'Laden...',
         altLink = null
     } = $props();
     
@@ -22,8 +22,15 @@
     async function handleSubmit(e) {
         e.preventDefault();
         error = null;
-        loading = true;
+
+        const passwordField = fields.find(f => f.type === 'password');
+        if (passwordField && formData[passwordField.name]?.length < 8) {
+            error = 'Wachtwoord moet minstens 8 karakters zijn';
+            return;
+        }
         
+        loading = true;
+
         try {
             await onSubmit(formData);
         } catch (err) {
@@ -34,7 +41,7 @@
     }
 </script>
 
-<article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 mb-16 min-w-100">
+<article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 mb-16 min-w-100 max-w-[90%]">
     <h2 class="text-2xl font-bold text-white mb-6">{title}</h2>
     
     <form class="space-y-6 px-4" onsubmit={handleSubmit}>
@@ -48,6 +55,9 @@
             <fieldset>
                 <label for={field.name} class="block text-md font-medium text-white">
                     {field.label}
+                    {#if field.required && !formData[field.name]}
+                        <span class="text-red-400">*</span>
+                    {/if}
                 </label>
                 <input 
                     type={field.type || 'text'}
@@ -55,6 +65,7 @@
                     name={field.name}
                     bind:value={formData[field.name]}
                     placeholder={field.placeholder}
+                    required
                     class="mt-1 block w-full rounded-lg bg-white/20 backdrop-blur px-4 py-2 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                 {#if field.error}

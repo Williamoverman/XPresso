@@ -77,7 +77,7 @@ describe('DELETE /pro-players/:id', () => {
         .post('/auth/login')
         .send({
         email: 'user@gmail.com',
-        password: 'user'
+        password: 'useruser'
     });
     const newUserToken = userRes.body.token;
 

@@ -11,13 +11,15 @@
             name: 'email',
             label: 'Email',
             type: 'email',
-            placeholder: 'gebruiker@gmail.com'
+            placeholder: 'gebruiker@gmail.com',
+            required: true
         },
         {
             name: 'password',
             label: 'Wachtwoord',
             type: 'password',
-            placeholder: '*****'
+            placeholder: '*****',
+            required: true
         }
     ];
     

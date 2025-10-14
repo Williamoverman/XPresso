@@ -16,7 +16,7 @@ beforeAll(async () => {
     .post('/auth/login')
     .send({
       email: 'admin@gmail.com',
-      password: 'admin'
+      password: 'adminadmin'
     });
   adminToken = adminRes.body.token;
   
@@ -24,7 +24,7 @@ beforeAll(async () => {
     .post('/auth/login')
     .send({
       email: 'user@gmail.com',
-      password: 'user'
+      password: 'useruser'
     });
   userToken = userRes.body.token;
   
@@ -32,7 +32,7 @@ beforeAll(async () => {
     .post('/auth/login')
     .send({
       email: 'proplayer@gmail.com',
-      password: 'proplayer'
+      password: 'proplayerproplayer'
     });
   proPlayerToken = proPlayerRes.body.token;
 });

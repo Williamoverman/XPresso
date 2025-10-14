@@ -2,7 +2,7 @@
     let { isDropDownOpen, handleLogout } = $props();
 </script>
 
-<section class="overflow-hidden transition-all duration-500 ease-out {isDropDownOpen ? 'max-h-96 min-w-65 opacity-100' : 'max-h-0 opacity-0'} sm:absolute">
+<section class="overflow-hidden transition-all duration-500 ease-out {isDropDownOpen ? 'max-h-96 min-w-65 opacity-100' : 'max-h-0 opacity-0'} sm:absolute z-1000">
     <article class="sm:bg-slate-900/95 transform transition-transform duration-500 {isDropDownOpen ? 'translate-y-0' : '-translate-y-4'}">
         <div class="pl-6 md:pl-0 py-0 sm:py-4 space-y-2">
             <a

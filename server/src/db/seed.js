@@ -11,17 +11,17 @@ async function seed() {
   const users = await User.bulkCreate([
     {
       email: "admin@gmail.com",
-      password: await hashPassword("admin"),
+      password: await hashPassword("adminadmin"),
       username: "admin",
     },
     {
       email: "user@gmail.com",
-      password: await hashPassword("user"),
+      password: await hashPassword("useruser"),
       username: "user",
     },
     {
       email: "proplayer@gmail.com",
-      password: await hashPassword("proplayer"),
+      password: await hashPassword("proplayerproplayer"),
       username: "proplayer",
     },
   ]);

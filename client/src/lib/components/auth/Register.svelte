@@ -11,19 +11,23 @@
             name: 'email',
             label: 'Email',
             type: 'email',
-            placeholder: 'gebruiker@gmail.com'
+            placeholder: 'gebruiker@gmail.com',
+            required: true
         },
         {
             name: 'username',
             label: 'Username',
             type: 'username',
-            placeholder: 'user123'
+            placeholder: 'user123',
+            required: true
         },
         {
             name: 'password',
             label: 'Wachtwoord',
             type: 'password',
-            placeholder: '*****'
+            placeholder: '*****',
+            required: true,
+            minLength: 8
         }
     ];
     
