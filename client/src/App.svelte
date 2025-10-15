@@ -4,7 +4,8 @@
   import Login from "./pages/Login.svelte";
   import Games from "./pages/Games.svelte";
   import Register from "./pages/Register.svelte";
-
+  import Ads from "./pages/Ads.svelte";
+  
   import Header from "./lib/components/Header.svelte";
   import Footer from "./lib/components/Footer.svelte";
 
@@ -31,6 +32,12 @@
 
   router('/games', (ctx) => {
     Page = Games 
+    currentRoute = ctx.pathname;
+    context = ctx;
+  });
+
+  router('/ads', (ctx) => {
+    Page = Ads 
     currentRoute = ctx.pathname;
     context = ctx;
   });

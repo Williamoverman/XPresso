@@ -23,6 +23,7 @@
     function closeModal() {
         isOpen = false;
         error = null;
+        formData = {};
     }
    
     async function handleSubmit(e) {
@@ -42,8 +43,8 @@
 </script>
 
 {#if isOpen}
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center font-[Bungee] tracking-widest">
-        <article class="bg-white/10 backdrop-blur-lg rounded-xl p-6 sm:p-8 shadow-2xl border border-white/20 w-full max-w-[90%] sm:max-w-lg mx-4">            
+    <section class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center font-[Bungee] tracking-widest">
+        <article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 w-full max-w-[90%] sm:max-w-lg max-h-5/6 overflow-y-auto">            
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-white">{title}</h2>
                 <button
@@ -67,26 +68,45 @@
                     <fieldset>
                         <label for={field.name} class="block text-md font-medium text-white">
                             {field.label}
-                            {#if field.required && !formData[field.name]}
+                            {#if field.required && formData[field.name] === ''}
                                 <span class="text-red-400">*</span>
                             {/if}
                         </label>
-                        <input
-                            type={field.type || 'text'}
-                            id={field.name}
-                            name={field.name}
-                            bind:value={formData[field.name]}
-                            placeholder={field.placeholder}
-                            required={field.required}
-                            class="mt-1 block w-full rounded-lg bg-white/20 backdrop-blur px-4 py-2 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        >
+                        
+                        {#if field.type === 'select'}
+                            <select
+                                id={field.name}
+                                name={field.name}
+                                bind:value={formData[field.name]}
+                                required={field.required}
+                                class="mt-1 w-full rounded-lg bg-white/20 backdrop-blur px-4 py-2 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                <option value="" disabled selected>{field.placeholder || 'Selecteer een optie'}</option>
+                                {#each field.options || [] as option}
+                                    <option class="text-black" value={option.value}>{option.label}</option>
+                                {/each}
+                            </select>
+                        {:else}
+                            <input
+                                type={field.type || 'text'}
+                                id={field.name}
+                                name={field.name}
+                                bind:value={formData[field.name]}
+                                placeholder={field.placeholder}
+                                required={field.required}
+                                min={field.min}
+                                max={field.max}
+                                class="mt-1 w-full rounded-lg bg-white/20 backdrop-blur px-4 py-2 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                        {/if}
+
                         {#if field.error}
                             <p class="text-sm text-red-400 mt-1">{field.error}</p>
                         {/if}
                     </fieldset>
                 {/each}
            
-                <div class="flex gap-3 pt-4">
+                <section class="flex gap-3 pt-4">
                     <button
                         type="button"
                         onclick={closeModal}
@@ -101,8 +121,8 @@
                     >
                         {loading ? loadingText : submitText}
                     </button>
-                </div>
+                </section>
             </form>
         </article>
-    </div>
+    </section>
 {/if}

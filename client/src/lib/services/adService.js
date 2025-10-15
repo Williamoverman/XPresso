@@ -1,7 +1,7 @@
 import { api } from './apiclient/api.js';
 
 export const adService = {
-  getAll: () => api.get('/ads'),
+  getAll: (queryParams = '') => api.get(`/ads${queryParams}`),
   getById: (id) => api.get(`/ads/${id}`),
   create: (adData) => api.post('/ads', adData),
   update: (id, adData) => api.put(`/ads/${id}`, adData),

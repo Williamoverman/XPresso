@@ -20,6 +20,18 @@ class AuthState {
             return "";
         return this.user?.username || "N/A";
     }
+
+    getId() {
+        return this.user?.id;
+    }
+
+    hasAnyRole() {
+        return this.user?.roles.length > 0;
+    }
+
+    isProPlayer() {
+        return this.user?.roles.includes("ProPlayer");
+    }
     
     login(token) {
         localStorage.setItem('token', token);
