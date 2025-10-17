@@ -29,6 +29,11 @@ const router = express.Router();
  *         schema:
  *           type: integer
  *         description: Filter ads by pro player ID
+ *       - in: query
+ *         name: with_spots
+ *         schema:
+ *           type: boolean
+ *         description: Include spots available
  *     responses:
  *       200:
  *         description: Ads returned succesfully

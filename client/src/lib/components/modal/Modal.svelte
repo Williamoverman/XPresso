@@ -35,6 +35,7 @@
             await onSubmit(formData);
             closeModal();
         } catch (err) {
+            console.log("error caught")
             error = err.message || 'An error occurred';
         } finally {
             loading = false;

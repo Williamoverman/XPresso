@@ -40,7 +40,7 @@
 
     async function handleAddAd(data) {    
         data.pro_player_id = authState.getId();
-        adService.create(data);
+        await adService.create(data);
     }
 </script>
 

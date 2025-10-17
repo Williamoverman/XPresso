@@ -3,7 +3,7 @@ import adQueries from '../db/helpers/ad-helper.js';
 
 const getAllAds = async (req, res, next) => {
     try {
-        const { service_type, game_id, pro_player_id } = req.query;
+        const { service_type, game_id, pro_player_id, with_spots } = req.query;
 
         const options = {
             service_type: service_type,
@@ -11,7 +11,12 @@ const getAllAds = async (req, res, next) => {
             pro_player_id: pro_player_id
         };
 
-        const ads = await adQueries.getAll(options);
+        let ads;
+        if (with_spots)
+            ads = await adQueries.getAllWithAvailableSpots(options)
+        else
+            ads = await adQueries.getAll(options);
+
         res.status(StatusCodes.OK).json(ads);
     } catch (error) {
         next(error);

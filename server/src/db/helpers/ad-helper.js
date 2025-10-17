@@ -24,10 +24,37 @@ const adService = createService(Ad, {
     }
 });
 
+const getAllWithAvailableSpots = async (options = {}) => {
+    const ads = await adService.findAll(options);
+    
+    const adsWithSpots = await Promise.all(
+        ads.map(async (ad) => {
+            const activeReservations = await Reservation.count({
+                where: {
+                    ad_id: ad.id,
+                    status: { [Op.notIn]: ['Cancelled', 'Completed'] }
+                }
+            });
+            
+            const spots_still_available = Math.max(0, ad.total_spots_available - activeReservations);
+            
+            return {
+                ...ad.toJSON(),
+                metadata: {
+                    spots_still_available: spots_still_available
+                }
+            };
+        })
+    );
+    
+    return adsWithSpots;
+};
+
 export default {
     getAll: adService.findAll.bind(adService),
     getById: adService.findById.bind(adService),
     create: adService.create.bind(adService),
     update: adService.update.bind(adService),
-    remove: adService.delete.bind(adService)
+    remove: adService.delete.bind(adService),
+    getAllWithAvailableSpots
 };

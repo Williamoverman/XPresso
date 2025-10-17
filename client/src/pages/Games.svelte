@@ -16,7 +16,7 @@
     ];
 
     async function handleAddGame(data) {
-        gameService.create(data);
+        await gameService.create(data);
     }
 </script>
 
