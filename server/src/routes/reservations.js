@@ -1,6 +1,7 @@
 import express from 'express';
 import reservationController from '../controllers/reservation-controller.js';
 import validator from '../middleware/validators.js';
+import reservationChecker from '../middleware/reservation-checks.js';
 import { Ad, Reservation, User } from '../db/database-helper.js';
 
 const router = express.Router();
@@ -129,6 +130,7 @@ router.post('/',
     validator.requireOwner('body', 'user_id'),
     validator.requireFields('start_date', 'end_date'),
     validator.validateDates,
+    reservationChecker.checkAvailableSpots,
     reservationController.createReservation
 );
 
