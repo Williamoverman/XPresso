@@ -33,6 +33,7 @@
     
     async function handleRegistrationSubmit(data) {
         await userService.create(data);
+        sessionStorage.setItem('showRegistrationToast', 'true');
         router("/");
     }
 </script>

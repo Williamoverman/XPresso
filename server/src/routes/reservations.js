@@ -131,6 +131,8 @@ router.post('/',
     validator.requireFields('start_date', 'end_date'),
     validator.validateDates,
     reservationChecker.checkAvailableSpots,
+    reservationChecker.checkReservationDuration,
+    reservationChecker.checkUserReservationLimit,
     reservationController.createReservation
 );
 
@@ -191,6 +193,7 @@ router.patch('/:id',
     validator.requireOwner('body', 'user_id'),
     validator.requireFields('start_date', 'end_date'),
     validator.validateDates,
+    reservationChecker.checkReservationDuration,
     reservationController.updateReservation
 );
 

@@ -2,12 +2,15 @@
     import { adService } from '../../services/adService.js';
     import { onMount } from 'svelte';
     import { authState } from '../../state/authState.svelte.js';
-    import Modal from '../modal/Modal.svelte';
     import { reservationService } from '../../services/reservationService.js';
-
+    import Modal from '../modal/Modal.svelte';
+    import Toast from '../Toast.svelte';
+    
+    let toastComponent = $state(null);
     let allAds = $state([]);
     let isLoading = $state(true);
     let error = $state(null);
+    let modalError = $state(null);
 
     let { game_id } = $props();
     let modalOpen = $state(false);
@@ -33,17 +36,25 @@
     ]);
 
     async function openModal(id) {
-        modalOpen = true;
-        selectedAdId = id;
+        if (authState.isProPlayer() || authState.isUser()) {
+            modalOpen = true;
+            selectedAdId = id;
+        } else if (authState.isAdmin())
+            toastComponent.showToast('Als admin kun je geen reservering plaatsen.', 'error'); 
+        else
+            toastComponent.showToast('Je moet ingelogd zijn om te reserveren.', 'error'); 
     }
 
     async function handleAddReservation(data) {    
         data.user_id = authState.getId();
         data.ad_id = selectedAdId;
         await reservationService.create(data);
+        toastComponent.showToast('Reservering geplaatst', 'success');
         selectedAdId = 0;
     }
 </script>
+
+<Toast bind:this={toastComponent} />
 
 <section class="w-full overflow-x-auto px-4 md:px-8 py-8">
     {#if isLoading}
@@ -75,12 +86,12 @@
             </thead>
             <tbody>
                 {#each allAds as ad, index}
-                    <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : {} } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
+                    <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : toastComponent.showToast('Geen plek', 'info') } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
                         <td class="text-lg">{ad.name}</td>
                         <td class="text-sm">{ad.description}</td>
                         <td class="text-sm">{ad.service_type}</td>
                         {#if ad.metadata.spots_still_available === 0}
-                            <td class="text-center text-lg flex flex-row justify-center items-center">Full</td>
+                            <td class="text-center text-md">Geen plek</td>
                         {:else}
                             <td class="text-center text-lg flex flex-row justify-center items-center"><p class="text-green-500 pr-1">{ad.metadata.spots_still_available}</p>/<p class="text-red-500 pl-1">{ad.total_spots_available}</p></td>
                         {/if}
@@ -99,7 +110,7 @@
     onSubmit={handleAddReservation}
     bind:isOpen={modalOpen}
     bind:loading={isLoading}
-    bind:error
+    bind:error={modalError}
     submitText="Reserveer"
 />
 <style>

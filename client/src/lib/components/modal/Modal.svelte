@@ -14,10 +14,12 @@
     let formData = $state({});
    
     $effect(() => {
-        formData = fields.reduce((acc, field) => {
-            acc[field.name] = '';
-            return acc;
-        }, {});
+        if (isOpen && fields.length > 0) {
+            formData = fields.reduce((acc, field) => {
+                acc[field.name] = field.type === 'select' ? '' : '';
+                return acc;
+            }, {});
+        }
     });
 
     function closeModal() {
@@ -45,7 +47,7 @@
 
 {#if isOpen}
     <section class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center font-[Bungee] tracking-widest">
-        <article class="bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl border border-white/20 w-full max-w-[90%] sm:max-w-lg max-h-5/6 overflow-y-auto">            
+        <article class="bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/20 w-full max-w-[90%] sm:max-w-lg max-h-5/6 overflow-y-auto">            
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-white">{title}</h2>
                 <button

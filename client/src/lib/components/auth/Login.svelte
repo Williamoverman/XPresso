@@ -2,7 +2,7 @@
     import { authService } from '../../services/authService';
     import AuthForm from './AuthForm.svelte';
     import router from "page";
-
+    
     let loading = $state(false);
     let error = $state(null);
     
@@ -25,6 +25,7 @@
     
     async function handleLoginSubmit(data) {
         await authService.login(data.email, data.password);
+        sessionStorage.setItem('showLoginToast', 'true');
         router("/");
     }
 </script>

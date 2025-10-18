@@ -33,6 +33,14 @@ class AuthState {
         return this.user?.roles.includes("ProPlayer");
     }
     
+    isUser() {
+        return this.user?.roles.includes("User");
+    }
+
+    isAdmin() {
+        return this.user?.roles.includes("Admin");
+    }
+    
     login(token) {
         localStorage.setItem('token', token);
         this.isLoggedIn = true;
