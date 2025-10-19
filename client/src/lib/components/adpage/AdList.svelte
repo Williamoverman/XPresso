@@ -8,25 +8,49 @@
     
     let toastComponent = $state(null);
     let allAds = $state([]);
+    let filteredAds = $state([]);
     let isLoading = $state(true);
     let error = $state(null);
     let modalError = $state(null);
 
-    let { game_id } = $props();
+    let { filters = {} } = $props();
     let modalOpen = $state(false);
     let selectedAdId = $state(0);
 
     onMount(async () => {
+        await loadAds();
+    });
+
+    async function loadAds() {
         try {
-            if (game_id)
-                allAds = await adService.getAll(`?game_id=${game_id}&with_spots=true`);
-            else
-                allAds = await adService.getAll('?with_spots=true');
+            isLoading = true;
+            allAds = await adService.getAll('?with_spots=true');
+            
+            applyFilters();
         } catch (err) {
             error = 'Gefaald om advertenties te laten zien, probeer later opnieuw.';
         } finally {
             isLoading = false;
         }
+    }
+
+    function applyFilters() {
+        filteredAds = allAds.filter(ad => {
+            if (filters.game_id && ad.game_id != filters.game_id)
+                return false;
+            
+            if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id)
+                return false;
+            
+            if (filters.service_type && !ad.service_type.toLowerCase().includes(filters.service_type.toLowerCase()))
+                return false;
+            
+            return true;
+        });
+    }
+
+    $effect(() => {
+        applyFilters();
     });
 
     let fields = $derived.by(() => [
@@ -51,6 +75,20 @@
         await reservationService.create(data);
         toastComponent.showToast('Reservering geplaatst', 'success');
         selectedAdId = 0;
+    }
+
+    async function deletion(ad_id, event) {
+        event.stopPropagation();
+        
+        if (confirm('Weet je zeker dat je deze advertentie wilt verwijderen?')) {
+            try {
+                await adService.delete(ad_id);
+                toastComponent.showToast('Advertentie verwijderd', 'success');
+                await loadAds();
+            } catch (err) {
+                toastComponent.showToast(err, 'error');
+            }
+        }
     }
 </script>
 
@@ -82,10 +120,11 @@
                     <th class="text-center text-sm">Plekken beschikbaar</th>
                     <th class="text-center text-sm">Max/Gebruiker</th>
                     <th class="text-center text-sm">Max duur (min)</th>
+                    <th class="text-center text-sm">Acties</th>
                 </tr>
             </thead>
             <tbody>
-                {#each allAds as ad, index}
+                {#each filteredAds as ad, index}
                     <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : toastComponent.showToast('Geen plek', 'info') } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
                         <td class="text-lg">{ad.name}</td>
                         <td class="text-sm">{ad.description}</td>
@@ -97,6 +136,19 @@
                         {/if}
                         <td class="text-center text-lg">{ad.max_reservations_per_user}</td>
                         <td class="text-center text-lg">{ad.max_duration_minutes}</td>
+                        <td class="text-center">
+                            {#if authState.isProPlayer() && authState.getId() === ad.pro_player_id}
+                                <button 
+                                    onclick={(e) => deletion(ad.id, e)}
+                                    class="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 text-sm"
+                                    type="button">
+                                    <i class="fa-light fa-trash mr-1"></i>
+                                    Verwijder
+                                </button>
+                            {:else}
+                                <span class="text-gray-600">-</span>
+                            {/if}
+                        </td>
                     </tr>
                 {/each}
             </tbody>

@@ -91,7 +91,20 @@ async function updateAssignedGame(id, game_id, data) {
 }
 
 export default {
-    getAll: proPlayerService.findAll.bind(proPlayerService),
+    getAll: async () => {
+        return await proPlayerService.findAll({
+            include: [{ 
+                model: User, 
+                attributes: ['username'],
+                include: [{
+                    model: Role,
+                    where: { name: 'ProPlayer' },
+                    attributes: [],
+                    through: { attributes: [] }
+                }]
+            }]
+        });
+    },
     getById: proPlayerService.findById.bind(proPlayerService),
     create,
     update: proPlayerService.update.bind(proPlayerService),

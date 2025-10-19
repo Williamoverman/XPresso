@@ -17,7 +17,7 @@ const adService = createService(Ad, {
         await ad.reload({ include: [Reservation] });
         
         if (ad.Reservations.length > 0) {
-            const error = new Error('Cannot delete ad with associated reservations');
+            const error = new Error('Kan reservering niet verwijderen met open reserveringen');
             error.status = StatusCodes.BAD_REQUEST;
             throw error;
         }

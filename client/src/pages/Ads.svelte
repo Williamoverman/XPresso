@@ -1,5 +1,6 @@
 <script>
     import AdList from '../lib/components/adpage/AdList.svelte';
+    import AdFilter from '../lib/components/adpage/AdFilter.svelte';
     import Modal from "../lib/components/modal/Modal.svelte";
     import Button from '../lib/components/Button.svelte';
 
@@ -12,7 +13,7 @@
     let loading = $state(false);
     let error = $state(null);
     let allGames = $state(null);
-    let urlGameID = $derived(new URLSearchParams(window.location.search).get('game_id') || '');
+    let filters = $state({});
 
     onMount(async () => {
         allGames = await gameService.getAll();
@@ -42,10 +43,15 @@
         data.pro_player_id = authState.getId();
         await adService.create(data);
     }
+    
+    function handleFilterChange(newFilters) {
+        filters = newFilters;
+    }
 </script>
 
 <section class="min-h-[calc(100vh-theme(spacing.20))] bg-gradient-to-br from-indigo-900 via-blue-900 to-indigo-800">
-    <AdList game_id={urlGameID} />
+    <AdFilter onFilterChange={handleFilterChange} />
+    <AdList filters={filters} />
 
     {#if authState.isProPlayer()}
         <Button onClick={() => modalOpen = true } title="Voeg advertentie toe" />
