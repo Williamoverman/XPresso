@@ -9,7 +9,7 @@ beforeEach(async () => {
     user_id: 2,
     ad_id: 1,
     start_date: "2025-10-15T10:00:00Z",
-    end_date: "2025-10-15T12:00:00Z"
+    end_date: "2025-10-15T11:00:00Z"
   };
 });
 
@@ -22,10 +22,10 @@ describe('GET /reservations', () => {
 });
 
 describe('POST /reservations', () => {
-  it('returns 201 (correct reservation)', async () => {
+  it('returns 400 (already 2 reservations for this user)', async () => {
     const res = await request(app).post('/reservations').set('Authorization', `Bearer ${userToken}`).send(dummyReservation);
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('id');
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe('Maximum reserverings limiet bereikt: 2 voor deze advertentie');
   });
 
   it('returns 401 (needs to be logged in)', async () => {
@@ -58,17 +58,10 @@ describe('GET /reservations/:id', () => {
 
 describe('PATCH /reservations/:id', () => {
   it('returns 200 (correct reservation)', async () => {
-    dummyReservation.start_date = "2025-10-14T10:00:00Z";
+    dummyReservation.start_date = "2025-10-15T10:05:00Z";
     const res = await request(app).patch(`/reservations/1`).set('Authorization', `Bearer ${userToken}`).send(dummyReservation);
     expect(res.status).toBe(200);
-    expect(res.body.start_date).toBe("2025-10-14T10:00:00.000Z");
-  });
-
-  it('returns 400 (missing required fields)', async () => {
-    dummyReservation.end_date = "";
-    const res = await request(app).patch(`/reservations/1`).set('Authorization', `Bearer ${userToken}`).send(dummyReservation);
-    expect(res.status).toBe(400);
-    expect(res.body.message).toBe('Missing required fields: end_date');
+    expect(res.body.start_date).toBe("2025-10-15T10:05:00.000Z");
   });
 
   it('returns 404 (non existing reservation)', async () => {

@@ -186,12 +186,9 @@ router.post('/',
  */
 router.patch('/:id', 
     validator.checkIfExists([
-        { model: User, source: 'body', field: 'user_id' },
-        { model: Ad, source: 'body', field: 'ad_id' },
         { model: Reservation, source: 'params', field: 'id' }
     ]),
-    validator.requireOwner('body', 'user_id'),
-    validator.requireFields('start_date', 'end_date'),
+    validator.requireResourceOwner(Reservation, 'user_id', 'user', 'id'),
     validator.validateDates,
     reservationChecker.checkReservationDuration,
     reservationController.updateReservation

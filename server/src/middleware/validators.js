@@ -238,7 +238,7 @@ function requireResourceOwner(model, ownerField = 'user_id', source = 'params', 
         try {
             const service = createService(model);
             const record = await service.findById(parseInt(req[source]?.[field]));
-
+            
             if (record[ownerField] !== req.user.id) {
                 const error = new Error(`Forbidden: not authorized to modify this ${model.name}`);
                 error.status = StatusCodes.FORBIDDEN;

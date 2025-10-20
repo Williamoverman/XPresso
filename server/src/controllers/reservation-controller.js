@@ -45,7 +45,6 @@ const updateReservation = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { status, customer_notes, start_date, end_date } = req.body;
-
         let input = {};
 
         if (status) input.status = status;

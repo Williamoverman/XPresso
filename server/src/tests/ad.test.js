@@ -128,7 +128,7 @@ describe('DELETE /ads/:id', () => {
   it('returns 400 (associated reservations)', async () => {
     const res = await request(app).delete(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`);
     expect(res.status).toBe(400);
-    expect(res.body.message).toBe('Cannot delete ad with associated reservations');
+    expect(res.body.message).toBe('Kan reservering niet verwijderen met open reserveringen');
   });
   
   it('returns 403 (cannot delete someone elses ad)', async () => {

@@ -1,22 +1,16 @@
 <script>
     import { gameService } from '../../services/gameService.js';
-    import { onMount } from 'svelte';
     import router from "page";
+    import DataLoader from '../DataLoader.svelte';
 
+    let dataLoader = $state(null);
     let allGames = $state([]);
     let isLoading = $state(true);
     let error = $state(null);
 
-    onMount(async () => {
-        try {
-            const response = await gameService.getAll();
-            allGames = response || [];
-        } catch (err) {
-            error = 'Failed to load games. Please try again later.';
-        } finally {
-            isLoading = false;
-        }
-    });
+    async function getGames() {
+        return await gameService.getAll();
+    }
 
     function getRandomColor() {
         const vibrantColors = [
@@ -32,37 +26,29 @@
     }
 </script>
 
-{#snippet gameCard(gameData)}
-    <article class="font-[Bungee] w-80 h-80 m-6 rounded-2xl shadow-2xl text-white flex flex-col items-center justify-center transition-transform duration-300 hover:scale-110 hover:shadow-3xl cursor-pointer group overflow-hidden bg-gradient-to-br {getRandomColor()} max-w-full sm:max-w-[calc(50%-1.5rem)] lg:max-w-[calc(33.333%-1.5rem)] relative">
-        <header class="text-center">
-            <h3 class="text-3xl mb-4 drop-shadow-lg font-bold">{gameData.name}</h3>
-            <p class="text-xl drop-shadow-lg">{gameData.abbreviation}</p>
-        </header>
-        <button 
-            class="w-full bg-black/80 text-white font-bold py-3 px-6 absolute bottom-0 left-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-black" 
-            onclick={() => reservationButton(gameData.id)}>
-            Reserveer nu!
-        </button>
-    </article>
-{/snippet}
-
-<section class="flex flex-wrap justify-center">
-    {#if isLoading}
-        <section class="w-full h-screen flex items-center justify-center">
-            <p class="text-white text-lg">Loading games...</p>
+<DataLoader 
+    bind:this={dataLoader}
+    loadFunction={getGames}
+    bind:data={allGames}
+    bind:isLoading
+    bind:error
+    emptyMessage="Geen spellen gevonden"
+>
+    {#snippet children(games, reload)}
+        <section class="flex flex-wrap justify-center">
+            {#each games as game}
+                <article class="font-[Bungee] w-80 h-80 m-6 rounded-2xl shadow-2xl text-white flex flex-col items-center justify-center transition-transform duration-300 hover:scale-110 hover:shadow-3xl cursor-pointer group overflow-hidden bg-gradient-to-br {getRandomColor()} max-w-full sm:max-w-[calc(50%-1.5rem)] lg:max-w-[calc(33.333%-1.5rem)] relative">
+                    <header class="text-center">
+                        <h3 class="text-3xl mb-4 drop-shadow-lg font-bold">{game.name}</h3>
+                        <p class="text-xl drop-shadow-lg">{game.abbreviation}</p>
+                    </header>
+                    <button
+                        class="w-full bg-black/80 text-white font-bold py-3 px-6 absolute bottom-0 left-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 hover:bg-black"
+                        onclick={() => reservationButton(game.id)}>
+                        Reserveer nu!
+                    </button>
+                </article>
+            {/each}
         </section>
-    {:else if error}
-        <section class="w-full h-screen flex items-center justify-center">
-            <p class="text-red-500">{error}</p>
-        </section>
-    {:else}
-        {#each allGames as game}
-            {@render gameCard(game)}
-        {/each}
-        {#if allGames.length === 0}
-            <section class="w-full h-screen flex items-center justify-center">
-                <p class="text-white text-lg">No games available.</p>
-            </section>
-        {/if}
-    {/if}
-</section>
+    {/snippet}
+</DataLoader>

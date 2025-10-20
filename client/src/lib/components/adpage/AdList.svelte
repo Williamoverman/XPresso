@@ -1,14 +1,14 @@
 <script>
     import { adService } from '../../services/adService.js';
-    import { onMount } from 'svelte';
     import { authState } from '../../state/authState.svelte.js';
     import { reservationService } from '../../services/reservationService.js';
     import Modal from '../modal/Modal.svelte';
     import Toast from '../Toast.svelte';
-    
+    import DataLoader from '../DataLoader.svelte';
+
     let toastComponent = $state(null);
+    let dataLoader = $state(null);
     let allAds = $state([]);
-    let filteredAds = $state([]);
     let isLoading = $state(true);
     let error = $state(null);
     let modalError = $state(null);
@@ -17,41 +17,22 @@
     let modalOpen = $state(false);
     let selectedAdId = $state(0);
 
-    onMount(async () => {
-        await loadAds();
-    });
-
     async function loadAds() {
-        try {
-            isLoading = true;
-            allAds = await adService.getAll('?with_spots=true');
-            
-            applyFilters();
-        } catch (err) {
-            error = 'Gefaald om advertenties te laten zien, probeer later opnieuw.';
-        } finally {
-            isLoading = false;
-        }
+        return await adService.getAll('?with_spots=true');
     }
 
-    function applyFilters() {
-        filteredAds = allAds.filter(ad => {
-            if (filters.game_id && ad.game_id != filters.game_id)
-                return false;
-            
-            if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id)
-                return false;
-            
-            if (filters.service_type && !ad.service_type.toLowerCase().includes(filters.service_type.toLowerCase()))
-                return false;
-            
-            return true;
-        });
-    }
-
-    $effect(() => {
-        applyFilters();
-    });
+    let filteredAds = $derived(allAds.filter(ad => {
+        if (filters.game_id && ad.game_id != filters.game_id)
+            return false;
+        
+        if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id)
+            return false;
+        
+        if (filters.service_type && !ad.service_type.toLowerCase().includes(filters.service_type.toLowerCase()))
+            return false;
+        
+        return true;
+    }));
 
     let fields = $derived.by(() => [
         { name: 'start_date', label: 'Start datum', type: 'datetime-local', required: true },
@@ -75,6 +56,7 @@
         await reservationService.create(data);
         toastComponent.showToast('Reservering geplaatst', 'success');
         selectedAdId = 0;
+        dataLoader.reload();
     }
 
     async function deletion(ad_id, event) {
@@ -95,65 +77,59 @@
 <Toast bind:this={toastComponent} />
 
 <section class="w-full overflow-x-auto px-4 md:px-8 py-8">
-    {#if isLoading}
-        <p class="flex justify-center items-center py-12 text-white/80 text-xl">
-            <i class="fa-light fa-spinner-third fa-spin mr-3"></i>
-            Laden...
-        </p>
-    {:else if error}
-        <p class="text-red-300 text-lg flex items-center">
-            <i class="fa-light fa-circle-exclamation mr-3"></i>
-            {error}
-        </p>
-    {:else if allAds.length === 0}
-        <p class="text-blue-300 text-lg flex items-center justify-center">
-            <i class="fa-light fa-inbox mr-3"></i>
-            Geen advertenties gevonden
-        </p>
-    {:else}
-        <table class="font-[Bungee] w-full bg-slate-900/40 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/10">
-            <thead class="bg-gradient-to-r from-blue-950/80 via-indigo-950/80 to-blue-950/80">
-                <tr>
-                    <th class="text-left text-sm ">Naam</th>
-                    <th class="text-left text-sm">Beschrijving</th>
-                    <th class="text-left text-sm">Service type</th>
-                    <th class="text-center text-sm">Plekken beschikbaar</th>
-                    <th class="text-center text-sm">Max/Gebruiker</th>
-                    <th class="text-center text-sm">Max duur (min)</th>
-                    <th class="text-center text-sm">Acties</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each filteredAds as ad, index}
-                    <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : toastComponent.showToast('Geen plek', 'info') } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
-                        <td class="text-lg">{ad.name}</td>
-                        <td class="text-sm">{ad.description}</td>
-                        <td class="text-sm">{ad.service_type}</td>
-                        {#if ad.metadata.spots_still_available === 0}
-                            <td class="text-center text-md">Geen plek</td>
-                        {:else}
-                            <td class="text-center text-lg flex flex-row justify-center items-center"><p class="text-green-500 pr-1">{ad.metadata.spots_still_available}</p>/<p class="text-red-500 pl-1">{ad.total_spots_available}</p></td>
-                        {/if}
-                        <td class="text-center text-lg">{ad.max_reservations_per_user}</td>
-                        <td class="text-center text-lg">{ad.max_duration_minutes}</td>
-                        <td class="text-center">
-                            {#if authState.isProPlayer() && authState.getId() === ad.pro_player_id}
-                                <button 
-                                    onclick={(e) => deletion(ad.id, e)}
-                                    class="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 text-sm"
-                                    type="button">
-                                    <i class="fa-light fa-trash mr-1"></i>
-                                    Verwijder
-                                </button>
-                            {:else}
-                                <span class="text-gray-600">-</span>
-                            {/if}
-                        </td>
+    <DataLoader 
+        bind:this={dataLoader}
+        loadFunction={loadAds}
+        bind:data={allAds}
+        bind:isLoading
+        bind:error
+        emptyMessage="Geen advertenties gevonden"
+    >
+        {#snippet children(ads, reload)}
+            <table class="font-[Bungee] w-full bg-slate-900/40 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                <thead class="bg-gradient-to-r from-blue-950/80 via-indigo-950/80 to-blue-950/80">
+                    <tr>
+                        <th class="text-left text-sm">Naam</th>
+                        <th class="text-left text-sm">Beschrijving</th>
+                        <th class="text-left text-sm">Service type</th>
+                        <th class="text-center text-sm">Plekken beschikbaar</th>
+                        <th class="text-center text-sm">Max/Gebruiker</th>
+                        <th class="text-center text-sm">Max duur (min)</th>
+                        <th class="text-center text-sm">Acties</th>
                     </tr>
-                {/each}
-            </tbody>
-        </table>
-    {/if}
+                </thead>
+                <tbody>
+                    {#each filteredAds as ad, index}
+                        <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : toastComponent.showToast('Geen plek', 'info') } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
+                            <td class="text-lg">{ad.name}</td>
+                            <td class="text-sm">{ad.description}</td>
+                            <td class="text-sm">{ad.service_type}</td>
+                            {#if ad.metadata.spots_still_available === 0}
+                                <td class="text-center text-md">Geen plek</td>
+                            {:else}
+                                <td class="text-center text-lg flex flex-row justify-center items-center"><p class="text-green-500 pr-1">{ad.metadata.spots_still_available}</p>/<p class="text-red-500 pl-1">{ad.total_spots_available}</p></td>
+                            {/if}
+                            <td class="text-center text-lg">{ad.max_reservations_per_user}</td>
+                            <td class="text-center text-lg">{ad.max_duration_minutes}</td>
+                            <td class="text-center">
+                                {#if authState.isProPlayer() && authState.getId() === ad.pro_player_id}
+                                    <button 
+                                        onclick={(e) => deletion(ad.id, e)}
+                                        class="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 text-sm"
+                                        type="button">
+                                        <i class="fa-light fa-trash mr-1"></i>
+                                        Verwijder
+                                    </button>
+                                {:else}
+                                    <span class="text-gray-600">-</span>
+                                {/if}
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        {/snippet}
+    </DataLoader>
 </section>
 
 <Modal 
