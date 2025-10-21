@@ -14,7 +14,7 @@
     
     $effect(() => {
         formData = fields.reduce((acc, field) => {
-            acc[field.name] = '';
+            acc[field.name] = field.value || '';
             return acc;
         }, {});
     });
@@ -24,7 +24,7 @@
         error = null;
 
         const passwordField = fields.find(f => f.type === 'password');
-        if (passwordField && formData[passwordField.name]?.length < 8) {
+        if (passwordField && passwordField.required && formData[passwordField.name]?.length < 8) {
             error = 'Wachtwoord moet minstens 8 karakters zijn';
             return;
         }
@@ -65,7 +65,7 @@
                     name={field.name}
                     bind:value={formData[field.name]}
                     placeholder={field.placeholder}
-                    required
+                    required={field.required}
                     class="mt-1 block w-full rounded-lg bg-white/20 backdrop-blur px-4 py-2 text-white placeholder-white/70 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                 {#if field.error}

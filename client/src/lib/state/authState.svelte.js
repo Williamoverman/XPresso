@@ -21,6 +21,10 @@ class AuthState {
         return this.user?.username || "N/A";
     }
 
+    getEmail() {
+        return this.user?.email;
+    }
+
     getId() {
         return this.user?.id;
     }

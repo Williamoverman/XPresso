@@ -6,6 +6,7 @@
   import Register from "./pages/Register.svelte";
   import Ads from "./pages/Ads.svelte";
   import MyReservations from "./pages/MyReservations.svelte";
+  import MyAccount from "./pages/MyAccount.svelte";
 
   import Header from "./lib/components/Header.svelte";
   import Footer from "./lib/components/Footer.svelte";
@@ -46,6 +47,12 @@
 
   router('/reservations', (ctx) => {
     Page = MyReservations 
+    currentRoute = ctx.pathname;
+    context = ctx;
+  });
+
+  router('/account', (ctx) => {
+    Page = MyAccount 
     currentRoute = ctx.pathname;
     context = ctx;
   });

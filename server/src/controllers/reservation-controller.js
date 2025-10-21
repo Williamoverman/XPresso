@@ -4,7 +4,7 @@ import reservationQueries from '../db/helpers/reservation-helper.js';
 const getAllReservations = async (req, res, next) => {
     try {
         const { id, ad_id } = req.query;
-        const reservations = await reservationQueries.getAll({ id, ad_id });
+        const reservations = await reservationQueries.getAll({ user_id: id, ad_id });
         res.status(StatusCodes.OK).json(reservations);
     } catch (error) {
         next(error);
