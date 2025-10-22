@@ -99,7 +99,7 @@
         emptyMessage="Geen reserveringen gevonden"
     >
         {#snippet children(data, reload)}
-            <article class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <article class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <fieldset class="stat-card">
                     <p class="stat-label">Totaal Reserveringen</p>
                     <p class="stat-value">{stats.total}</p>
@@ -121,17 +121,17 @@
                             onclick={() => toggleAd(ad.id)}
                             class="w-full px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-blue-800/30 transition-all duration-200"
                         >
-                            <div class="text-left">
+                            <fieldset class="text-left">
                                 <h3 class="text-white text-base sm:text-lg">{ad.name}</h3>
                                 <p class="text-xs sm:text-sm text-white/60">{ad.service_type}</p>
-                            </div>
-                            <div class="flex items-center gap-4 self-end sm:self-auto">
-                                <div class="text-right">
+                            </fieldset>
+                            <fieldset class="flex items-center gap-4 self-end sm:self-auto">
+                                <span class="text-right">
                                     <p class="text-xl sm:text-2xl text-white">{stats.total}</p>
                                     <p class="text-xs text-white/60">reserveringen</p>
-                                </div>
+                                </span>
                                 <i class="fa-light fa-chevron-{expandedAd === ad.id ? 'up' : 'down'} text-white/60"></i>
-                            </div>
+                            </fieldset>
                         </button>
 
                         {#if expandedAd === ad.id}
