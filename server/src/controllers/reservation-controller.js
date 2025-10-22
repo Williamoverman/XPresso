@@ -1,6 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
 import reservationQueries from '../db/helpers/reservation-helper.js';
 
+/**
+ * (admin only)
+ */
+async function getAllReservationsAdmin(req, res, next) {
+    try {
+        const reservations = await reservationQueries.findAllAdmin();
+        res.status(StatusCodes.OK).json(reservations);
+    } catch (error) {
+        next(error);
+    }
+}
+
 const getAllReservations = async (req, res, next) => {
     try {
         const { id, ad_id } = req.query;
@@ -71,6 +83,7 @@ const deleteReservation = async (req, res, next) => {
 }
 
 export default {
+    getAllReservationsAdmin,
     getAllReservations,
     getReservationById,
     createReservation,

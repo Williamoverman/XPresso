@@ -7,6 +7,7 @@
   import Ads from "./pages/Ads.svelte";
   import MyReservations from "./pages/MyReservations.svelte";
   import MyAccount from "./pages/MyAccount.svelte";
+  import Dashboard from "./pages/Dashboard.svelte";
 
   import Header from "./lib/components/Header.svelte";
   import Footer from "./lib/components/Footer.svelte";
@@ -57,13 +58,19 @@
     context = ctx;
   });
 
+  router('/dashboard', (ctx) => {
+    Page = Dashboard 
+    currentRoute = ctx.pathname;
+    context = ctx;
+  });
+
   router.start();
 </script>
 
 <link rel="stylesheet" crossorigin="anonymous" href="https://site-assets.fontawesome.com/releases/v7.0.0/css/all.css">
 
 <Header />
-<main class="flex-1">
+<main class="">
   <Page {context} />
 </main>
 <Footer />

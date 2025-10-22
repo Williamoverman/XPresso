@@ -8,6 +8,31 @@ const router = express.Router();
 
 /**
  * @openapi
+ * /reservations/admin/all:
+ *   get:
+ *     tags:
+ *       - Reservations
+ *     summary: Get all reservations (Admin only)
+ *     description: Returns all reservations in the system. Admin only.
+ *     responses:
+ *       200:
+ *         description: All reservations returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Reservation'
+ *       403:
+ *         description: Forbidden - Admin role required
+ */
+router.get('/admin/all',
+    validator.requireRoles('Admin'),
+    reservationController.getAllReservationsAdmin
+);
+
+/**
+ * @openapi
  * /reservations:
  *   get:
  *     tags:
@@ -41,6 +66,7 @@ const router = express.Router();
  *         description: User not found
  */
 router.get('/',
+    validator.requireRoles('User', 'ProPlayer'),
     validator.validateId([
         { source: 'query', field: 'id' }
     ]),
@@ -85,6 +111,7 @@ router.get('/',
  *                   example: "No reservation found by ID"
  */
 router.get('/:id', 
+    validator.requireRoles('User', 'ProPlayer'),
     validator.validateId(),
     validator.requireResourceOwner(Reservation, 'user_id'),
     reservationController.getReservationById
@@ -122,7 +149,8 @@ router.get('/:id',
  *                   type: string
  *                   example: "Missing required fields:"
  */
-router.post('/', 
+router.post('/',
+    validator.requireRoles('User', 'ProPlayer'),
     validator.checkIfExists([
         { model: User, source: 'body', field: 'user_id' },
         { model: Ad, source: 'body', field: 'ad_id' }
@@ -185,6 +213,7 @@ router.post('/',
  *                   example: "Missing required fields:"
  */
 router.patch('/:id', 
+    validator.requireRoles('User', 'ProPlayer'),
     validator.checkIfExists([
         { model: Reservation, source: 'params', field: 'id' }
     ]),

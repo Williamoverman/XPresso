@@ -1,4 +1,4 @@
-import { Reservation } from "../database-helper.js";
+import { Ad, Reservation, User } from "../database-helper.js";
 import createService from "../helpers/generic-helper.js"
 
 const reservationService = createService(Reservation, {
@@ -12,7 +12,17 @@ const reservationService = createService(Reservation, {
     }
 });
 
+async function findAllAdmin() {
+    return reservationService.findAll({
+        include: [
+            { model: User, attributes: ['id', 'username', 'email'] },
+            { model: Ad, attributes: ['id', 'name', 'service_type'] }
+        ]
+    });
+}
+
 export default {
+    findAllAdmin,
     getAll: reservationService.findAll.bind(reservationService),
     getById: reservationService.findById.bind(reservationService),
     create: reservationService.create.bind(reservationService),

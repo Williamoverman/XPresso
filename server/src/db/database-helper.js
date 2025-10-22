@@ -131,6 +131,7 @@ const Ad = sequelize.define('Ad', {
     },
     name: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false
     },
     description: {

@@ -9,6 +9,12 @@ const login = async (req, res, next) => {
 
         const user = await authQueries.getByEmail(email);
 
+        if (!user.is_active) {
+            const error = new Error('Your account has been deactived by an admin');
+            error.status = StatusCodes.UNAUTHORIZED;
+            throw error;
+        }
+
         if (!user || !await bcrypt.compare(password, user.password)) {
             const error = new Error('Invalid email or password');
             error.status = StatusCodes.UNAUTHORIZED;
