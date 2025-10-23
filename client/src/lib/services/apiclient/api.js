@@ -21,12 +21,17 @@ class ApiClient {
         };
         
         try {
+            console.log(`${this.baseUrl}${endpoint}`, config)
             const response = await fetch(`${this.baseUrl}${endpoint}`, config);
         
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
                 throw new Error(error.message || `HTTP ${response.status}`);
             }
+
+            const contentLength = response.headers.get('content-length');
+            if (response.status === 204 || contentLength === '0')
+                return null;
         
             return await response.json();
         } catch (error) {

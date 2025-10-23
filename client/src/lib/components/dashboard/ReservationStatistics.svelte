@@ -52,7 +52,8 @@
         const counts = { pending: 0, confirmed: 0, completed: 0, cancelled: 0 };
         reservations.forEach(res => {
             const status = res.status?.toLowerCase() || 'pending';
-            if (status in counts) counts[status]++;
+            if (status in counts) 
+                counts[status]++;
         });
         return {
             total,
@@ -99,39 +100,39 @@
         emptyMessage="Geen reserveringen gevonden"
     >
         {#snippet children(data, reload)}
-            <article class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                <fieldset class="stat-card">
+            <section class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <article class="stat-card">
                     <p class="stat-label">Totaal Reserveringen</p>
                     <p class="stat-value">{stats.total}</p>
-                </fieldset>
-                <fieldset class="stat-card">
+                </article>
+                <article class="stat-card">
                     <p class="stat-label">Totaal Advertenties</p>
                     <p class="stat-value">{stats.adCount}</p>
-                </fieldset>
-                <fieldset class="stat-card">
+                </article>
+                <article class="stat-card">
                     <p class="stat-label">Gem. per Advertentie</p>
                     <p class="stat-value">{stats.avgPerAd}</p>
-                </fieldset>
-            </article>
+                </article>
+            </section>
 
             <section class="space-y-4">
                 {#each groupedReservations as { ad, reservations: adRes, stats }}
-                    <fieldset class="card">
+                    <article class="card">
                         <button
                             onclick={() => toggleAd(ad.id)}
                             class="w-full px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-blue-800/30 transition-all duration-200"
                         >
-                            <fieldset class="text-left">
+                            <article class="text-left">
                                 <h3 class="text-white text-base sm:text-lg">{ad.name}</h3>
                                 <p class="text-xs sm:text-sm text-white/60">{ad.service_type}</p>
-                            </fieldset>
-                            <fieldset class="flex items-center gap-4 self-end sm:self-auto">
+                            </article>
+                            <article class="flex items-center gap-4 self-end sm:self-auto">
                                 <span class="text-right">
                                     <p class="text-xl sm:text-2xl text-white">{stats.total}</p>
                                     <p class="text-xs text-white/60">reserveringen</p>
                                 </span>
                                 <i class="fa-light fa-chevron-{expandedAd === ad.id ? 'up' : 'down'} text-white/60"></i>
-                            </fieldset>
+                            </article>
                         </button>
 
                         {#if expandedAd === ad.id}
@@ -171,7 +172,7 @@
                                 </article>
                             </article>
                         {/if}
-                    </fieldset>
+                    </article>
                 {/each}
             </section>
         {/snippet}

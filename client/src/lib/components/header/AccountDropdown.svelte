@@ -1,5 +1,4 @@
 <script>
-    import router from "page";
     import { authState } from "../../state/authState.svelte.js";
 
     let { isDropDownOpen, handleLogout } = $props();
@@ -26,6 +25,7 @@
                 <span>My Account</span>
                 <i class="fa-light fa-arrow-right"></i>
             </a>
+            {#if !authState.isAdmin()}
             <a
                 href="/reservations"
                 class="group"
@@ -34,6 +34,7 @@
                 <span>My Reservations</span>
                 <i class="fa-light fa-arrow-right"></i>
             </a>
+            {/if}
             <button
                 class="group"
                 onclick={handleLogout}

@@ -22,7 +22,7 @@
             allProPlayers = await proPlayerService.getAll();
 
             if (urlGameId)
-                selectedGameId = urlGameId;
+                selectedGameId = allGames.find(game => game.id == urlGameId)?.id || '';
         } catch (err) {
         } finally {
             isLoading = false;
@@ -74,15 +74,15 @@
             </p>
         {:else}
             <form class="grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit={(e) => e.preventDefault()}>
-                <fieldset class="flex flex-col border-none">
-                    <label for="game-filter" class="text-sm mb-2 text-gray-300">
+                <fieldset>
+                    <label for="game-filter">
                         <i class="fa-light fa-gamepad mr-2" aria-hidden="true"></i>
                         Spel
                     </label>
                     <select 
                         id="game-filter" 
                         bind:value={selectedGameId} 
-                        class="bg-black border-2 border-pink-500 rounded-lg px-4 py-2.5 text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors" 
+                        class="border-pink-500 cursor-pointer focus:border-blue-500" 
                         aria-label="Filter op spel">
                         <option value="">Alle spellen</option>
                         {#each allGames as game}
@@ -91,15 +91,15 @@
                     </select>
                 </fieldset>
                 
-                <fieldset class="flex flex-col border-none">
-                    <label for="proplayer-filter" class="text-sm mb-2 text-gray-300">
+                <fieldset>
+                    <label for="proplayer-filter">
                         <i class="fa-light fa-user-crown mr-2" aria-hidden="true"></i>
                         Pro Speler
                     </label>
                     <select 
                         id="proplayer-filter" 
                         bind:value={selectedProPlayerId} 
-                        class="bg-black border-2 border-purple-500 rounded-lg px-4 py-2.5 text-white cursor-pointer focus:outline-none focus:border-blue-500 transition-colors" 
+                        class="border-purple-500 cursor-pointer focus:border-blue-500" 
                         aria-label="Filter op pro speler">
                         <option value="">Alle pro spelers</option>
                         {#each allProPlayers as player}
@@ -108,8 +108,8 @@
                     </select>
                 </fieldset>
                 
-                <fieldset class="flex flex-col border-none">
-                    <label for="service-search" class="text-sm mb-2 text-gray-300">
+                <fieldset>
+                    <label for="service-search">
                         <i class="fa-light fa-search mr-2" aria-hidden="true"></i>
                         Service Type
                     </label>
@@ -118,7 +118,7 @@
                         type="search"
                         bind:value={searchServiceType}
                         placeholder="Zoek service type..."
-                        class="bg-black border-2 border-blue-500 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-500 cursor-text focus:outline-none focus:border-pink-500 transition-colors"
+                        class="border-blue-500 placeholder:text-gray-500 cursor-text focus:border-pink-500"
                         aria-label="Zoek op service type"
                     />
                 </fieldset>
@@ -126,3 +126,16 @@
         {/if}
     </header>
 </section>
+
+<style>
+    @reference "tailwindcss";
+    select, input {
+        @apply bg-black border-2 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors;
+    }
+    fieldset {
+        @apply flex flex-col border-none;
+    }
+    label {
+        @apply text-sm mb-2 text-gray-300;
+    }
+</style>

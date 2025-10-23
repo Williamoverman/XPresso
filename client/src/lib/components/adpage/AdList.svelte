@@ -5,126 +5,138 @@
     import Modal from '../modal/Modal.svelte';
     import Toast from '../Toast.svelte';
     import DataLoader from '../DataLoader.svelte';
-
-    let toastComponent = $state(null);
-    let dataLoader = $state(null);
-    let allAds = $state([]);
-    let isLoading = $state(true);
-    let error = $state(null);
-    let modalError = $state(null);
+    import AdRow from './AdRow.svelte';
 
     let { filters = {} } = $props();
-    let modalOpen = $state(false);
-    let selectedAdId = $state(0);
+    
+    let toast = $state(null);
+    let loader = $state(null);
+    let ads = $state([]);
+    let loading = $state(true);
+    let error = $state(null);
+    
+    let reserveModal = $state(false);
+    let editModal = $state(false);
+    let selectedId = $state(0);
+    let selectedAd = $state(null);
+
+    const filteredAds = $derived(ads.filter(ad => {
+        if (filters.game_id && ad.game_id != filters.game_id) return false;
+        if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id) return false;
+        if (filters.service_type && !ad.service_type.toLowerCase().includes(filters.service_type.toLowerCase())) return false;
+        return true;
+    }));
+
+    const reserveFields = [
+        { name: 'start_date', label: 'Start datum', type: 'datetime-local', required: true },
+        { name: 'end_date', label: 'Eind datum', type: 'datetime-local', required: true },
+        { name: 'customer_notes', label: 'Notities', type: 'text' },
+    ];
+
+    const editFields = $derived(!selectedAd ? [] : [
+        { name: 'name', label: 'Naam', type: 'text', required: true, value: selectedAd.name },
+        { name: 'description', label: 'Beschrijving', type: 'text', required: true, value: selectedAd.description },
+        { name: 'service_type', label: 'Service type', type: 'text', required: true, value: selectedAd.service_type },
+        { name: 'max_reservations_per_user', label: 'Max/gebruiker', type: 'number', required: true, min: 1, value: selectedAd.max_reservations_per_user },
+        { name: 'total_spots_available', label: 'Totaal plekken', type: 'number', required: true, min: 1, value: selectedAd.total_spots_available },
+        { name: 'max_duration_minutes', label: 'Max duur (min)', type: 'number', required: true, min: 1, value: selectedAd.max_duration_minutes }
+    ]);
 
     async function loadAds() {
         return await adService.getAll('?with_spots=true');
     }
 
-    let filteredAds = $derived(allAds.filter(ad => {
-        if (filters.game_id && ad.game_id != filters.game_id)
-            return false;
-        
-        if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id)
-            return false;
-        
-        if (filters.service_type && !ad.service_type.toLowerCase().includes(filters.service_type.toLowerCase()))
-            return false;
-        
-        return true;
-    }));
-
-    let fields = $derived.by(() => [
-        { name: 'start_date', label: 'Start datum', type: 'datetime-local', required: true },
-        { name: 'end_date', label: 'Eind datum', type: 'datetime-local', required: true },
-        { name: 'customer_notes', label: 'Notities', type: 'text' },
-    ]);
-
-    async function openModal(id) {
-        if (authState.isProPlayer() || authState.isUser()) {
-            modalOpen = true;
-            selectedAdId = id;
-        } else if (authState.isAdmin())
-            toastComponent.showToast('Als admin kun je geen reservering plaatsen.', 'error'); 
-        else
-            toastComponent.showToast('Je moet ingelogd zijn om te reserveren.', 'error'); 
+    function openReserveModal(id) {
+        if (!authState.isLoggedIn) {
+            toast.showToast('Je moet ingelogd zijn', 'error');
+            return;
+        }
+        if (authState.isAdmin()) {
+            toast.showToast('Admins kunnen niet reserveren', 'error');
+            return;
+        }
+        selectedId = id;
+        reserveModal = true;
     }
 
-    async function handleAddReservation(data) {    
-        data.user_id = authState.getId();
-        data.ad_id = selectedAdId;
-        await reservationService.create(data);
-        toastComponent.showToast('Reservering geplaatst', 'success');
-        selectedAdId = 0;
-        dataLoader.reload();
+    async function handleReserve(data) {
+        await reservationService.create({
+            ...data,
+            user_id: authState.getId(),
+            ad_id: selectedId
+        });
+        toast.showToast('Reservering geplaatst', 'success');
+        loader.reload();
     }
 
-    async function deletion(ad_id, event) {
-        event.stopPropagation();
-        
+    async function handleEdit(data) {
+        await adService.update(selectedId, {
+            game_id: selectedAd.game_id,
+            name: data.name,
+            description: data.description,
+            max_reservations_per_user: data.max_reservations_per_user,
+            service_type: data.service_type,
+            total_spots_available: data.total_spots_available,
+            max_duration_minutes: data.max_duration_minutes
+        });
+        toast.showToast('Advertentie aangepast', 'success');
+        selectedAd = null;
+        loader.reload();
+    }
+
+    async function deletion(ad_id) {        
         if (confirm('Weet je zeker dat je deze advertentie wilt verwijderen?')) {
             try {
                 await adService.delete(ad_id);
-                toastComponent.showToast('Advertentie verwijderd', 'success');
-                await loadAds();
+                toast.showToast('Advertentie verwijderd', 'success');
+                await loader.reload();
             } catch (err) {
-                toastComponent.showToast(err, 'error');
+                toast.showToast(err, 'error');
             }
         }
     }
+
+    function openEditModal(ad) {
+        selectedAd = ad;
+        selectedId = ad.id;
+        editModal = true;
+    }
 </script>
 
-<Toast bind:this={toastComponent} />
+<Toast bind:this={toast} />
 
 <section class="w-full overflow-x-auto px-4 md:px-8 py-8">
     <DataLoader 
-        bind:this={dataLoader}
+        bind:this={loader}
         loadFunction={loadAds}
-        bind:data={allAds}
-        bind:isLoading
+        bind:data={ads}
+        bind:isLoading={loading}
         bind:error
         emptyMessage="Geen advertenties gevonden"
     >
-        {#snippet children(ads, reload)}
+        {#snippet children()}
             <table class="font-[Bungee] w-full bg-slate-900/40 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/10">
                 <thead class="bg-gradient-to-r from-blue-950/80 via-indigo-950/80 to-blue-950/80">
                     <tr>
-                        <th class="text-left text-sm">Naam</th>
-                        <th class="text-left text-sm">Beschrijving</th>
-                        <th class="text-left text-sm">Service type</th>
-                        <th class="text-center text-sm">Plekken beschikbaar</th>
-                        <th class="text-center text-sm">Max/Gebruiker</th>
-                        <th class="text-center text-sm">Max duur (min)</th>
-                        <th class="text-center text-sm">Acties</th>
+                        <th class="text-left">Naam</th>
+                        <th class="text-left">Beschrijving</th>
+                        <th class="text-left">Service type</th>
+                        <th class="text-center">Plekken</th>
+                        <th class="text-center">Max/User</th>
+                        <th class="text-center">Duur (min)</th>
+                        <th class="text-center">Acties</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {#each filteredAds as ad, index}
-                        <tr onclick={() => ad.metadata.spots_still_available != 0 ? openModal(ad.id) : toastComponent.showToast('Geen plek', 'info') } class="hover:bg-blue-800 transition-all duration-300 border-b border-white/5 {index % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-900/40'}">
-                            <td class="text-lg">{ad.name}</td>
-                            <td class="text-sm">{ad.description}</td>
-                            <td class="text-sm">{ad.service_type}</td>
-                            {#if ad.metadata.spots_still_available === 0}
-                                <td class="text-center text-md">Geen plek</td>
-                            {:else}
-                                <td class="text-center text-lg flex flex-row justify-center items-center"><p class="text-green-500 pr-1">{ad.metadata.spots_still_available}</p>/<p class="text-red-500 pl-1">{ad.total_spots_available}</p></td>
-                            {/if}
-                            <td class="text-center text-lg">{ad.max_reservations_per_user}</td>
-                            <td class="text-center text-lg">{ad.max_duration_minutes}</td>
-                            <td class="text-center">
-                                {#if authState.isProPlayer() && authState.getId() === ad.pro_player_id}
-                                    <button 
-                                        onclick={(e) => deletion(ad.id, e)}
-                                        class="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 text-sm"
-                                        type="button">
-                                        <i class="fa-light fa-trash mr-1"></i>
-                                        Verwijder
-                                    </button>
-                                {:else}
-                                    <span class="text-gray-600">-</span>
-                                {/if}
-                            </td>
-                        </tr>
+                    {#each filteredAds as ad, i}
+                        <AdRow 
+                            {ad} 
+                            {i}
+                            onReserve={() => openReserveModal(ad.id)}
+                            onEdit={() => openEditModal(ad)}
+                            onDelete={() => deletion(ad.id)}
+                            onNoSpots={() => toast.showToast('Geen plek', 'info')}
+                        />
                     {/each}
                 </tbody>
             </table>
@@ -134,19 +146,27 @@
 
 <Modal 
     title="Maak reservering aan"
-    fields={fields}
-    onSubmit={handleAddReservation}
-    bind:isOpen={modalOpen}
-    bind:loading={isLoading}
-    bind:error={modalError}
+    fields={reserveFields}
+    onSubmit={handleReserve}
+    bind:isOpen={reserveModal}
+    bind:loading
     submitText="Reserveer"
 />
+
+{#if selectedAd}
+<Modal 
+    title="Pas advertentie aan"
+    fields={editFields}
+    onSubmit={handleEdit}
+    bind:isOpen={editModal}
+    bind:loading
+    submitText="Opslaan"
+/>
+{/if}
+
 <style>
     @reference "tailwindcss";
-    tr th, tr td {
-        @apply px-6 py-4 text-white/90;
-    }
-    tr th {
-        @apply border-b border-slate-500;
+    th {
+        @apply px-6 py-4 text-white/90 text-sm border-b border-slate-500;
     }
 </style>

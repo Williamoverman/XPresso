@@ -3,40 +3,42 @@
     import DataLoader from "../DataLoader.svelte";
     import { authState } from "../../state/authState.svelte.js";
 
-    let dataLoader = $state(null);
-    let allReservations = $state(null);
-    let isLoading = $state(true);
-    let error = $state(null);
+    let loader = $state(null);
+    let reservations = $state([]);
+    let loading = $state(true);
+    let errorMsg = $state(null);
+    let statusFilter = $state('All');
 
-    async function getAllReservations() {
+    async function loadReservations() {
         while (authState.isValidating) {
+            // wait for the auth state to be done validating the JWT, because otherwise id will be undefined
             await new Promise(resolve => setTimeout(resolve, 100));
         }
-
         return reservationService.getAll(`?id=${authState.getId()}`);
     }
 
-    function getStatusColor(status) {
-        const colors = {
-            'Pending': 'bg-yellow-500/20 text-yellow-400',
-            'Cancelled': 'bg-red-500/20 text-red-400',
-            'Completed': 'bg-green-500/20 text-green-400'
-        };
-        return colors[status] || 'bg-gray-500/20 text-gray-400';
+    function getColor(status) {
+        switch (status) {
+            case 'Pending': return 'bg-yellow-500/20 text-yellow-400';
+            case 'Cancelled': return 'bg-red-500/20 text-red-400';
+            case 'Completed': return 'bg-green-500/20 text-green-400';
+            default: return 'bg-gray-500/20 text-gray-400';
+        }
     }
 
-    function getStatusIcon(status) {
-        const icons = {
-            'Pending': 'fa-clock',
-            'Cancelled': 'fa-times-circle',
-            'Completed': 'fa-flag-checkered'
-        };
-        return icons[status] || 'fa-circle';
+    function getIcon(status) {
+        if (status === 'Pending') 
+            return 'fa-clock';
+        if (status === 'Cancelled') 
+            return 'fa-times-circle';
+        if (status === 'Completed') 
+            return 'fa-flag-checkered';
+
+        return 'fa-circle';
     }
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleString('nl-NL', {
+    function formatDate(date) {
+        return new Date(date).toLocaleString('nl-NL', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -45,110 +47,136 @@
         });
     }
 
-    function calculateDuration(start, end) {
-        const startDate = new Date(start);
-        const endDate = new Date(end);
-        const diff = endDate.getTime() - startDate.getTime();
+    function getDuration(start, end) {
+        const startTime = new Date(start).getTime();
+        const endTime = new Date(end).getTime();
+        const diff = endTime - startTime;
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         
         if (hours > 0)
-            return `${hours}u, ${minutes}m`;
+            return `${hours} uur, ${minutes} min`;
 
         return `${minutes} minuten`;
     }
 
-    async function updateReservation(id, cancel) {
-        // if cancelled just update status to cancelled otherwise update status to voltooid
-        if (cancel && !confirm('Weet je zeker dat je deze reservering wilt annuleren?'))
+    async function updateRes(id, isCancel) {
+        const action = isCancel ? 'annuleren' : 'voltooien';
+        if (!confirm(`Weet je zeker dat je deze reservering wilt ${action}?`))
             return;
 
-        if (!cancel && !confirm('Weet je zeker dat je deze reservering wilt markeren als voltooid?'))
-            return;
-        
         try {
-            await reservationService.update(id, { status: cancel ? 'Cancelled' : 'Completed',  });
-            dataLoader?.reload();
+            await reservationService.update(id, { status: isCancel ? 'Cancelled' : 'Completed' });
+            loader?.reload();
         } catch (err) {
-            error = err?.message || `Fout bij het ${cancel ? 'annuleren' : 'voltooien'} van de reservering.`;
+            errorMsg = err?.message || `Kon de reservering niet ${action}.`;
         }
+    }
+
+    const statuses = ['All', 'Pending', 'Cancelled', 'Completed'];
+    function filterRes(res) {
+        return statusFilter === 'All' ? res : res.filter(r => r.status === statusFilter);
+    }
+    function countStatus(res, status) {
+        return status === 'All' ? res.length : res.filter(item => item.status === status).length;
     }
 </script>
 
 <DataLoader 
-    bind:this={dataLoader}
-    loadFunction={getAllReservations}
-    bind:data={allReservations}
-    bind:isLoading
-    bind:error
+    bind:this={loader}
+    loadFunction={loadReservations}
+    bind:data={reservations}
+    bind:isLoading={loading}
+    bind:error={errorMsg}
     emptyMessage="Geen reserveringen gevonden"
 >
-    {#snippet children(reservations, reload)}
-        <section class="px-4 md:px-8 py-8 font-[Bungee] max-w-4/6">
-            <ul class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
-                {#each reservations as reservation}
-                    <li class="bg-slate-900/40 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/10 transition-all duration-300 hover:scale-105 hover:border-blue-500/50">
-                        <header class="px-6 py-4 border-b border-white/10 {getStatusColor(reservation.status)}">
-                            <fieldset class="flex items-center justify-between">
-                                <span class="text-sm tracking-wider">{reservation.status}</span>
-                                <i class="fa-light {getStatusIcon(reservation.status)} text-xl"></i>
-                            </fieldset>
-                        </header>
+    {#snippet children(data, reload)}
+        <section class="px-4 py-6 font-[Bungee] max-w-4/5 mx-auto">
+            <header class="mb-6 bg-slate-900/30 rounded-2xl p-12 border border-white/10">
+                <h2 class="text-white text-sm mb-3">Kies een status</h2>
+                <nav class="flex flex-wrap gap-2">
+                    {#each statuses as status}
+                        <button
+                            class="filter-btn {statusFilter === status ? 'active' : ''}"
+                            onclick={() => statusFilter = status}
+                        >
+                            <i class="fa-light {status === 'All' ? 'fa-list' : getIcon(status)}"></i>
+                            <span>{status === 'All' ? 'Alle' : status}</span>
+                            <span class="count">{countStatus(data, status)}</span>
+                        </button>
+                    {/each}
+                </nav>
+            </header>
 
-                        <section class="px-6 py-5 space-y-4">
-                            <article class="space-y-3">
-                                <article class="flex items-start">
+            {#if filterRes(data).length === 0}
+                <div class="text-center py-10 text-white/60">
+                    <i class="fa-light fa-inbox text-3xl mb-3"></i>
+                    <p>Geen {statusFilter === 'All' ? '' : statusFilter.toLowerCase()} reserveringen</p>
+                </div>
+            {:else}
+                <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {#each filterRes(data) as res}
+                        <li class="bg-slate-900/30 rounded-lg border border-white/10 hover:scale-102 transition-all">
+                            <header class="p-4 border-b border-white/10 {getColor(res.status)}">
+                                <div class="flex justify-between">
+                                    <span class="text-sm">{res.status}</span>
+                                    <i class="fa-light {getIcon(res.status)} text-lg"></i>
+                                </div>
+                            </header>
+
+                            <section class="p-4 space-y-3">
+                                <div class="flex items-start">
                                     <i class="fa-light fa-calendar-check text-green-400"></i>
-                                    <fieldset class="flex-1 text-white">
+                                    <div class="flex-1 text-white">
                                         <p>Start</p>
-                                        <time datetime={reservation.start_date} class="text-sm">{formatDate(reservation.start_date)}</time>
-                                    </fieldset>
-                                </article>
+                                        <time class="text-sm">{formatDate(res.start_date)}</time>
+                                    </div>
+                                </div>
 
-                                <article class="flex items-start">
+                                <div class="flex items-start">
                                     <i class="fa-light fa-calendar-xmark text-red-400"></i>
-                                    <fieldset class="flex-1 text-white">
+                                    <div class="flex-1 text-white">
                                         <p>Eind</p>
-                                        <time datetime={reservation.end_date} class=" text-sm">{formatDate(reservation.end_date)}</time>
-                                    </fieldset>
-                                </article>
-                            </article>
+                                        <time class="text-sm">{formatDate(res.end_date)}</time>
+                                    </div>
+                                </div>
 
-                            <article class="flex items-center pt-3 border-t border-white/10">
-                                <i class="fa-light fa-clock text-blue-400"></i>
-                                <fieldset class="flex-1 text-white">
-                                    <p class="mb-1">Duur</p>
-                                    <p>{calculateDuration(reservation.start_date, reservation.end_date)}</p>
-                                </fieldset>
-                            </article>
+                                <div class="flex items-center pt-2 border-t border-white/10">
+                                    <i class="fa-light fa-clock text-blue-400"></i>
+                                    <div class="flex-1 text-white">
+                                        <p>Duur</p>
+                                        <p>{getDuration(res.start_date, res.end_date)}</p>
+                                    </div>
+                                </div>
 
-                            <fieldset class="pt-3 border-t border-white/10 text-white">
-                                <p class="mb-2">Notities</p>
-                                <blockquote class=" text-xs">{reservation.customer_notes || "Geen opmerkingen"}</blockquote>
-                            </fieldset>
+                                <div class="pt-2 border-t border-white/10 text-white">
+                                    <p class="mb-1">Notities</p>
+                                    <p class="text-xs">{res.customer_notes || "Geen notities"}</p>
+                                </div>
 
-                            {#if reservation.status === 'Pending'}
-                            <footer class="flex pt-3 gap-4 border-t border-white/10 justify-center">
-                                <button 
-                                    class="bg-red-500 border-red-500/50 hover:bg-red-600"
-                                    onclick={() => updateReservation(reservation.id, true)}
-                                    aria-label={`Annuleer reservering ${reservation.id}`}
-                                >
-                                    <i class="fa-duotone fa-regular fa-xmark"></i>
-                                </button>
-                                <button 
-                                    class="bg-green-500 border-green-500/50 hover:bg-green-600"
-                                    onclick={() => updateReservation(reservation.id, false)}
-                                    aria-label={`Markeer reservering ${reservation.id} als voltooid`}
-                                >
-                                    <i class="fa-duotone fa-regular fa-check"></i>
-                                </button>
-                            </footer>
-                            {/if}
-                        </section>
-                    </li>
-                {/each}
-            </ul> 
+                                {#if res.status === 'Pending'}
+                                    <footer class="flex pt-2 gap-3 border-t border-white/10">
+                                        <button 
+                                            class="bg-red-500 hover:bg-red-600 btn"
+                                            onclick={() => updateRes(res.id, true)}
+                                            aria-label="knop"
+                                        >
+                                            <i class="fa-duotone fa-xmark"></i>
+                                        </button>
+                                        <button 
+                                            class="bg-green-500 hover:bg-green-600 btn"
+                                            onclick={() => updateRes(res.id, false)}
+                                            aria-label="knop2"
+                                        >
+                                            <i class="fa-duotone fa-check"></i>
+                                        </button>
+                                    </footer>
+                                {/if}
+                            </section>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
         </section>
     {/snippet}
 </DataLoader>
@@ -159,12 +187,27 @@
         @apply text-xs;
     }
     i {
-        @apply mr-3 mt-1;
+        @apply mr-2 mt-1;
     }
-    button {
-        @apply py-2 rounded-xl border-2 text-white flex-1;
+    .btn {
+        @apply py-2 rounded-lg border border-white/10 text-white flex-1;
     }
-    button i {
-        @apply m-0 text-white text-lg;
+    .btn i {
+        @apply m-0 text-lg;
+    }
+    .filter-btn {
+        @apply px-3 py-1 rounded-lg border border-white/10 text-white/70 hover:bg-white/5;
+    }
+    .filter-btn.active {
+        @apply bg-blue-500/20 border-blue-500 text-blue-400;
+    }
+    .filter-btn i {
+        @apply m-0 text-base;
+    }
+    .count {
+        @apply ml-2 bg-white/10 px-2 py-0.5 rounded-full text-xs;
+    }
+    .filter-btn.active .count {
+        @apply bg-blue-500/30;
     }
 </style>

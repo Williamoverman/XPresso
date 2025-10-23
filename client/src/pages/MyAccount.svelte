@@ -18,9 +18,11 @@
     <article class="md:w-1/2 w-full">
         <PersonalInfo />
     </article>
+    {#if !authState.isAdmin()}
     <article class="md:w-1/2 w-full text-center font-[Bungee] mb-4">
         <button class="p-8 rounded-xl border-2 border-slate-800 bg-slate-900 text-white hover:bg-slate-800 hover:cursor-pointer" onclick={() => router("/reservations")}>
             My reservations
         </button>
     </article>
+    {/if}
 </section>

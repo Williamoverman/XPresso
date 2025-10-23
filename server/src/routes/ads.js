@@ -197,16 +197,9 @@ router.post('/',
  *                   example: "Missing required fields:"
  */
 router.patch('/:id', 
-    validator.validateId([
-        {source: 'body', field: 'game_id'}
-    ]),
-    validator.checkIfExists([
-        {model: Game, source: 'body', field: 'game_id'}
-    ]),
     validator.requireAuth,
     validator.requireResourceOwner(Ad, 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
-    validator.requireFields('name', 'max_reservations_per_user', 'service_type', 'total_spots_available', 'max_duration_minutes'),
     validator.validatePositiveNumber('max_reservations_per_user', 'total_spots_available', 'max_duration_minutes'),
     adController.updateAd
 );

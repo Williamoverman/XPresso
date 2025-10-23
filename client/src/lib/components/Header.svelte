@@ -1,5 +1,6 @@
 <script>
 	import router from 'page';
+    import { onMount } from 'svelte';
     import { authService } from '../services/authService.js';
     import Logo from './header/Logo.svelte';
     import NavLinks from './header/NavLinks.svelte';
@@ -20,6 +21,15 @@
             console.error('Logout failed:', err);
         }
     }
+
+	function handleRouteChange() {
+		isDropDownOpen = false;
+		isOpen = false;
+	}
+
+	onMount(() => {		
+		router('*', (handleRouteChange));
+	});
 </script>
 
 <header class="font-[Bungee] bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white">
