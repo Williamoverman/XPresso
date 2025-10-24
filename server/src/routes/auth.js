@@ -81,7 +81,6 @@ router.post('/login',
  *                   example: "Invalid or missing token"
  */
 router.post('/logout', 
-    validator.requireAuth,
     authController.logout
 );
 

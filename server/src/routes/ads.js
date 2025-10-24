@@ -144,6 +144,7 @@ router.post('/',
     validator.requireOwner('body', 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
     validator.requireFields('name', 'max_reservations_per_user', 'service_type', 'total_spots_available', 'max_duration_minutes'),
+    validator.checkIfAdNameExists,
     validator.validatePositiveNumber('max_reservations_per_user', 'total_spots_available', 'max_duration_minutes'),
     adController.createAd
 );
@@ -200,6 +201,7 @@ router.patch('/:id',
     validator.requireAuth,
     validator.requireResourceOwner(Ad, 'pro_player_id'),
     validator.requireRoles('ProPlayer'),
+    validator.checkIfAdNameExists,
     validator.validatePositiveNumber('max_reservations_per_user', 'total_spots_available', 'max_duration_minutes'),
     adController.updateAd
 );

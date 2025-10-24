@@ -32,7 +32,7 @@ describe('POST /reviews', () => {
   it('returns 401 (needs to be logged in)', async () => {
     const res = await request(app).post('/reviews').send(dummyReview);
     expect(res.status).toBe(401);
-    expect(res.body.message).toBe('Unauthorized: invalid or expired token');
+    expect(res.body.message).toBe('invalid or expired token');
   });
 
   it('returns 400 (missing required fields)', async () => {

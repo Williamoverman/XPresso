@@ -5,5 +5,6 @@ Place the credentials for at least two users in the table below. There should be
 
 |    id    |       email       | password | username | is_active |
 |----------|-------------------|----------|----------|-----------|
-|    `1`   | `admin@gmail.com` |  `admin` | `admin`  |  `true`   |
-|    `2`   | `user@gmail.com`  |  `user`  | `user`   |  `true`   | 
+|    `1`   | `admin@gmail.com` |  `adminadmin` | `admin`  |  `true`   |
+|    `2`   | `user@gmail.com`  |  `useruser`  | `user`   |  `true`   | 
+|    `3`   | `proplayer@gmail.com`  |  `proplayerproplayer`  | `proplayer`   |  `true`   | 

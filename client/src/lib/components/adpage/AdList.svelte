@@ -1,4 +1,5 @@
 <script>
+    import { onMount, onDestroy } from 'svelte';
     import { adService } from '../../services/adService.js';
     import { authState } from '../../state/authState.svelte.js';
     import { reservationService } from '../../services/reservationService.js';
@@ -19,6 +20,38 @@
     let editModal = $state(false);
     let selectedId = $state(0);
     let selectedAd = $state(null);
+
+    let ws = $state(null);
+
+    onMount(() => {
+        ws = new WebSocket('ws://localhost:3000');
+        ws.onmessage = async (event) => {
+            try {
+                const message = JSON.parse(event.data);                
+                switch(message.type) {
+                    case 'ad_created':
+                        toast.showToast('Nieuwe advertentie toegevoegd', 'info');
+                        break;
+                    case 'ad_updated':
+                        toast.showToast('Advertentie bijgewerkt', 'info');
+                        break;
+                    case 'ad_deleted':
+                        toast.showToast('Advertentie verwijderd', 'info');
+                        break;
+                }
+                loader.reload();
+            } catch (err) {
+                console.error(err);
+            }
+        };
+    });
+
+    onDestroy(() => {
+        if (ws) {
+            ws.close();
+            ws = null;
+        }
+    });
 
     const filteredAds = $derived(ads.filter(ad => {
         if (filters.game_id && ad.game_id != filters.game_id) return false;
@@ -65,8 +98,6 @@
             user_id: authState.getId(),
             ad_id: selectedId
         });
-        toast.showToast('Reservering geplaatst', 'success');
-        loader.reload();
     }
 
     async function handleEdit(data) {
@@ -79,17 +110,13 @@
             total_spots_available: data.total_spots_available,
             max_duration_minutes: data.max_duration_minutes
         });
-        toast.showToast('Advertentie aangepast', 'success');
         selectedAd = null;
-        loader.reload();
     }
 
     async function deletion(ad_id) {        
         if (confirm('Weet je zeker dat je deze advertentie wilt verwijderen?')) {
             try {
                 await adService.delete(ad_id);
-                toast.showToast('Advertentie verwijderd', 'success');
-                await loader.reload();
             } catch (err) {
                 toast.showToast(err, 'error');
             }
@@ -122,7 +149,7 @@
                         <th class="text-left">Beschrijving</th>
                         <th class="text-left">Service type</th>
                         <th class="text-center">Plekken</th>
-                        <th class="text-center">Max/User</th>
+                        <th class="text-center">Max/Gebruiker</th>
                         <th class="text-center">Duur (min)</th>
                         <th class="text-center">Acties</th>
                     </tr>

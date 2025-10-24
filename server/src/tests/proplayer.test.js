@@ -21,13 +21,13 @@ describe('POST /pro-players', () => {
   it('returns 401 (needs to be logged in)', async () => {
     const res = await request(app).post(`/pro-players/2`);
     expect(res.status).toBe(401);
-    expect(res.body.message).toBe('Unauthorized: invalid or expired token');
+    expect(res.body.message).toBe('invalid or expired token');
   });
 
   it('returns 403 (already registered as proplayer)', async () => {
     const res = await request(app).post(`/pro-players/3`).set('Authorization', `Bearer ${proPlayerToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: requires one of [User]');
+    expect(res.body.message).toBe('requires one of User');
   });
 
   it('returns 404 (user not found)', async () => {
@@ -67,7 +67,7 @@ describe('PUT /pro-players/:id', () => {
   it('returns 404 (altering someone elses)', async () => {
     const res = await request(app).put(`/pro-players/1`).set('Authorization', `Bearer ${proPlayerToken}`).send({bio: "test", hourly_rate: 10});
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to interact with this user');
+    expect(res.body.message).toBe('not authorized to interact with this user');
   });
 });
 
@@ -121,7 +121,7 @@ describe('POST /pro-players/:id/games', () => {
   it('returns 401 (needs to be logged in)', async () => {
     const res = await request(app).post(`/pro-players/3/games`).send({ game_id: 1, current_rank: "none", years_experience: 4 });
     expect(res.status).toBe(401);
-    expect(res.body.message).toBe('Unauthorized: invalid or expired token');
+    expect(res.body.message).toBe('invalid or expired token');
   });
 
   it('returns 404 (pro player not found)', async () => {

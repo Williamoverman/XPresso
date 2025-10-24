@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { User } from "../db/database-helper.js";
+import { Ad, User } from "../db/database-helper.js";
 import validator from 'validator';
 import jwt from "jsonwebtoken";
 import createService from "../db/helpers/generic-helper.js";
@@ -129,8 +129,26 @@ async function checkIfEmailExists(req, res, next) {
 }
 
 /**
+ * Validator to check if ad name exists (slightly differs from generic existt check)
+ */
+async function checkIfAdNameExists(req, res, next) {
+    const { name } = req.body;
+
+    const service = createService(Ad);
+    const ad = await service.findAll({ where: { name: name } });
+    console.log(req.params.id)
+    if (ad.length > 0 && ad[0].id !== parseInt(req.params.id)) {
+        const error = new Error(`Advertentie naam bestaat al`);
+        error.status = StatusCodes.BAD_REQUEST;
+        throw error;
+    }
+        
+    next();
+}
+
+/**
  * Generic existence validator
- * @param {Array<{model: Object, source: string, field: string}>} validators - Array of validator objects
+ * @param {Array<{model: Object, source: string, field: string}>} validators Array of validator objects
  */
 function checkIfExists(validators = []) {
     return async (req, res, next) => {
@@ -152,7 +170,7 @@ function requireAuth(req, res, next) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            const error = new Error('Unauthorized: missing or invalid token');
+            const error = new Error('missing or invalid token');
             error.status = StatusCodes.UNAUTHORIZED;
             throw error;
         }
@@ -163,7 +181,7 @@ function requireAuth(req, res, next) {
         req.user = decoded;
         next();
     } catch (err) {
-        const error = new Error('Unauthorized: invalid or expired token');
+        const error = new Error('invalid or expired token');
         error.status = StatusCodes.UNAUTHORIZED;
         next(error);
     }
@@ -178,7 +196,7 @@ function requireRoles(...requiredRoles) {
   return (req, res, next) => {
     try {
       if (!req.user) {
-        const error = new Error('Unauthorized: user not authenticated');
+        const error = new Error('user not authenticated');
         error.status = StatusCodes.UNAUTHORIZED;
         throw error;
       }
@@ -187,7 +205,7 @@ function requireRoles(...requiredRoles) {
       
       if (requiredRoles.length === 0) {
         if (userRoles.length === 0) {
-          const error = new Error('Forbidden: At least one role required');
+          const error = new Error('At least one role required');
           error.status = StatusCodes.FORBIDDEN;
           throw error;
         }
@@ -196,7 +214,7 @@ function requireRoles(...requiredRoles) {
 
       const hasAccess = requiredRoles.some(role => userRoles.includes(role));
       if (!hasAccess) {
-        const error = new Error(`Forbidden: requires one of [${requiredRoles.join(', ')}]`);
+        const error = new Error(`requires one of ${requiredRoles.join(', ')}`);
         error.status = StatusCodes.FORBIDDEN;
         throw error;
       }
@@ -216,7 +234,7 @@ function requireRoles(...requiredRoles) {
 function requireOwner(source = 'params', field = 'id') {
     return (req, res, next) => {
         if (req.user.id !== parseInt(req[source]?.[field])) {
-            const error = new Error('Forbidden: not authorized to interact with this user');
+            const error = new Error('not authorized to interact with this user');
             error.status = StatusCodes.FORBIDDEN;
             throw error;
         }
@@ -240,7 +258,7 @@ function requireResourceOwner(model, ownerField = 'user_id', source = 'params', 
             const record = await service.findById(parseInt(req[source]?.[field]));
             
             if (record[ownerField] !== req.user.id) {
-                const error = new Error(`Forbidden: not authorized to modify this ${model.name}`);
+                const error = new Error(`not authorized to modify this ${model.name}`);
                 error.status = StatusCodes.FORBIDDEN;
                 return next(error);
             }
@@ -279,6 +297,7 @@ export default {
     validateRating,
     validateDates,
     checkIfEmailExists,
+    checkIfAdNameExists,
     checkIfExists,
     requireAuth,
     requireRoles,

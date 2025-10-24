@@ -21,7 +21,6 @@ class ApiClient {
         };
         
         try {
-            console.log(`${this.baseUrl}${endpoint}`, config)
             const response = await fetch(`${this.baseUrl}${endpoint}`, config);
         
             if (!response.ok) {

@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import adQueries from '../db/helpers/ad-helper.js';
+import { broadcast } from '../websocket.js';
 
 const getAllAds = async (req, res, next) => {
     try {
@@ -59,6 +60,7 @@ const createAd = async (req, res, next) => {
         };
 
         const createdAd = await adQueries.create(input);
+        broadcast('ad_created', createdAd);
         res.status(StatusCodes.CREATED).json(createdAd);
     } catch (error) {
         next(error);
@@ -91,6 +93,7 @@ const updateAd = async (req, res, next) => {
         if (max_duration_minutes) input.max_duration_minutes = max_duration_minutes;
 
         const updatedAd = await adQueries.update(id, input);
+        broadcast('ad_updated', updatedAd);
         res.status(StatusCodes.OK).json(updatedAd);
     } catch (error) {
         next(error);
@@ -102,6 +105,7 @@ const deleteAd = async (req, res, next) => {
         const { id } = req.params;
 
         await adQueries.remove(id);
+        broadcast('ad_deleted', { id: id });
         res.status(StatusCodes.NO_CONTENT).json();
     } catch (error) {
         next(error);

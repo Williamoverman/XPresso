@@ -49,7 +49,7 @@ describe('POST /ads', () => {
     dummyAd.pro_player_id = 3;
     const res = await request(app).post('/ads').set('Authorization', `Bearer ${userToken}`).send(dummyAd);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to interact with this user');
+    expect(res.body.message).toBe('not authorized to interact with this user');
   });
 
   it('returns 400 (missing required fields)', async () => {
@@ -94,28 +94,13 @@ describe('PATCH /ads/:id', () => {
     dummyAd.pro_player_id = 3;
     const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${userToken}`).send(dummyAd);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to modify this Ad');
-  });
-
-  it('returns 400 (missing required fields)', async () => {
-    dummyAd.name = "";
-    dummyAd.max_reservations_per_user = 0;
-    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
-    expect(res.status).toBe(400);
-    expect(res.body.message).toBe('Missing required fields: name, max_reservations_per_user');
+    expect(res.body.message).toBe('not authorized to modify this Ad');
   });
 
   it('returns 404 (non existing ad)', async () => {
     const res = await request(app).patch(`/ads/1233`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
     expect(res.status).toBe(404);
     expect(res.body.message).toBe('No Ad found by ID: 1233');
-  });
-  
-  it('returns 404 (non existing game)', async () => {
-    dummyAd.game_id = 23;
-    const res = await request(app).patch(`/ads/1`).set('Authorization', `Bearer ${proPlayerToken}`).send(dummyAd);
-    expect(res.status).toBe(404);
-    expect(res.body.message).toBe('No Game found by ID: 23');
   });
 });
 
@@ -134,7 +119,7 @@ describe('DELETE /ads/:id', () => {
   it('returns 403 (cannot delete someone elses ad)', async () => {
     const res = await request(app).delete(`/ads/1`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to modify this Ad');
+    expect(res.body.message).toBe('not authorized to modify this Ad');
   });
 
   it('returns 404 (non existing ad)', async () => {

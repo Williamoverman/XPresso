@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import reservationQueries from '../db/helpers/reservation-helper.js';
+import { broadcast } from '../websocket.js';
 
 /**
  * (admin only)
@@ -47,6 +48,7 @@ const createReservation = async (req, res, next) => {
         };
 
         const createdReservation = await reservationQueries.create(input);
+        broadcast('reservation_created', createdReservation);
         res.status(StatusCodes.CREATED).json(createdReservation);
     } catch (error) {
         next(error);
@@ -65,6 +67,7 @@ const updateReservation = async (req, res, next) => {
         if (end_date) input.end_date = end_date;
 
         const updatedReservation = await reservationQueries.update(id, input);
+        broadcast('reservation_updated', updatedReservation);
         res.status(StatusCodes.OK).json(updatedReservation);
     } catch (error) {
         next(error);
@@ -76,6 +79,7 @@ const deleteReservation = async (req, res, next) => {
         const { id } = req.params;
 
         await reservationQueries.remove(id);
+        broadcast('reservation_deleted', { id: id });
         res.status(StatusCodes.NO_CONTENT).json();
     } catch (error) {
         next(error);

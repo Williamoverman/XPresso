@@ -115,7 +115,7 @@ describe('PATCH /users/:id', () => {
   it('returns 403 (non-owner access)', async () => {
     const res = await request(app).patch(`/users/3`).set('Authorization', `Bearer ${userToken}`).send(dummyUser);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to interact with this user');
+    expect(res.body.message).toBe('not authorized to interact with this user');
   });
 
   it('returns 404 (non existing user)', async () => {
@@ -146,7 +146,7 @@ describe('DELETE /users/:id', () => {
   it('returns 403 (non-owner access)', async () => {
     const res = await request(app).delete(`/users/3`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: not authorized to interact with this user');
+    expect(res.body.message).toBe('not authorized to interact with this user');
   });
 });
 
@@ -166,7 +166,7 @@ describe('GET /users/:id/roles', () => {
   it('returns 403 (non-admin access)', async () => {
     const res = await request(app).get(`/users/2/roles`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: requires one of [Admin]');
+    expect(res.body.message).toBe('requires one of Admin');
   });
 });
 
@@ -188,7 +188,7 @@ describe('POST /users/:id/roles', () => {
     const roleData = { role_id: 2 };
     const res = await request(app).post(`/users/3/roles`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: requires one of [Admin]');
+    expect(res.body.message).toBe('requires one of Admin');
   });
 });
 
@@ -215,7 +215,7 @@ describe('PATCH /users/:id/activate', () => {
   it('returns 403 (non-admin access)', async () => {
     const res = await request(app).patch(`/users/2/activate`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: requires one of [Admin]');
+    expect(res.body.message).toBe('requires one of Admin');
   });
 });
 
@@ -235,6 +235,6 @@ describe('PATCH /users/:id/deactivate', () => {
   it('returns 403 (non-admin access)', async () => {
     const res = await request(app).patch(`/users/2/deactivate`).set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
-    expect(res.body.message).toBe('Forbidden: requires one of [Admin]');
+    expect(res.body.message).toBe('requires one of Admin');
   });
 });
