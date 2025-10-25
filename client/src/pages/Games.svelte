@@ -51,7 +51,10 @@
         {#snippet children(games, reload)}
             <section class="flex flex-wrap justify-center">
                 {#each games as game}
-                    <GameArticle {game} onReservation={reservationButton} />
+                    <GameArticle 
+                        {game} 
+                        onReservation={reservationButton} 
+                    />
                 {/each}
             </section>
         {/snippet}

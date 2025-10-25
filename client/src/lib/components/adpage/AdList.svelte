@@ -162,7 +162,7 @@
                             onReserve={() => openReserveModal(ad.id)}
                             onEdit={() => openEditModal(ad)}
                             onDelete={() => deletion(ad.id)}
-                            onNoSpots={() => toast.showToast('Geen plek', 'info')}
+                            noSpots={() => toast.showToast('Geen plek', 'info')}
                         />
                     {/each}
                 </tbody>

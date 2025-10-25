@@ -1,13 +1,13 @@
 <script>
     import { authState } from '../../state/authState.svelte.js';
 
-    let { ad, i, onReserve, onEdit, onDelete, onNoSpots } = $props();
+    let { ad, i, onReserve, onEdit, onDelete, noSpots } = $props();
 
     const canEdit = $derived(authState.isProPlayer() && authState.getId() === ad.pro_player_id);
     const hasSpots = $derived(ad.metadata.spots_still_available > 0);
     
     function handleClick() {
-        hasSpots ? onReserve() : onNoSpots();
+        hasSpots ? onReserve() : noSpots();
     }
 
     function stopAndEdit(e) {

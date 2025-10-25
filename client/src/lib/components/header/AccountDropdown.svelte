@@ -1,5 +1,6 @@
 <script>
     import { authState } from "../../state/authState.svelte.js";
+    import router from "page";
 
     let { isDropDownOpen, handleLogout } = $props();
 </script>
@@ -8,32 +9,32 @@
     <article class="sm:bg-slate-900/95 transform transition-transform duration-500 {isDropDownOpen ? 'translate-y-0' : '-translate-y-4'}">
         <div class="pl-6 md:pl-0 py-0 sm:py-4 space-y-2">
             {#if authState.isAdmin()}
-            <a
-                href="/dashboard"
+            <button
+                onclick={() => router("/dashboard")}
                 class="group"
             >
                 <i class="fa-sharp fa-solid fa-hammer"></i>
                 <span>Dashboard</span>
                 <i class="fa-light fa-arrow-right"></i>
-            </a>
+            </button>
             {/if}
-            <a
-                href="/account"
+            <button
+                onclick={() => router("/account")}
                 class="group"
             >
                 <i class="fa-light fa-user"></i>
                 <span>My Account</span>
                 <i class="fa-light fa-arrow-right"></i>
-            </a>
+            </button>
             {#if !authState.isAdmin()}
-            <a
-                href="/reservations"
+            <button
+                onclick={() => router("/reservations")}
                 class="group"
             >
                 <i class="fa-light fa-calendar"></i>
                 <span>My Reservations</span>
                 <i class="fa-light fa-arrow-right"></i>
-            </a>
+            </button>
             {/if}
             <button
                 class="group"
