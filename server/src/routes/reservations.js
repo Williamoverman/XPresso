@@ -217,7 +217,7 @@ router.patch('/:id',
     validator.checkIfExists([
         { model: Reservation, source: 'params', field: 'id' }
     ]),
-    validator.requireResourceOwner(Reservation, 'user_id', 'user', 'id'),
+    validator.requireResourceOwner(Reservation, 'user_id'),
     validator.validateDates,
     reservationChecker.checkReservationDuration,
     reservationController.updateReservation

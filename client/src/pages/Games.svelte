@@ -18,6 +18,7 @@
     let gameListLoading = $state(false);
     let gameListError = $state(null);
 
+    // fields for add game modal
     const fields = [
         { name: 'name', label: 'Game naam', type: 'text', required: true },
         { name: 'abbreviation', label: 'Afkorting', type: 'text', required: true },

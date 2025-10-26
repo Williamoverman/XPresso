@@ -14,6 +14,7 @@
         await load();
     });
 
+    // loads in the function passed to dataLoader, sets data to it
     async function load() {
         try {
             isLoading = true;
@@ -26,6 +27,7 @@
         }
     }
 
+    // reload dataloader
     export function reload() {
         return load();
     }

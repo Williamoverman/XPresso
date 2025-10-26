@@ -12,6 +12,7 @@
     
     let formData = $state({});
     
+    // initialize form data from field definitions
     $effect(() => {
         formData = fields.reduce((acc, field) => {
             acc[field.name] = field.value || '';

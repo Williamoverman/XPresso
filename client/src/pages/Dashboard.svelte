@@ -5,7 +5,9 @@
     import { onMount } from 'svelte';
     import router from "page"; 
 
+    // redirect if not admin
     onMount(async () => {
+        // wait for token validation to complete
         while (authState.isValidating) {
             await new Promise(resolve => setTimeout(resolve, 50));
         }

@@ -2,6 +2,7 @@
   let toasts = $state([]);
   let nextId = 0;
 
+  // show toast for 4 seconds
   export function showToast(message: string, type: 'info' | 'error' | 'success' = 'info') {
     const id = nextId++;
     toasts = [...toasts, { id, message, type }];

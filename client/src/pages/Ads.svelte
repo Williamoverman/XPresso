@@ -19,6 +19,7 @@
         allGames = await gameService.getAll();
     });
 
+    // fields for creating ad modal
     let fields = $derived.by(() => [
         { 
             name: 'game_id', 
@@ -44,6 +45,7 @@
         await adService.create(data);
     }
     
+    // pass filter changes from AdFilter to AdList
     function handleFilterChange(newFilters) {
         filters = newFilters;
     }

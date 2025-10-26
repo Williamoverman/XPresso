@@ -31,7 +31,9 @@
     }
 
     function getDuration(start, end) {
-        const diff = new Date(end) - new Date(start);
+        const startTime = new Date(start).getTime();
+        const endTime = new Date(end).getTime();
+        const diff = endTime - startTime;
         const hour = Math.floor(diff / (1000 * 60 * 60));
         const min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         return hour > 0 ? `${hour} uur, ${min} min` : `${min} minuten`;
@@ -75,12 +77,14 @@
                     <button 
                         class="py-2 border-white/10 flex-1 rounded-lg border text-white bg-red-500 hover:bg-red-600"
                         onclick={onCancel}
+                        aria-label="Annuleren"
                     >
                         <i class="fa-duotone fa-xmark text-lg mr-0"></i>
                     </button>
                     <button 
                         class="py-2 border-white/10 flex-1 rounded-lg border text-white bg-green-500 hover:bg-green-600"
                         onclick={onComplete}
+                        aria-label="Voltooien"
                     >
                         <i class="fa-duotone fa-check text-lg mr-0"></i>
                     </button>
@@ -104,6 +108,7 @@
                         <button 
                             class="py-2 border-white/10 flex-1 rounded-lg border text-white bg-yellow-500 hover:bg-yellow-600"
                             onclick={onReview}
+                            aria-label="Review toevoegen"
                         >
                             <i class="fa-duotone fa-regular fa-star-sharp"></i>
                         </button>

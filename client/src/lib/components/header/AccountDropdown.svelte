@@ -50,7 +50,7 @@
 
 <style>
     @reference "tailwindcss";
-    a, button {
+    button {
         @apply flex items-center w-full text-left text-white/90 hover:text-white hover:bg-white/10 px-4 py-3 rounded-xl transition-all duration-300 transform hover:translate-x-2;
     }
     .fa-arrow-right {

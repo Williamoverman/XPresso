@@ -15,6 +15,7 @@ import reservationsRouter from './routes/reservations.js';
 import authRouter from './routes/auth.js';
 import validator from './middleware/validators.js';
 import sanitizeHtml from 'sanitize-html';
+import { seed } from './db/seedUsersOnly.js';
 
 // Check if NODE_ENV environment variable is set, otherwise go to development mode
 const nodeEnv = process.env.NODE_ENV || 'dev';
@@ -43,7 +44,9 @@ wss.on('connection', (ws) => {
 // Set up basic JSON parsing and CORS headers
 app.use(express.json({ type: 'application/json' }));
 app.use(cors({
-  origin: ['http://localhost:4173', 'http://localhost:5173']
+    origin: ['http://localhost:4173', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use((req, res, next) => {
@@ -61,16 +64,6 @@ app.use((req, res, next) => {
         for (const key in req.query) {
             if (typeof req.query[key] === 'string') {
                 req.query[key] = sanitizeHtml(req.query[key], {
-                    allowedTags: [],
-                    allowedAttributes: {}
-                });
-            }
-        }
-    }
-    if (req.params) {
-        for (const key in req.params) {
-            if (typeof req.params[key] === 'string') {
-                req.params[key] = sanitizeHtml(req.params[key], {
                     allowedTags: [],
                     allowedAttributes: {}
                 });
@@ -101,6 +94,10 @@ app.use(function (err, req, res, next) {
             message: err.message || 'Something went wrong!'
         });
 });
+
+// als omgeving prod is seed alleen de nodige gebruikers
+if (process.env.NODE_ENV === 'prod')
+    await seed();
 
 // Setup server, by default on port 3000
 if (process.env.NODE_ENV !== 'test') {

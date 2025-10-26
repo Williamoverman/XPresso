@@ -10,6 +10,7 @@
         hasSpots ? onReserve() : noSpots();
     }
 
+    // stop propagation to stop the reservation button from happening
     function stopAndEdit(e) {
         e.stopPropagation();
         onEdit();

@@ -6,6 +6,7 @@
 
     let toastComponent = $state(null);
 
+    // because my login and registers automatically redirect i cant show toast there, thats why i show it here
     $effect(() => {
         if (sessionStorage.getItem('showLoginToast') === 'true') {
             toastComponent?.showToast('Login succesvol', 'success');

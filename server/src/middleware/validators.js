@@ -136,7 +136,7 @@ async function checkIfAdNameExists(req, res, next) {
 
     const service = createService(Ad);
     const ad = await service.findAll({ where: { name: name } });
-    console.log(req.params.id)
+
     if (ad.length > 0 && ad[0].id !== parseInt(req.params.id)) {
         const error = new Error(`Advertentie naam bestaat al`);
         error.status = StatusCodes.BAD_REQUEST;
@@ -195,33 +195,32 @@ function requireAuth(req, res, next) {
 function requireRoles(...requiredRoles) {
   return (req, res, next) => {
     try {
-      if (!req.user) {
-        const error = new Error('user not authenticated');
-        error.status = StatusCodes.UNAUTHORIZED;
-        throw error;
-      }
-
-      const userRoles = req.user.roles || [];
-      
-      if (requiredRoles.length === 0) {
-        if (userRoles.length === 0) {
-          const error = new Error('At least one role required');
-          error.status = StatusCodes.FORBIDDEN;
-          throw error;
+        if (!req.user) {
+            const error = new Error('user not authenticated');
+            error.status = StatusCodes.UNAUTHORIZED;
+            throw error;
         }
-        return next();
-      }
+        
+        const userRoles = req.user.roles || [];
+        if (requiredRoles.length === 0) {
+            if (userRoles.length === 0) {
+            const error = new Error('At least one role required');
+            error.status = StatusCodes.FORBIDDEN;
+            throw error;
+            }
+            return next();
+        }
 
-      const hasAccess = requiredRoles.some(role => userRoles.includes(role));
-      if (!hasAccess) {
-        const error = new Error(`requires one of ${requiredRoles.join(', ')}`);
-        error.status = StatusCodes.FORBIDDEN;
-        throw error;
-      }
+        const hasAccess = requiredRoles.some(role => userRoles.includes(role));
+        if (!hasAccess) {
+            const error = new Error(`requires one of ${requiredRoles.join(', ')}`);
+            error.status = StatusCodes.FORBIDDEN;
+            throw error;
+        }
 
-      next();
+        next();
     } catch (err) {
-      next(err);
+        next(err);
     }
   };
 }

@@ -1,14 +1,17 @@
 const baseUrl = import.meta.env.VITE_API_URL;
 
+// generic API clien t for making requests
 class ApiClient {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
     }
 
+    // get jwt
     getToken() {
         return localStorage.getItem('token');
     }
 
+    // make request with token attached
     async request(endpoint, options = {}) {
         const token = this.getToken();
         const config = {
@@ -39,6 +42,7 @@ class ApiClient {
         }
     }
 
+    //shortcuts for my services
     get(endpoint) {
         return this.request(endpoint);
     }

@@ -4,6 +4,7 @@
         onReservation
     } = $props();
 
+    // nice random colors (i chose not to use pictures due to me not wanting to deal with that lol)
     function getRandomColor() {
         const vibrantColors = [
             'from-red-500 to-blue-500', 'from-green-500 to-cyan-300', 'from-blue-500 to-red-500',
@@ -14,7 +15,7 @@
     }
 </script>
 
-<article class="font-[Bungee] w-80 h-80 m-6 rounded-2xl shadow-2xl text-white flex flex-col items-center justify-center transition-transform duration-300 hover:scale-110 hover:shadow-3xl cursor-pointer group overflow-hidden bg-gradient-to-br {getRandomColor()} max-w-full sm:max-w-[calc(50%-1.5rem)] lg:max-w-[calc(33.333%-1.5rem)] relative">
+<article class="font-[Bungee] min-w-80 min-h-80 m-6 rounded-2xl shadow-2xl text-white flex flex-col items-center justify-center transition-transform duration-300 hover:scale-110 hover:shadow-3xl cursor-pointer group overflow-hidden bg-gradient-to-br {getRandomColor()} max-w-full sm:max-w-[calc(50%-1.5rem)] lg:max-w-[calc(33.333%-1.5rem)] relative">
     <header class="text-center">
         <h3 class="text-3xl mb-4 drop-shadow-lg font-bold">{game.name}</h3>
         <p class="text-xl drop-shadow-lg">{game.abbreviation}</p>

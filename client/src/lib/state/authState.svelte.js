@@ -1,20 +1,20 @@
 import { api } from '../services/apiclient/api.js';
 
+// global authentication state manager
 class AuthState {
     isLoggedIn = $state(false);
     user = $state(null);
     isValidating = $state(false);
     
     constructor() {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
-            this.isLoggedIn = !!token;
+        const token = localStorage.getItem('token');
+        this.isLoggedIn = !!token;
 
-            if (token)
-                this.validateToken(token);
-        }
+        if (token)
+            this.validateToken();
     }
 
+    // get user info helpers
     getName() {
         if (this.isValidating) 
             return "";
@@ -29,6 +29,7 @@ class AuthState {
         return this.user?.id;
     }
 
+    // role checking helpers
     hasAnyRole() {
         return this.user?.roles.length > 0;
     }
@@ -45,19 +46,22 @@ class AuthState {
         return this.user?.roles.includes("Admin");
     }
     
+    // save token and validate user
     login(token) {
         localStorage.setItem('token', token);
         this.isLoggedIn = true;
-        this.validateToken(token);
+        this.validateToken();
     }
     
+    // remove token and user data
     logout() {
         localStorage.removeItem('token');
         this.isLoggedIn = false;
         this.user = null;
     }
 
-    async validateToken(token) {
+    // verify token and fetch user data from server
+    async validateToken() {
         if (this.isValidating) 
             return;
         

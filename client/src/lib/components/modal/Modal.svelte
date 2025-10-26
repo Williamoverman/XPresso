@@ -13,6 +13,7 @@
    
     let formData = $state({});
    
+    // initialize form data when modal opens
     $effect(() => {
         if (isOpen && fields.length > 0) {
             formData = fields.reduce((acc, field) => {

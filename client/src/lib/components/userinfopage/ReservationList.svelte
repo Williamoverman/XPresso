@@ -33,6 +33,7 @@
         
         try {
             const reviews = await reviewService.getAll(`?user_id=${authState.getId()}`);
+            // map reviews by reservation id for quick lookup
             reviewsByReservation = reviews.reduce((acc, review) => {
                 acc[review.reservation_id] = review;
                 return acc;
@@ -61,7 +62,8 @@
 
     async function updateStatus(id, cancel) {
         const msg = cancel ? 'annuleren' : 'voltooien';
-        if (!confirm(`Weet je zeker dat je deze reservering wilt ${msg}?`)) return;
+        if (!confirm(`Weet je zeker dat je deze reservering wilt ${msg}?`)) 
+            return;
         
         try {
             await reservationService.update(id, { status: cancel ? 'Cancelled' : 'Completed' });

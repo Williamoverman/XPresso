@@ -15,12 +15,14 @@
     
     onMount(async () => {
         try {
+            // get game id to filter on from link
             const urlParams = new URLSearchParams(window.location.search);
             const urlGameId = urlParams.get('game_id');
 
             allGames = await gameService.getAll();
             allProPlayers = await proPlayerService.getAll();
 
+            // if theres a game id in link find it in all games
             if (urlGameId)
                 selectedGameId = allGames.find(game => game.id == urlGameId)?.id || '';
         } catch (err) {
@@ -29,6 +31,7 @@
         }
     });
     
+    // sends new filters back to main ad component to send to adlist
     function handleFilterChange() {
         const filters = {
             game_id: selectedGameId,
@@ -45,6 +48,7 @@
         handleFilterChange();
     }
     
+    // when filter values change apply new filters
     $effect(() => {
         handleFilterChange();
     });

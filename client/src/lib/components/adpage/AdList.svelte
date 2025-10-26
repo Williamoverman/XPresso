@@ -23,6 +23,7 @@
 
     let ws = $state(null);
 
+    // on mount establish websocket connection and listen to new types
     onMount(() => {
         ws = new WebSocket('ws://localhost:3000');
         ws.onmessage = async (event) => {
@@ -53,6 +54,7 @@
         }
     });
 
+    // filter ads based on selected game, pro player, and service type search
     const filteredAds = $derived(ads.filter(ad => {
         if (filters.game_id && ad.game_id != filters.game_id) return false;
         if (filters.pro_player_id && ad.pro_player_id != filters.pro_player_id) return false;
@@ -60,12 +62,14 @@
         return true;
     }));
 
+    // fields for reservation modal
     const reserveFields = [
         { name: 'start_date', label: 'Start datum', type: 'datetime-local', required: true },
         { name: 'end_date', label: 'Eind datum', type: 'datetime-local', required: true },
         { name: 'customer_notes', label: 'Notities', type: 'text' },
     ];
 
+    // fields for edit ad modal
     const editFields = $derived(!selectedAd ? [] : [
         { name: 'name', label: 'Naam', type: 'text', required: true, value: selectedAd.name },
         { name: 'description', label: 'Beschrijving', type: 'text', required: true, value: selectedAd.description },
@@ -98,6 +102,7 @@
             user_id: authState.getId(),
             ad_id: selectedId
         });
+        toast.showToast('Reservering toegevoegd', 'success')
     }
 
     async function handleEdit(data) {

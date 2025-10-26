@@ -30,6 +30,7 @@
         }
     }
 
+    // group reservations by ad and count statuses
     let groupedReservations = $derived.by(() => {
         const groups = {};
         

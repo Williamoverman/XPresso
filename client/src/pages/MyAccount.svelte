@@ -4,7 +4,9 @@
     import { authState } from "../lib/state/authState.svelte.js";
     import { onMount } from 'svelte';
 
+    // redirect if not logged in
     onMount(async () => {
+        // wait for token validation to complete
         while (authState.isValidating) {
             await new Promise(resolve => setTimeout(resolve, 50));
         }

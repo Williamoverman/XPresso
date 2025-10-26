@@ -8,6 +8,7 @@
     let error = $state(null);
     let toastComponent = $state(null);
 
+    // fields for personal info update
     const fields = [
         {
             name: 'username',
@@ -42,6 +43,7 @@
             updateData.password = formData.password;
 
         await userService.update(authState.getId(), updateData);
+        await authState.validateToken();
         toastComponent.showToast('Persoonlijke info updated', 'success')
     }
 </script>
